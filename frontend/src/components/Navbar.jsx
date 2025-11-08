@@ -11,20 +11,24 @@ const Navbar = () => {
                 <a href="#Electrical">ELECTRICAL</a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">PROPERTY SERVICES</a>
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
-                <a href="">RENOVATION</a>
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
                 <a href="">INSTALLATION</a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
                 <a href="">PERSONAL</a>
             </button>
+            <button className="btn glass bg-[#e5d4c0]">
+                <a href="">PROPERTY SERVICES</a>
+            </button>
+            <button className="btn glass bg-[#e5d4c0]">
+                <a href="">RENOVATION</a>
+            </button>
+            
+            
           
         </nav>
-        <div className="text-lg cursor-pointer">🔍</div>
+        <button className="btn glass bg-[#e5d4c0]">
+                <a href="">Log in</a>
+        </button>
       </header>
     </div>
   )
