@@ -1,16 +1,20 @@
 import React from "react"
 import { Route , Routes } from "react-router"
 import { toast } from "react-hot-toast"
-import Home from "./pages/Home"
+import Landing from "./pages/Landing"
 import Profile from "./pages/Profile"
 import Services from "./pages/Services"
+import Navbar from "./components/Navbar"
+
 const App = () => {
   return (
-    <div data-theme="synthwave">
+    <div>
+      <Navbar/>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/services" element={<Services />} />
+        
       </Routes>
     </div>
   )
