@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-export default function PremiumLanding() {
+export default function Landing() {
   return (
     <div className="min-h-screen bg-[#f4efe9] text-[#000000] font-sans px-8 py-10">
       
