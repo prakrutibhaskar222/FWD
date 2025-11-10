@@ -1,0 +1,10 @@
+design:
+->landing
+->login
+->signup
+->home
+->electrical
+->installation
+->personal
+->property
+->renovation

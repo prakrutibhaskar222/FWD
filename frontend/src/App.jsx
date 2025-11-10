@@ -10,7 +10,8 @@ import Installation from "./pages/Installation"
 import Personal from "./pages/Personal"
 import PropertyServices from "./pages/PropertyServices"
 import Renovation from "./pages/Renovation"
-
+import Login from "./pages/Login"
+import Signin from "./pages/Signin"
 
 const App = () => {
   return (
@@ -29,7 +30,8 @@ const App = () => {
           <Route path="/personal" element={<Personal />} />
           <Route path="/propertyservices" element={<PropertyServices />} /> 
           <Route path="/renovation" element={<Renovation />} /> 
-          
+          <Route path="/login" element={<Login />} /> 
+          <Route path="/signin" element={<Signin />} /> 
         </Routes>
       
 

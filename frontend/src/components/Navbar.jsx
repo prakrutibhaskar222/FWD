@@ -1,6 +1,17 @@
-import React from 'react'
+
+import React, { useState } from "react";
+import { Link } from 'react-router'
 
 const Navbar = () => {
+
+// ✅ Define login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // ✅ Function to handle logout
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    alert("Logged out successfully!");}
+
   return (
     
     <div className='bg-[#e9e4de]' >
@@ -26,12 +37,30 @@ const Navbar = () => {
             
           
         </nav>
-        <button className="btn glass bg-[#e5d4c0]">
-                <a href="">Log in</a>
-        </button>
+        
+
+        
+        {!isLoggedIn ? (
+  <button className="btn glass bg-[#e5d4c0]">
+    <Link to="/login" className="text-black no-underline">
+      Log in
+    </Link>
+  </button>
+) : (
+  <button
+    onClick={() => setIsLoggedIn(false)}
+    className="btn glass bg-red-400 text-white hover:bg-red-500"
+  >
+    Logout
+  </button>
+)}
+
+
+
       </header>
     </div>
   )
 }
+
 
 export default Navbar
