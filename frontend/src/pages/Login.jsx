@@ -26,10 +26,6 @@ export default function Login() {
       return; // Stop submission if invalid
     }
 
-    if (!formData.email.endsWith("@yahoo.com")) {
-      toast.error("Email must end with @gmail.com");
-      return; // Stop submission if invalid
-    }
 
     console.log("Login attempt:", formData);
     toast.success('Successfully login!!')
