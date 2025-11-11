@@ -28,7 +28,7 @@ const Navbar = () => {
                 <a href="">PERSONAL</a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">PROPERTY SERVICES</a>
+                <a href="">HOME SERVICES</a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
                 <a href="">RENOVATION</a>

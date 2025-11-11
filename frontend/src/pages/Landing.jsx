@@ -2,21 +2,27 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, Button } from "@mui/material";
 import { Wrench, User, Home, Paintbrush } from "lucide-react";
+import { Link } from "react-router"; 
 
 export default function Landing() {
   const services = [
     {
-      title: "Electrical Installation",
-      description: "Expert installation of lights, fans, switches, and home electrical systems.",
+      title: "Electrical ",
+      description: "Certified electricians for safe wiring, lighting, and appliance repairs.",
+      icon: <Wrench className="w-10 h-10 mb-4" />,
+    },
+    {
+      title: "Installation",
+      description: "Reliable experts for appliance, fixture, and equipment installations.",
       icon: <Wrench className="w-10 h-10 mb-4" />,
     },
     {
       title: "Personal Services",
-      description: "Professional grooming, beauty, and wellness services at your doorstep.",
+      description: "Premium lifestyle and wellness experiences in the comfort of your home..",
       icon: <User className="w-10 h-10 mb-4" />,
     },
     {
-      title: "Property Services",
+      title: "Home Services",
       description: "Reliable home maintenance, pest control, and deep cleaning services.",
       icon: <Home className="w-10 h-10 mb-4" />,
     },
@@ -70,7 +76,9 @@ export default function Landing() {
       <section className="text-center bg-black text-white py-20">
         <h2 className="text-3xl font-light mb-6">Need a Service Today?</h2>
         <Button className="bg-amber-400 text-black px-8 py-4 text-lg rounded-2xl hover:bg-amber-300 transition">
-          Get Started
+          <Link to="/Signup" >
+            Get Started
+          </Link>
         </Button>
       </section>
     </div>

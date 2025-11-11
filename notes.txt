@@ -10,3 +10,105 @@ design:
 ->renovation
 
 get started link to signup page
+property services to home servises
+
+
+Electrical Services:
+
+Electrical wiring (new installation or rewiring)
+
+Switchboard installation and repair
+
+Ceiling fan / exhaust fan installation
+
+Lighting installation (indoor, outdoor, decorative)
+
+Inverter and UPS setup
+
+Circuit breaker & fuse replacement
+
+Electrical panel maintenance
+
+Earthing & surge protection
+
+Home automation & smart lighting setup
+
+
+🏠 Installation Services
+
+Kitchen appliance installation (chimney, hob, dishwasher)
+
+
+Appliance installation (AC, geyser, oven, etc.)
+
+Bathroom fittings installation (geyser, taps, shower panels)
+
+Air conditioner installation / uninstallation
+
+CCTV camera installation
+
+Water purifier installation
+
+TV wall mounting
+
+Door / window / curtain installation
+
+Modular furniture assembly & installation
+
+Solar panel installation
+
+👤 Personal Services
+
+Home cleaning & sanitization
+
+Pest control
+
+Laundry & dry cleaning pickup
+
+Personal fitness trainer / yoga instructor
+
+Babysitting or elderly care services
+
+Personal driver / chauffeur service
+
+🏡 Property Services
+
+Real estate consultation (buying, selling, renting)
+
+Property maintenance (cleaning, plumbing, electrical, etc.)
+
+House painting & waterproofing
+
+Security guard services
+
+Landscape & gardening maintenance
+
+Interior design & furnishing
+
+Property inspection & valuation
+
+Tenant management & rent collection
+
+🔧 Renovation Services
+
+Civil renovation (walls, floors, tiles, ceilings)
+
+Bathroom & kitchen remodeling
+
+False ceiling design & installation
+
+Wall plastering & painting
+
+Carpentry & woodwork renovation
+
+Flooring replacement (tiles, marble, laminate)
+
+Space redesign / partitioning
+
+Masonry & waterproofing works
+
+Interior lighting revamp
+
+
+
+
