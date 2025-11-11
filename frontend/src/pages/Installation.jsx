@@ -8,7 +8,7 @@ const Installation = () => {
         Get professional installation for your home and appliances.
       </p>
     </div>
-  );
-};
+  )
+}
 
 export default Installation;
