@@ -110,7 +110,9 @@ export default function Login() {
                   "&:hover": { backgroundColor: "#facc15" },
                 }}
               >
+                <Link to="/home" >
                 Log In
+            </Link>
               </Button>
             </Box>
 

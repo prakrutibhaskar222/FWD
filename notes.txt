@@ -1,5 +1,5 @@
 design:
-->landing
+->landing✅
 ->login
 ->signup
 ->home
@@ -8,3 +8,5 @@ design:
 ->personal
 ->property
 ->renovation
+
+get started link to signup page

@@ -38,7 +38,13 @@ const Navbar = () => {
           
         </nav>
         
-
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            placeholder="🕵️ Search for services"
+            className="border rounded-lg px-3 py-1 text-sm focus:outline-none"
+          />
+        </div>
         
         {!isLoggedIn ? (
   <button className="btn glass bg-[#e5d4c0]">

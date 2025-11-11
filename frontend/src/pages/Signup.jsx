@@ -119,7 +119,9 @@ export default function Signup() {
                   "&:hover": { backgroundColor: "#facc15" },
                 }}
               >
-                Sign Up
+                <Link to="/home" >
+                   Sign up
+                </Link>
               </Button>
             </Box>
 
