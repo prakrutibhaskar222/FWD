@@ -1,6 +1,8 @@
 import React from "react"
 import { Route, Routes } from "react-router" 
 import { Toaster } from "react-hot-toast"
+
+
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Landing from "./pages/Landing"
@@ -15,11 +17,13 @@ import Signup from "./pages/Signup"
 import Stats from "./components/Stats"
 import Booking from "./pages/Booking"
 
+
 const App = () => {
   return (
     <div className="min-h-screen flex flex-col">
      
       <Navbar />
+      
       <Toaster position="top-center" /> 
 
      

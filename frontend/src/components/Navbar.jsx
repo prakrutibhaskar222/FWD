@@ -16,44 +16,49 @@ const Navbar = () => {
     
     <div className='bg-[#e9e4de]' >
       <header className="flex justify-between items-center ">
-        <div className="text-xl font-semibold sixtyfour">COOLIE</div>
+        <Link
+            to="/home"
+            className="text-xl font-semibold sixtyfour"
+        >
+        COOLIE
+        </Link>
         <nav className="space-x-4 text-sm  uppercase tracking-wide mt-2 mb-2">
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="#Electrical"><Link to="/electrical" >
+                <Link to="/electrical" >
                                 ELECTRICAL
                             </Link>
-                            </a>
+                    
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href=""><Link to="/installation" >
+                <Link to="/installation" >
                                 INSTALLATION
                             </Link>
-                            </a>
+                            
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href=""><Link to="/personal" >
+                <Link to="/personal" >
                                 PERSONAL
                             </Link>
-                            </a>
+                            
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href=""><Link to="/homeservices" >
+                <Link to="/homeservices" >
                                 HOME SERVICES
                             </Link>
-                            </a>
+                            
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href=""><Link to="/renovation" >
+                <Link to="/renovation" >
                                 RENOVATION
                             </Link>
-                            </a>
+                            
             </button>
             
             
           
         </nav>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-end space-x-3">
           <input
             type="text"
             placeholder="🕵️ Search for services"
