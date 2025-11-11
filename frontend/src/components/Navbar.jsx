@@ -19,19 +19,34 @@ const Navbar = () => {
         <div className="text-xl font-semibold sixtyfour">COOLIE</div>
         <nav className="space-x-4 text-sm  uppercase tracking-wide mt-2 mb-2">
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="#Electrical">ELECTRICAL</a>
+                <a href="#Electrical"><Link to="/electrical" >
+                                ELECTRICAL
+                            </Link>
+                            </a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">INSTALLATION</a>
+                <a href=""><Link to="/installation" >
+                                INSTALLATION
+                            </Link>
+                            </a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">PERSONAL</a>
+                <a href=""><Link to="/personal" >
+                                PERSONAL
+                            </Link>
+                            </a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">HOME SERVICES</a>
+                <a href=""><Link to="/homeservices" >
+                                HOME SERVICES
+                            </Link>
+                            </a>
             </button>
             <button className="btn glass bg-[#e5d4c0]">
-                <a href="">RENOVATION</a>
+                <a href=""><Link to="/renovation" >
+                                RENOVATION
+                            </Link>
+                            </a>
             </button>
             
             
