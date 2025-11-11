@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast"
+import toast from "react-hot-toast";
 import {
   Card,
   CardContent,
@@ -9,10 +9,10 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Link } from "react-router";
+import { Link } from "react-router"; 
 
-export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+export default function Signup() {
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,14 +22,13 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // ✅ Simple validation
     if (!formData.email.endsWith("@gmail.com")) {
       toast.error("Email must end with @gmail.com");
-      return; // Stop submission if invalid
+      return;
     }
 
-
-    console.log("Login attempt:", formData);
-    toast.success('Successfully login!!')
+    toast.success("Signup successful!");
   };
 
   return (
@@ -60,7 +59,7 @@ export default function Login() {
                 letterSpacing: "1px",
               }}
             >
-              Login
+              Sign Up
             </Typography>
 
             <Typography
@@ -69,10 +68,20 @@ export default function Login() {
               color="text.secondary"
               sx={{ mb: 3 }}
             >
-              Welcome back! Please enter your details.
+              Create an account to get started!
             </Typography>
 
             <Box component="form" onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+                required
+              />
               <TextField
                 fullWidth
                 label="Email"
@@ -103,14 +112,14 @@ export default function Login() {
                   mt: 3,
                   py: 1.4,
                   fontSize: "1rem",
-                  backgroundColor: "#fbbf24", // amber-400
+                  backgroundColor: "#fbbf24",
                   color: "black",
                   borderRadius: "12px",
                   textTransform: "none",
                   "&:hover": { backgroundColor: "#facc15" },
                 }}
               >
-                Log In
+                Sign Up
               </Button>
             </Box>
 
@@ -119,10 +128,10 @@ export default function Login() {
               align="center"
               sx={{ mt: 3, color: "gray" }}
             >
-              Don’t have an account?{" "}
-            <Link to="/signup" className="text-amber-600 hover:underline">
-                Sign up
-            </Link>
+              Already have an account?{" "}
+              <Link to="/login" className="text-amber-600 hover:underline">
+                Log in
+              </Link>
             </Typography>
           </CardContent>
         </Card>
