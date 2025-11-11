@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react"; // optional icons library
+import { Link } from "react-router";
 
 export default function Electrical() {
   const services = [
@@ -49,7 +50,9 @@ export default function Electrical() {
       <section className="text-center bg-black text-white py-20">
         <h2 className="text-3xl font-light mb-6">Need an Electrician Today?</h2>
         <button className="bg-amber-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-amber-300 transition">
-          Book a Service
+          <Link to="/booking">
+            Book a Service
+          </Link>
         </button>
       </section>
     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react"; // optional icon library
+import { Link } from "react-router";
 
 export default function Personal() {
   const services = [
@@ -49,7 +50,9 @@ export default function Personal() {
           Need Personal Help or Wellness Support?
         </h2>
         <button className="bg-pink-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-pink-300 transition">
-          Book a Service
+          <Link to="/booking">
+            Book a Service
+          </Link>
         </button>
       </section>
     </div>

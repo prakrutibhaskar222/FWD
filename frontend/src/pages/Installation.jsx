@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react"; // optional, for icons
+import { Link } from "react-router";
 
 export default function Installation() {
   const services = [
@@ -54,7 +55,9 @@ export default function Installation() {
           Need an Installation Expert Today?
         </h2>
         <button className="bg-blue-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-blue-300 transition">
-          Book a Service
+          <Link to="/booking">
+            Book a Service
+          </Link>
         </button>
       </section>
     </div>

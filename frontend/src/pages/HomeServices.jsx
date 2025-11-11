@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react"; // optional for icons
+import { Link } from "react-router";
 
 export default function HomeServices() {
   const services = [
@@ -53,7 +54,9 @@ export default function HomeServices() {
           Need Trusted Professionals for Your Home?
         </h2>
         <button className="bg-green-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-green-300 transition">
-          Book a Service
+          <Link to="/booking">
+            Book a Service
+          </Link>
         </button>
       </section>
     </div>

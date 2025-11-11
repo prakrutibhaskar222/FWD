@@ -13,6 +13,7 @@ import Renovation from "./pages/Renovation"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Stats from "./components/Stats"
+import Booking from "./pages/Booking"
 
 const App = () => {
   return (
@@ -33,7 +34,8 @@ const App = () => {
           <Route path="/renovation" element={<Renovation />} /> 
           <Route path="/login" element={<Login />} /> 
           <Route path="/signup" element={<Signup />} /> 
-          <Route path="/Stats" element={<Stats />} /> 
+          <Route path="/Stats" element={<Stats />} />
+          <Route path="/booking" element={<Booking />} />  
         </Routes>
       
 
