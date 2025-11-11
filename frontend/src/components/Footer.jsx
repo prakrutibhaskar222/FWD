@@ -22,7 +22,7 @@ const Footer = () => {
           <p>FAQ</p>
         </div>
         <div className="space-y-2 text-xs opacity-80">
-          <p>© Urban Premium 2025</p>
+          <p>© Coolie Premium 2025 </p>
           <p>Made in India</p>
         </div>
       </footer></div>
