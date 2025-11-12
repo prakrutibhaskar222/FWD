@@ -61,5 +61,4 @@ export default function Installation() {
         </button>
       </section>
     </div>
-
-        )}
+  )}

@@ -11,14 +11,16 @@ const Footer = () => {
         </div>
         <div className="space-y-2">
           <h4 className="font-semibold uppercase text-xs">Services</h4>
-          <p>Home Cleaning</p>
-          <p>Salon & Grooming</p>
-          <p>Repair & Maintenance</p>
+          <p>Electrical</p>
+          <p>Installation</p>
+          <p>Personal</p>
+          <p>Home Services</p>
+          <p>Renovation</p>
         </div>
         <div className="space-y-2">
           <h4 className="font-semibold uppercase text-xs">Contact</h4>
-          <p>Email</p>
-          <p>Store</p>
+          <p>Email-rvandanaa.cs24@bmsce.ac.in</p>
+          <p>Contact-7619443280</p>
           <p>FAQ</p>
         </div>
         <div className="space-y-2 text-xs opacity-80">
