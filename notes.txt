@@ -4,3 +4,9 @@ alterations
 footer links
 text bold
 clicking
+
+
+
+
+middle::
+text-xl font-semibold sixtyfour

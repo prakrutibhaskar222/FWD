@@ -22,6 +22,52 @@ export default function Booking() {
     "Renovation Services",
   ];
 
+  const sub_services = [
+    "Electrical wiring (new installation or rewiring)",
+    "Switchboard installation and repair",
+    "Ceiling fan / exhaust fan installation",
+    "Lighting installation (indoor, outdoor, decorative)",
+    "Inverter and UPS setup",
+    "Circuit breaker & fuse replacement",
+    "Electrical panel maintenance",
+    "Earthing & surge protection",
+    "Home automation & smart lighting setup",
+    "House painting & waterproofing",
+    "Security guard services",
+    "Landscape & gardening maintenance",
+    "Electrical appliances cleaning",
+    "Deep cleaning",
+    "Bathroom cleaning",
+    "Room cleaning",
+    "New house organization",
+    "Kitchen cleaning",
+    "Kitchen appliance installation (chimney, hob, dishwasher)",
+    "Appliance installation (AC, geyser, oven, etc.)",
+    "Bathroom fittings installation (geyser, taps, shower panels)",
+    "Air conditioner installation / uninstallation",
+    "CCTV camera installation",
+    "Water purifier installation",
+    "TV wall mounting",
+    "Door / window / curtain installation",
+    "Modular furniture assembly & installation",
+    "Solar panel installation",
+     "Home cleaning & sanitization",
+    "Pest control",
+    "Laundry & dry cleaning pickup",
+    "Personal fitness trainer / yoga instructor",
+    "Babysitting or elderly care services",
+    "Personal driver / chauffeur service",
+    "Civil renovation (walls, floors, tiles, ceilings)",
+    "Bathroom & kitchen remodeling",
+    "False ceiling design & installation",
+    "Wall plastering & painting",
+    "Carpentry & woodwork renovation",
+    "Flooring replacement (tiles, marble, laminate)",
+    "Space redesign / partitioning",
+    "Masonry & waterproofing works",
+    "Interior lighting revamp",
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -129,6 +175,24 @@ export default function Booking() {
                 required
               >
                 {services.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <TextField
+                fullWidth
+                select
+                label="Select Sub_Service"
+                name="sub_service"
+                value={formData.sub_service}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+                required
+              >
+                {sub_services.map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>
