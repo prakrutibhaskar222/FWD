@@ -77,7 +77,7 @@ export default function HomePage() {
             >
               <div className="absolute inset-0 bg-black/40"></div>
 
-              <div className="relative z-10 text-center text-white p-4 flex flex-col justify-center h-full">
+              <div className="relative z-10 text-center text-[#ffffff] p-4 flex font-bold flex-col justify-center h-full">
                 <div className="text-4xl mb-2">{service.icon}</div>
                 <h3 className="text-lg font-semibold">{service.name}</h3>
                 <p className="text-sm">{service.desc}</p>
