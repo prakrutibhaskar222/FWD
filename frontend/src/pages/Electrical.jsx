@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 export default function Electrical() {
   const services = [
-    "Electrical wiring (new installation or rewiring)",
+    <button><Link to="/E1">Electrical wiring (new installation or rewiring)</Link></button>,
     "Switchboard installation and repair",
     "Ceiling fan / exhaust fan installation",
     "Lighting installation (indoor, outdoor, decorative)",

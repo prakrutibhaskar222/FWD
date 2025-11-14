@@ -16,6 +16,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Stats from "./components/Stats"
 import Booking from "./pages/Booking"
+import E1 from "./subpages/E1"
 
 
 const App = () => {
@@ -39,7 +40,8 @@ const App = () => {
           <Route path="/login" element={<Login />} /> 
           <Route path="/signup" element={<Signup />} /> 
           <Route path="/Stats" element={<Stats />} />
-          <Route path="/booking" element={<Booking />} />  
+          <Route path="/booking" element={<Booking />} /> 
+          <Route path="/e1" element={<E1 />} />  
         </Routes>
       
 
