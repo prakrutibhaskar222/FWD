@@ -50,7 +50,7 @@ export default function Electrical() {
       <section className="text-center bg-black text-white py-20">
         <h2 className="text-3xl font-light mb-6">Need an Electrician Today?</h2>
         <button className="bg-amber-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-amber-300 transition">
-          <Link to="/booking">
+          <Link to="/booking/electrical">
             Book a Service
           </Link>
         </button>

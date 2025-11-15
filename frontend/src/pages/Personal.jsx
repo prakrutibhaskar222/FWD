@@ -50,7 +50,7 @@ export default function Personal() {
           Need Personal Help or Wellness Support?
         </h2>
         <button className="bg-pink-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-pink-300 transition">
-          <Link to="/booking">
+          <Link to="/booking/personal">
             Book a Service
           </Link>
         </button>

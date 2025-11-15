@@ -54,7 +54,7 @@ export default function HomeServices() {
           Need Trusted Professionals for Your Home?
         </h2>
         <button className="bg-green-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-green-300 transition">
-          <Link to="/booking">
+          <Link to="/booking/homeservices">
             Book a Service
           </Link>
         </button>

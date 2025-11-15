@@ -53,7 +53,7 @@ export default function Renovation() {
           Ready to Transform Your Space?
         </h2>
         <button className="bg-amber-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-amber-300 transition">
-          <Link to="/booking">
+          <Link to="/booking/renovation">
             Book a Service
           </Link>
         </button>

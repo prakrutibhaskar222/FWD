@@ -32,74 +32,10 @@ export default function Booking() {
     personal: "Personal Services",
     homeservices: "Home Services",
     renovation: "Renovation Services",
-    
+    e1: "Electrical Wiring Service",
   };
 
-  // 🔥 Sub-services per topic
-  const subServiceCategories = {
-    electrical: [
-      "1.Electrical wiring (new installation or rewiring)",
-      "2.Switchboard installation & repair",
-      "3.Ceiling fan / exhaust fan installation",
-      "4.Lighting installation (indoor & outdoor)",
-      "5.Inverter / UPS installation",
-      "6.Circuit breaker & fuse replacement",
-      "7.Electrical panel maintenance",
-      "8.Earthing & surge protection",
-      "9.Home automation & smart lighting setup",
-    ],
-
-    installation: [
-      "1.Kitchen appliance installation (chimney, hob, dishwasher)",
-    "2.Appliance installation (AC, geyser, oven, etc.)",
-    "3.Bathroom fittings installation (geyser, taps, shower panels)",
-    "4.Air conditioner installation / uninstallation",
-    "5.CCTV camera installation",
-    "6.Water purifier installation",
-    "7.TV wall mounting",
-    "8.Door / window / curtain installation",
-    "9.Modular furniture assembly & installation",
-    "10.Solar panel installation",
-    ],
-
-    personal: [
-      "1.Home cleaning & sanitization",
-    "2.Pest control",
-    "3.Laundry & dry cleaning pickup",
-    "4.Personal fitness trainer / yoga instructor",
-    "5.Babysitting or elderly care services",
-    "6.Personal driver / chauffeur service",
-    ],
-
-    homeservices: [
-      "1.House painting & waterproofing",
-    "2.Security guard services",
-    "3.Landscape & gardening maintenance",
-    "4.Electrical appliances cleaning",
-    "5.Deep cleaning",
-    "6.Bathroom cleaning",
-    "7.Room cleaning",
-    "8.New house organization",
-    "9.Kitchen cleaning",
-    ],
-
-    renovation: [
-      "1.Civil renovation (walls, floors, tiles, ceilings)",
-    "2.Bathroom & kitchen remodeling",
-    "3.False ceiling design & installation",
-    "4.Wall plastering & painting",
-    "5.Carpentry & woodwork renovation",
-    "6.Flooring replacement (tiles, marble, laminate)",
-    "7.Space redesign / partitioning",
-    "8.Masonry & waterproofing works",
-    "9.Interior lighting revamp",
-    ],
-
-  };
-
-  // 🔥 Filter sub-services for this topic
-  const filteredSubServices = subServiceCategories[topic] || [];
-
+  
   // 🔥 Auto-fill service when topic changes
   useEffect(() => {
     if (topic && serviceNames[topic]) {
@@ -153,23 +89,7 @@ export default function Booking() {
               <TextField fullWidth label="Email" name="email" value={formData.email} onChange={handleChange} margin="normal" required />
               <TextField fullWidth label="Phone" name="phone" value={formData.phone} onChange={handleChange} margin="normal" required />
 
-              {/* 🔥 Auto-filtered sub-services */}
-              <TextField
-                fullWidth
-                select
-                label="Select Sub-Service"
-                name="sub_service"
-                value={formData.sub_service}
-                onChange={handleChange}
-                margin="normal"
-                required
-              >
-                {filteredSubServices.map((s, i) => (
-                  <MenuItem key={i} value={s}>
-                    {s}
-                  </MenuItem>
-                ))}
-              </TextField>
+              
 
               <Button
                 type="submit"

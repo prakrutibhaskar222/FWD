@@ -55,7 +55,7 @@ export default function Installation() {
           Need an Installation Expert Today?
         </h2>
         <button className="bg-blue-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-blue-300 transition">
-          <Link to="/booking">
+          <Link to="/booking/installation">
             Book a Service
           </Link>
         </button>
