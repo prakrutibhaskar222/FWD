@@ -1,6 +1,6 @@
 login in home page to log_out
 navbar 
-3 to 2 landing page layout
+3 to 2 landing page layout=====done
 footer links 
 inner sub-pages=make button and link it 
 sub-pages
