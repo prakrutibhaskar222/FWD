@@ -6,14 +6,14 @@ import { Link } from "react-router";
 export default function Electrical() {
   const services = [
     <button><Link to="/E1">Electrical wiring (new installation or rewiring)</Link></button>,
-    "Switchboard installation and repair",
-    "Ceiling fan / exhaust fan installation",
-    "Lighting installation (indoor, outdoor, decorative)",
-    "Inverter and UPS setup",
-    "Circuit breaker & fuse replacement",
-    "Electrical panel maintenance",
-    "Earthing & surge protection",
-    "Home automation & smart lighting setup",
+    <button><Link to="/E2">Switchboard installation and repair</Link></button>,
+    <button><Link to="/E3">Ceiling fan / exhaust fan installation</Link></button>,
+    <button><Link to="/E4">Lighting installation (indoor, outdoor, decorative)</Link></button>,
+    <button><Link to="/E5">Inverter and UPS setup</Link></button>,
+    <button><Link to="/E6">Circuit breaker & fuse replacement</Link></button>,
+    <button><Link to="/E7">Electrical panel maintenance</Link></button>,
+    <button><Link to="/E8">Earthing & surge protection</Link></button>,
+    <button><Link to="/E9">Home automation & smart lighting setup</Link></button>,
   ];
 
   return (

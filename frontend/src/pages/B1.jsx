@@ -27,12 +27,16 @@ export default function Booking() {
 
   // 🔥 Main service names
   const serviceNames = {
-    electrical: "Electrical Services",
-    installation: "Installation Services",
-    personal: "Personal Services",
-    homeservices: "Home Services",
-    renovation: "Renovation Services",
+    
     e1: "Electrical Wiring Service",
+    e2: "Switchboard installation and repair",
+    e3: "Ceiling fan / exhaust fan installation",
+    e4: "Lighting installation",
+    e5: "Inverter and UPS setup",
+    e6: "Circuit breaker & fuse replacement",
+    e7: "Electrical panel maintenance",
+    e8: "Earthing & surge protection",
+    e9: "Home automation",
   };
 
   

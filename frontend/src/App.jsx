@@ -18,7 +18,8 @@ import Stats from "./components/Stats"
 import Booking from "./pages/Booking"
 import B1 from "./pages/B1"
 import E1 from "./subpages/E1"
-
+import E2 from "./subpages/E2"
+import E3 from "./subpages/E3"
 
 const App = () => {
   return (
@@ -45,6 +46,8 @@ const App = () => {
           <Route path="/b1/:topic" element={<B1 />} /> 
 
           <Route path="/e1" element={<E1 />} />  
+          <Route path="/e2" element={<E2 />} />  
+          <Route path="/e3" element={<E3 />} /> 
         </Routes>
       
 
