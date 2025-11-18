@@ -21,6 +21,7 @@ import E1 from "./subpages/E1"
 import E2 from "./subpages/E2"
 import E3 from "./subpages/E3"
 
+
 const App = () => {
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/e1" element={<E1 />} />  
           <Route path="/e2" element={<E2 />} />  
           <Route path="/e3" element={<E3 />} /> 
+          
         </Routes>
       
 
