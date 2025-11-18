@@ -65,7 +65,7 @@ export default function FanInstallation() {
       {/* CTA Section */}
       <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2a034] text-black py-20"> {/* Warm orange gradient */}
         <h2 className="text-3xl font-light mb-6">Cool Your Space or Improve Ventilation!</h2>
-        <Link to="/b1/e3">
+        <Link to="/booking/e3">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"

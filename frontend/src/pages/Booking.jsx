@@ -25,97 +25,106 @@ export default function Booking() {
     notes: "",
   });
 
-  // 🔥 Main service names
+  // MAIN CATEGORY TITLES
   const serviceNames = {
     electrical: "Electrical Services",
     installation: "Installation Services",
     personal: "Personal Services",
     homeservices: "Home Services",
     renovation: "Renovation Services",
-    
+    e1: "Electrical Wiring Service",
+    e2: "Switchboard installation and repair",
+    e3: "Ceiling fan / exhaust fan installation",
+    e4: "Lighting installation",
+    e5: "Inverter and UPS setup",
+    e6: "Circuit breaker & fuse replacement",
+    e7: "Electrical panel maintenance",
+    e8: "Earthing & surge protection",
+    e9: "Home automation",
   };
 
-  // 🔥 Sub-services per topic
+  // SUB SERVICES
   const subServiceCategories = {
     electrical: [
-      "1.Electrical wiring (new installation or rewiring)",
-      "2.Switchboard installation & repair",
-      "3.Ceiling fan / exhaust fan installation",
-      "4.Lighting installation (indoor & outdoor)",
-      "5.Inverter / UPS installation",
-      "6.Circuit breaker & fuse replacement",
-      "7.Electrical panel maintenance",
-      "8.Earthing & surge protection",
-      "9.Home automation & smart lighting setup",
+      "Electrical wiring (new installation or rewiring)",
+      "Switchboard installation & repair",
+      "Ceiling fan / exhaust fan installation",
+      "Lighting installation (indoor & outdoor)",
+      "Inverter / UPS installation",
+      "Circuit breaker & fuse replacement",
+      "Electrical panel maintenance",
+      "Earthing & surge protection",
+      "Home automation & smart lighting setup",
     ],
 
     installation: [
-      "1.Kitchen appliance installation (chimney, hob, dishwasher)",
-    "2.Appliance installation (AC, geyser, oven, etc.)",
-    "3.Bathroom fittings installation (geyser, taps, shower panels)",
-    "4.Air conditioner installation / uninstallation",
-    "5.CCTV camera installation",
-    "6.Water purifier installation",
-    "7.TV wall mounting",
-    "8.Door / window / curtain installation",
-    "9.Modular furniture assembly & installation",
-    "10.Solar panel installation",
+      "Kitchen appliance installation (chimney, hob, dishwasher)",
+      "AC / geyser / oven installation",
+      "Bathroom fittings installation",
+      "AC installation / uninstallation",
+      "CCTV camera installation",
+      "Water purifier installation",
+      "TV wall mounting",
+      "Door / window / curtain installation",
+      "Furniture assembly",
+      "Solar panel installation",
     ],
 
     personal: [
-      "1.Home cleaning & sanitization",
-    "2.Pest control",
-    "3.Laundry & dry cleaning pickup",
-    "4.Personal fitness trainer / yoga instructor",
-    "5.Babysitting or elderly care services",
-    "6.Personal driver / chauffeur service",
+      "Home cleaning & sanitization",
+      "Pest control",
+      "Laundry & dry cleaning pickup",
+      "Personal fitness trainer / yoga instructor",
+      "Babysitting or elderly care",
+      "Driver / chauffeur service",
     ],
 
     homeservices: [
-      "1.House painting & waterproofing",
-    "2.Security guard services",
-    "3.Landscape & gardening maintenance",
-    "4.Electrical appliances cleaning",
-    "5.Deep cleaning",
-    "6.Bathroom cleaning",
-    "7.Room cleaning",
-    "8.New house organization",
-    "9.Kitchen cleaning",
+      "House painting & waterproofing",
+      "Security guard services",
+      "Landscape & gardening maintenance",
+      "Appliance deep cleaning",
+      "Home deep cleaning",
+      "Bathroom cleaning",
+      "Room cleaning",
+      "New house setup",
+      "Kitchen cleaning",
     ],
 
     renovation: [
-      "1.Civil renovation (walls, floors, tiles, ceilings)",
-    "2.Bathroom & kitchen remodeling",
-    "3.False ceiling design & installation",
-    "4.Wall plastering & painting",
-    "5.Carpentry & woodwork renovation",
-    "6.Flooring replacement (tiles, marble, laminate)",
-    "7.Space redesign / partitioning",
-    "8.Masonry & waterproofing works",
-    "9.Interior lighting revamp",
+      "Civil renovation (walls, floors, tiles)",
+      "Bathroom & kitchen remodeling",
+      "False ceiling installation",
+      "Wall plastering & painting",
+      "Carpentry & woodwork",
+      "Flooring replacement",
+      "Space redesign / partitioning",
+      "Waterproofing works",
+      "Interior lighting redesign",
     ],
-
   };
 
-  // 🔥 Filter sub-services for this topic
+  // Get the subservice list for this topic
   const filteredSubServices = subServiceCategories[topic] || [];
 
-  // 🔥 Auto-fill service when topic changes
+  // Auto-fill service category when topic updates
   useEffect(() => {
     if (topic && serviceNames[topic]) {
       setFormData((prev) => ({
         ...prev,
         service: serviceNames[topic],
-        sub_service: "", // reset any old selection
+        sub_service: "",
       }));
     }
   }, [topic]);
 
+  // Track input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
+  // Submit form
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -139,7 +148,7 @@ export default function Booking() {
 
             <form onSubmit={handleSubmit}>
 
-              {/* Auto-filled service */}
+              {/* Main Service (Auto-filled) */}
               <TextField
                 fullWidth
                 label="Service Category"
@@ -148,29 +157,80 @@ export default function Booking() {
                 margin="normal"
               />
 
-              {/* User info */}
-              <TextField fullWidth label="Full Name" name="name" value={formData.name} onChange={handleChange} margin="normal" required />
-              <TextField fullWidth label="Email" name="email" value={formData.email} onChange={handleChange} margin="normal" required />
-              <TextField fullWidth label="Phone" name="phone" value={formData.phone} onChange={handleChange} margin="normal" required />
-
-              {/* 🔥 Auto-filtered sub-services */}
+              {/* User Details */}
               <TextField
                 fullWidth
-                select
-                label="Select Sub-Service"
-                name="sub_service"
-                value={formData.sub_service}
+                label="Full Name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 margin="normal"
                 required
-              >
-                {filteredSubServices.map((s, i) => (
-                  <MenuItem key={i} value={s}>
-                    {s}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
 
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                margin="normal"
+                required
+              />
+
+              <TextField
+                fullWidth
+                label="Phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                margin="normal"
+                required
+              />
+
+              {/* Sub-services */}
+              {filteredSubServices.length > 0 && (
+                <TextField
+                  fullWidth
+                  select
+                  label="Select Sub-Service"
+                  name="sub_service"
+                  value={formData.sub_service}
+                  onChange={handleChange}
+                  margin="normal"
+                  required
+                >
+                  {filteredSubServices.map((s, i) => (
+                    <MenuItem key={i} value={s}>
+                      {s}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
+
+              {/* Address */}
+              <TextField
+                fullWidth
+                label="Address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                margin="normal"
+              />
+
+              {/* Notes */}
+              <TextField
+                fullWidth
+                label="Additional Notes"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                margin="normal"
+                multiline
+                rows={3}
+              />
+
+              {/* Submit */}
               <Button
                 type="submit"
                 fullWidth
@@ -184,6 +244,7 @@ export default function Booking() {
               >
                 Confirm Booking
               </Button>
+
             </form>
           </CardContent>
         </Card>

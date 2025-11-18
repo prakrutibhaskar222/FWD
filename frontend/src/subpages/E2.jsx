@@ -65,7 +65,7 @@ export default function SwitchboardInstallation() {
       {/* CTA Section */}
       <section className="text-center bg-gradient-to-r from-[#8eca9a] to-[#a2daad] text-black py-20"> {/* Blue/cyan gradient */}
         <h2 className="text-3xl font-light mb-6">Need Your Switchboard Inspected or Fixed?</h2>
-        <Link to="/b1/e2">
+        <Link to="/booking/e2">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"
