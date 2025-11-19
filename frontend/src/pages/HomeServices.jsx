@@ -5,15 +5,15 @@ import { Link } from "react-router";
 
 export default function HomeServices() {
   const services = [
-    <button><Link to="../">House painting & waterproofing</Link></button>,
-    "Security guard services",
-    "Landscape & gardening maintenance",
-    "Electrical appliances cleaning",
-    "Deep cleaning",
-    "Bathroom cleaning",
-    "Room cleaning",
-    "New house organization",
-    "Kitchen cleaning",
+    <button><Link to="/h1">House painting & waterproofing</Link></button>,
+    <button><Link to="/h2">Security guard services</Link></button>,
+    <button><Link to="/h3">Landscape & gardening maintenance</Link></button>,
+    <button><Link to="/h4">Electrical appliances cleaning</Link></button>,
+    <button><Link to="/h5">Deep cleaning</Link></button>,
+    <button><Link to="/h6">Bathroom cleaning</Link></button>,
+    <button><Link to="/h7">Room cleaning</Link></button>,
+    <button><Link to="/h8">New house organization</Link></button>,
+    <button><Link to="/h9">Kitchen cleaning</Link></button>,
   ];
 
   return (

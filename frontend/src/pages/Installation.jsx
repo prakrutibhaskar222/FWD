@@ -5,16 +5,16 @@ import { Link } from "react-router";
 
 export default function Installation() {
   const services = [
-    "Kitchen appliance installation (chimney, hob, dishwasher)",
-    "Appliance installation (AC, geyser, oven, etc.)",
-    "Bathroom fittings installation (geyser, taps, shower panels)",
-    "Air conditioner installation / uninstallation",
-    "CCTV camera installation",
-    "Water purifier installation",
-    "TV wall mounting",
-    "Door / window / curtain installation",
-    "Modular furniture assembly & installation",
-    "Solar panel installation",
+    <button><Link to="/i1">Kitchen appliance installation (chimney, hob, dishwasher)</Link></button>,
+    <button><Link to="/i2">Appliance installation (AC, geyser, oven, etc.)</Link></button>,
+    <button><Link to="/i3">Bathroom fittings installation (geyser, taps, shower panels)</Link></button>,
+    <button><Link to="/i4">Air conditioner installation / uninstallation</Link></button>,
+    <button><Link to="/i5">CCTV camera installation</Link></button>,
+    <button><Link to="/i6">Water purifier installation</Link></button>,
+    <button><Link to="/i7">TV wall mounting</Link></button>,
+    <button><Link to="/i8">Door / window / curtain installation</Link></button>,
+    <button><Link to="/i9">Modular furniture assembly & installation</Link></button>,
+    <button><Link to="/i10">Solar panel installation</Link></button>,
   ];
 
   return (

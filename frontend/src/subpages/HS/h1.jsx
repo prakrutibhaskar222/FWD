@@ -60,7 +60,7 @@ export default function HousePainting() {
       {/* CTA Section */}
       <section className="text-center bg-gradient-to-r from-[#9cc6f0] to-[#478ed1] text-black py-20">
         <h2 className="text-3xl font-light mb-6">Ready to Refresh Your Home?</h2>
-        <Link to="/b1/hs1">
+        <Link to="/booking/hs1">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"

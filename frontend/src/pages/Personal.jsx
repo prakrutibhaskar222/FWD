@@ -5,12 +5,13 @@ import { Link } from "react-router";
 
 export default function Personal() {
   const services = [
-    "Home cleaning & sanitization",
-    "Pest control",
-    "Laundry & dry cleaning pickup",
-    "Personal fitness trainer / yoga instructor",
-    "Babysitting or elderly care services",
-    "Personal driver / chauffeur service",
+    <button><Link to="/p1">Home cleaning & sanitization</Link></button>,
+    <button><Link to="/p2">Pest control</Link></button>,
+    <button><Link to="/p3">Laundry & dry cleaning pickup</Link></button>,
+    <button><Link to="/p4">Personal fitness trainer / yoga instructor</Link></button>,
+    <button><Link to="/p5">Babysitting or elderly care services</Link></button>,
+    <button><Link to="/p6">Personal driver / chauffeur service</Link></button>,
+
   ];
 
   return (
