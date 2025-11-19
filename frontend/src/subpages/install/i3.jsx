@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
 
-export default function BathroomFittingsInstallation() {
+import { CheckCircle, ArrowLeft } from "lucide-react";
+
+export default function BathroomFittingsInstallation({ setActive }) {
   return (
     <div className="min-h-screen bg-[#e2d7c1] text-[#1a1a1a] font-sans">
       
@@ -58,7 +59,7 @@ export default function BathroomFittingsInstallation() {
       {/* CTA Section */}
       <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2ab34] text-black py-20">
         <h2 className="text-3xl font-light mb-6">Upgrade Your Bathroom with Expert Installation</h2>
-        <Link to="/booking/bath1">
+        <Link to="/booking/i3">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"

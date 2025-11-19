@@ -1,11 +1,21 @@
 import React from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ArrowLeft } from "lucide-react";
 
-export default function KitchenApplianceInstallation() {
+export default function KitchenApplianceInstallation({ setActive }) {
   return (
     <div className="min-h-screen bg-[#e2d7c1] text-[#1a1a1a] font-sans">
+
+      {/* BACK BUTTON */}
+            <button
+              onClick={() => setActive(null)}
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg 
+                         hover:bg-gray-800 transition m-6"
+            >
+              <ArrowLeft size={20} /> Back
+            </button>
+        
       
       {/* Header Section */}
       <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-amber-100 to-white">
@@ -59,7 +69,7 @@ export default function KitchenApplianceInstallation() {
       {/* CTA Section */}
       <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2ab34] text-black py-20">
         <h2 className="text-3xl font-light mb-6">Get Your Appliances Installed Professionally</h2>
-        <Link to="/booking/kitchen1">
+        <Link to="/booking/i1">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"
