@@ -5,15 +5,15 @@ import { Link } from "react-router";
 
 export default function Renovation() {
   const services = [
-    "Civil renovation (walls, floors, tiles, ceilings)",
-    "Bathroom & kitchen remodeling",
-    "False ceiling design & installation",
-    "Wall plastering & painting",
-    "Carpentry & woodwork renovation",
-    "Flooring replacement (tiles, marble, laminate)",
-    "Space redesign / partitioning",
-    "Masonry & waterproofing works",
-    "Interior lighting revamp",
+    <button><Link to="/r1">Civil renovation (walls, floors, tiles, ceilings)</Link></button>,
+    <button><Link to="/r2">Bathroom & kitchen remodeling</Link></button>,
+    <button><Link to="/r3">False ceiling design & installation</Link></button>,
+    <button><Link to="/r4">Wall plastering & painting</Link></button>,
+    <button><Link to="/r5">Carpentry & woodwork renovation</Link></button>,
+    <button><Link to="/r6">Flooring replacement (tiles, marble, laminate)</Link></button>,
+    <button><Link to="/r7">Space redesign / partitioning</Link></button>,
+    <button><Link to="/r8">Masonry & waterproofing works</Link></button>,
+    <button><Link to="/r9">Interior lighting revamp</Link></button>,
   ];
 
   return (
