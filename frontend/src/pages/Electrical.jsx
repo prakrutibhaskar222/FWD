@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-import E1 from "../subpages/elect/E1";
-import E2 from "../subpages/elect/E2";
-import E3 from "../subpages/elect/E3";
-import E4 from "../subpages/elect/E4";
-import E5 from "../subpages/elect/E5";
-import E6 from "../subpages/elect/E6";
-import E7 from "../subpages/elect/E7";
-import E8 from "../subpages/elect/E8";
-import E9 from "../subpages/elect/E9";
+import E1 from "../subpages/electrical/E1";
+import E2 from "../subpages/electrical/E2";
+import E3 from "../subpages/electrical/E3";
+import E4 from "../subpages/electrical/E4";
+import E5 from "../subpages/electrical/E5";
+import E6 from "../subpages/electrical/E6";
+import E7 from "../subpages/electrical/E7";
+import E8 from "../subpages/electrical/E8";
+import E9 from "../subpages/electrical/E9";
 
 export default function Electrical() {
   const [active, setActive] = useState(null);
