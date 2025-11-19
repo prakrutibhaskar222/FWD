@@ -1,11 +1,19 @@
 import React from "react";
-import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ArrowLeft } from "lucide-react";
 
-export default function HousePainting() {
+export default function HousePainting({ setActive }) {
   return (
     <div className="min-h-screen bg-[#d6e4f0] text-[#1a1a1a] font-sans">
+
+      {/* BACK BUTTON */}
+      <button
+        onClick={() => setActive(null)}
+        className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg 
+                   hover:bg-gray-800 transition m-6"
+      >
+        <ArrowLeft size={20} /> Back
+      </button>
       
       {/* Header Section */}
       <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-blue-100 to-white">
@@ -13,9 +21,7 @@ export default function HousePainting() {
           House Painting & Waterproofing 🎨
         </h1>
         <p className="text-[#000000] text-lg max-w-3xl mx-auto leading-relaxed">
-          Transform your home with professional painting and long-lasting waterproofing solutions. 
-          Our experts ensure a smooth finish, moisture protection, and durable coating to keep 
-          your walls looking fresh and leak-free.
+          Transform your home with professional painting and long-lasting waterproofing solutions.
         </p>
       </section>
 
@@ -25,8 +31,8 @@ export default function HousePainting() {
         <div className="space-y-6">
           {[
             "Our team inspects your walls to understand surface condition, dampness, and paint requirements.",
-            "High-quality primers, putty, and waterproof coatings are applied to ensure longevity.",
-            "Final painting is done using premium paints with a smooth and uniform finish.",
+            "High-quality primers, putty, and waterproof coatings are applied for longevity.",
+            "Painting is completed using premium paints with a smooth, uniform finish.",
           ].map((text, index) => (
             <motion.div
               key={index}
@@ -47,7 +53,7 @@ export default function HousePainting() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
             <div>
               <p className="text-gray-600 font-medium">⏱ Estimated Duration</p>
-              <p className="text-xl text-black mt-2">1 – 3 days (depending on area)</p>
+              <p className="text-xl text-black mt-2">1 – 3 days</p>
             </div>
             <div>
               <p className="text-gray-600 font-medium">💰 Price Range</p>
@@ -58,16 +64,15 @@ export default function HousePainting() {
       </section>
 
       {/* CTA Section */}
-      <section className="text-center bg-gradient-to-r from-[#9cc6f0] to-[#478ed1] text-black py-20">
-        <h2 className="text-3xl font-light mb-6">Ready to Refresh Your Home?</h2>
-        <Link to="/booking/hs1">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"
-          >
-            Book Painting & Waterproofing Service
-          </motion.button>
-        </Link>
+      <section className="text-center bg-black text-white py-20">
+        <h2 className="text-3xl font-light mb-6">Ready to Rewire Your Space?</h2>
+
+        <a 
+          href="/booking/h1"
+          className="bg-blue-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-blue-300 transition inline-block"
+        >
+          Book a Service
+        </a>
       </section>
     </div>
   );
