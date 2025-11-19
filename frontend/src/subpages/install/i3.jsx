@@ -7,6 +7,16 @@ import { CheckCircle, ArrowLeft } from "lucide-react";
 export default function BathroomFittingsInstallation({ setActive }) {
   return (
     <div className="min-h-screen bg-[#e2d7c1] text-[#1a1a1a] font-sans">
+
+      {/* BACK BUTTON */}
+                  <button
+                    onClick={() => setActive(null)}
+                    className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg 
+                               hover:bg-gray-800 transition m-6"
+                  >
+                    <ArrowLeft size={20} /> Back
+                  </button>
+      
       
       {/* Header Section */}
       <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-amber-100 to-white">
