@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 export default function HomeServices() {
   const services = [
-    <button><Link to="../subpages/HS/HS1">House painting & waterproofing</Link></button>,
+    <button><Link to="../">House painting & waterproofing</Link></button>,
     "Security guard services",
     "Landscape & gardening maintenance",
     "Electrical appliances cleaning",

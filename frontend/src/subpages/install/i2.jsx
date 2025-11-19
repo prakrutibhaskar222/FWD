@@ -1,33 +1,29 @@
 import React from "react";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Wind, Wrench } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
-export default function FanInstallation() {
+export default function ApplianceInstallation() {
   return (
-    <div className="min-h-screen bg-[#c1d7e2] text-[#1a1a1a] font-sans">
-      
+    <div className="min-h-screen bg-[#e2d7c1] text-[#1a1a1a] font-sans">      
       {/* Header Section */}
-      <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-yellow-100 to-white">
+      <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-amber-100 to-white">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
-          Fan Installation & Repair 🌬️
+          Appliance Installation ⚙️
         </h1>
         <p className="text-[#000000] text-lg max-w-3xl mx-auto leading-relaxed">
-          Professional installation and repair for ceiling fans and exhaust fans to ensure optimal air circulation and silent operation in your home or office.
+          From ACs to geysers to kitchen ovens, our trained professionals ensure fast, safe, and reliable installation with proper testing and setup.
         </p>
       </section>
 
-      ---
-
       {/* Details Section */}
       <section className="px-8 md:px-20 py-20 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-semibold mb-10 text-center">Our Fan Service Procedure</h2>
+        <h2 className="text-3xl font-semibold mb-10 text-center">How It Works</h2>
         <div className="space-y-6">
           {[
-            "We handle assembly, secure hanging, and safe electrical connection for all ceiling fans.",
-            "Specialized installation for exhaust fans in bathrooms or kitchens with proper ventilation consideration.",
-            "Repair services cover wobbling, noise issues, speed regulator replacement, and motor problems.",
-            "Thorough testing of speed settings and fan stability is performed post-installation.",
+            "Certified technicians inspect the appliance type and installation requirements.",
+            "All installations follow safety standards, ensuring secure mounting and proper connections.",
+            "Post-installation testing and guidance on usage are provided for your convenience.",
           ].map((text, index) => (
             <motion.div
               key={index}
@@ -36,7 +32,7 @@ export default function FanInstallation() {
               transition={{ duration: 0.5, delay: index * 0.2 }}
               className="flex items-start gap-4"
             >
-              <Wind className="text-[#e29334] w-6 h-6 mt-1" /> {/* Orange/yellow icon */}
+              <CheckCircle className="text-[#e10e0e] w-6 h-6 mt-1" />
               <p className="text-gray-700 text-lg">{text}</p>
             </motion.div>
           ))}
@@ -48,29 +44,25 @@ export default function FanInstallation() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
             <div>
               <p className="text-gray-600 font-medium">⏱ Estimated Duration</p>
-              {/* Changed Duration for single fan service */}
-              <p className="text-xl text-black mt-2">30 mins – 1.5 hours (Per Fan)</p> 
+              <p className="text-xl text-black mt-2">1–3 hours</p>
             </div>
             <div>
               <p className="text-gray-600 font-medium">💰 Price Range</p>
-              {/* Changed Price */}
-              <p className="text-xl text-black mt-2">₹349 – ₹899</p> 
+              <p className="text-xl text-black mt-2">₹800 – ₹2,500</p>
             </div>
           </div>
         </div>
       </section>
 
-      ---
-
       {/* CTA Section */}
-      <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2a034] text-black py-20"> {/* Warm orange gradient */}
-        <h2 className="text-3xl font-light mb-6">Cool Your Space or Improve Ventilation!</h2>
-        <Link to="/booking/e3">
+      <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2ab34] text-black py-20">
+        <h2 className="text-3xl font-light mb-6">Ready to Install Your Appliance?</h2>
+        <Link to="/booking/a1">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"
           >
-            Book Fan Installation Service
+            Book Appliance Installation
           </motion.button>
         </Link>
       </section>

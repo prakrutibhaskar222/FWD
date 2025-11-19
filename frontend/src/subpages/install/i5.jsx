@@ -1,33 +1,32 @@
 import React from "react";
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Wrench, Zap } from "lucide-react"; // Using Wrench for repair feel, and Zap for electric feel
+import { CheckCircle } from "lucide-react";
 
-export default function SwitchboardInstallation() {
+export default function CCTVInstallation() {
   return (
-    <div className="min-h-screen bg-[#c1e2d7] text-[#1a1a1a] font-sans">
+    <div className="min-h-screen bg-[#e2d7c1] text-[#1a1a1a] font-sans">
       
       {/* Header Section */}
-      <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-green-100 to-white">
+      <section className="text-center px-6 md:px-20 py-16 bg-gradient-to-b from-amber-100 to-white">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
-          Switchboard Installation & Repair ⚡
+          CCTV Camera Installation 📹
         </h1>
         <p className="text-[#000000] text-lg max-w-3xl mx-auto leading-relaxed">
-          From fixing tripping breakers to complete distribution board upgrades, we ensure the heart of your home's electrical system is safe and fully functional.
+          Secure your home or office with professional CCTV camera installation.
+          Our trained technicians ensure proper placement, wiring, configuration,
+          and testing for maximum coverage and clarity.
         </p>
       </section>
 
-      ---
-
       {/* Details Section */}
       <section className="px-8 md:px-20 py-20 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-semibold mb-10 text-center">Our Process for Switchboards</h2>
+        <h2 className="text-3xl font-semibold mb-10 text-center">How It Works</h2>
         <div className="space-y-6">
           {[
-            "We diagnose issues like short circuits, loose connections, or breaker problems immediately.",
-            "Installation of new switchboards adheres to current safety codes and load requirements.",
-            "All components (MCBs, RCCBs) are checked for proper ratings and secure fitting.",
-            "Clear labeling and final operational testing are performed before job completion.",
+            "A trained technician inspects your property and identifies optimal camera locations.",
+            "Cameras are mounted securely with proper wiring, power management, and connectivity.",
+            "System testing, DVR/NVR setup, and mobile app configuration are completed for seamless monitoring.",
           ].map((text, index) => (
             <motion.div
               key={index}
@@ -36,7 +35,7 @@ export default function SwitchboardInstallation() {
               transition={{ duration: 0.5, delay: index * 0.2 }}
               className="flex items-start gap-4"
             >
-              <Zap className="text-[#0e9851] w-6 h-6 mt-1" /> {/* Green check/zap icon */}
+              <CheckCircle className="text-[#e10e0e] w-6 h-6 mt-1" />
               <p className="text-gray-700 text-lg">{text}</p>
             </motion.div>
           ))}
@@ -48,29 +47,25 @@ export default function SwitchboardInstallation() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
             <div>
               <p className="text-gray-600 font-medium">⏱ Estimated Duration</p>
-              {/* Changed Duration */}
-              <p className="text-xl text-black mt-2">45 mins – 3 hours</p> 
+              <p className="text-xl text-black mt-2">2–5 hours</p>
             </div>
             <div>
               <p className="text-gray-600 font-medium">💰 Price Range</p>
-              {/* Changed Price */}
-              <p className="text-xl text-black mt-2">₹499 – ₹2,500</p> 
+              <p className="text-xl text-black mt-2">₹1,200 – ₹6,000</p>
             </div>
           </div>
         </div>
       </section>
 
-      ---
-
       {/* CTA Section */}
-      <section className="text-center bg-gradient-to-r from-[#8eca9a] to-[#a2daad] text-black py-20"> {/* Blue/cyan gradient */}
-        <h2 className="text-3xl font-light mb-6">Need Your Switchboard Inspected or Fixed?</h2>
-        <Link to="/booking/e2">
+      <section className="text-center bg-gradient-to-r from-[#eac38c] to-[#e2ab34] text-black py-20">
+        <h2 className="text-3xl font-light mb-6">Ready to Secure Your Property?</h2>
+        <Link to="/booking/cctv1">
           <motion.button
             whileHover={{ scale: 1.05 }}
             className="bg-black text-white px-10 py-4 text-lg rounded-full hover:bg-gray-800 transition"
           >
-            Book Switchboard Service
+            Book CCTV Installation
           </motion.button>
         </Link>
       </section>
