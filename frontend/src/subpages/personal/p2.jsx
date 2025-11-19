@@ -72,7 +72,7 @@ export default function PestControl({ setActive }) {
         <h2 className="text-3xl font-light mb-6">Need Fast & Safe Pest Removal?</h2>
 
         <a 
-          href="/booking/h11"
+          href="/booking/p2"
           className="bg-red-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-red-300 transition inline-block"
         >
           Book a Service

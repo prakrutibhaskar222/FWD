@@ -73,7 +73,7 @@ export default function HomeCleaningSanitization({ setActive }) {
         <h2 className="text-3xl font-light mb-6">Want a Clean & Germ-Free Home?</h2>
 
         <a 
-          href="/booking/h10"
+          href="/booking/p1"
           className="bg-teal-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-teal-300 transition inline-block"
         >
           Book a Service
