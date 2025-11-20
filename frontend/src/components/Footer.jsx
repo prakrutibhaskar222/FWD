@@ -14,7 +14,7 @@ const Footer = () => {
         <h4 className="font-semibold uppercase text-xs">Services</h4>
 
         <Link to="/electrical" className="block hover:text-blue-500">Electrical</Link>
-        <Link to="/installation" className="block hover:text-blue-500">Installation</Link>
+          <Link to="/installation" className="block hover:text-[#25e93f]">Installation</Link>
         <Link to="/personal" className="block hover:text-blue-500">Personal</Link>
         <Link to="/homeservices" className="block hover:text-blue-500">Home Services</Link>
         <Link to="/renovation" className="block hover:text-blue-500">Renovation</Link>
