@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 //step 1 - create schema 
 //step 2 - create model
 
-const productSchema = new mongoose.Schema(
+const serviceSchema = new mongoose.Schema(
     {
         title:{
             type: String,
@@ -18,6 +18,6 @@ const productSchema = new mongoose.Schema(
 );
 
 
-const Product = mongoose.model("Product",productSchema)
+const Service = mongoose.model("Service",serviceSchema)
 
-export default Product;
+export default Service;
