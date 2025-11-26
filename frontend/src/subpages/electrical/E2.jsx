@@ -1,5 +1,3 @@
-import React from "react";
-import { Link } from "react-router"; 
 import { motion } from "framer-motion";
 import { Wrench, Zap } from "lucide-react"; // Using Wrench for repair feel, and Zap for electric feel
 import { CheckCircle, ArrowLeft } from "lucide-react";

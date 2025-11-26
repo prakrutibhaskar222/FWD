@@ -1,25 +1,39 @@
 import express from "express";
-import productRoutes from "../routes/productRoutes.js"
-import { connectDB } from "./config/db.js";
-import dotenv from "dotenv"
-import rateLimiter from "./middleware/rateLimiter.js";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import serviceRoute from "../routes/serviceRoute.js";
+import bookingRoute from "../routes/bookingRoute.js";
+import categoryRoute from "../routes/categoryRoute.js";
+import reviewRoute from "../routes/reviewRoute.js";
+import workerRoute from "../routes/workerRoutes.js";
+import calendarRoute from "../routes/calenderRoute.js";
 
-dotenv.config()
-
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 5001
 
-app.use(express.json())
-app.use(rateLimiter)
+// MIDDLEWARE
+app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  })
+);
+
+// ROUTES
+app.use("/api/services", serviceRoute);
+app.use("/api/bookings", bookingRoute);
+app.use("/api/categories", categoryRoute);
+app.use("/api/reviews", reviewRoute);
+app.use("/api/workers", workerRoute);
+app.use("/api/calendar", calendarRoute);
 
 
-app.use("/api/products",productRoutes)
 
+// START SERVER
 connectDB().then(() => {
-  app.listen(5001, () => {
-    console.log("Server started on port: ",PORT);
-  });
-})
-
-
-
+  app.listen(process.env.PORT || 5001, () =>
+    console.log("Server running on port", process.env.PORT)
+  );
+});

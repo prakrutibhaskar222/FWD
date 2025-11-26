@@ -1,66 +1,161 @@
-import Service from "../models/Service.js"
+// backend/controllers/servicesController.js
+import Service from "../models/Service.js";
+import Review from "../models/Review.js";
 
-export async function getAllServices  (req,res)  {
-    try {
-        const services = await Service.find().sort({createdAt:-1})
-        res.status(200).json(services)
-        
-    } catch (error) {
-        console.error("error in getAllServices controller ",error)
-        res.status(500).json({message : "Internal server error"})        
+/* CREATE */
+export const createService = async (req, res) => {
+  try {
+    const { title, category, price, description, features, duration, featured } = req.body;
+    const slug = title.toLowerCase().replace(/ /g, "-");
+
+    const service = await Service.create({
+      title,
+      category,
+      price,
+      description,
+      features: features || [],
+      duration: duration || "",
+      featured: !!featured,
+      slug
+    });
+
+    res.json({ success: true, data: service });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+/* GET ALL */
+export const getAllServices = async (req, res) => {
+  try {
+    // optional ids filter: ?ids=id1,id2
+    if (req.query.ids) {
+      const ids = req.query.ids.split(",");
+      const services = await Service.find({ _id: { $in: ids } });
+      return res.json({ success: true, data: services });
     }
-}
-export async function getService  (req,res)  {
-    try {
-        const service = await Service.findById(req.params.id)
-        if(!service) return res.status(404).json({message : "Service not found"})
-        res.status(200).json(service)
-        
-    } catch (error) {
-        console.error("error in getService controller ",error)
-        res.status(500).json({message : "Internal server error"})        
-    }
-}
 
-export async function createService  (req,res)  {
-    try {
-        const {title,content} = req.body
-        const service = new Service({title,content})
+    const services = await Service.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: services });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
 
-        const savedService = await service.save()
-        res.status(201).json(savedService)
-        
-    } catch (error) {
-        console.error("error in createService controller ",error)
-        res.status(500).json({message : "Internal server error"})        
-    }
-}
+/* GET ONE (non-incrementing) */
+export const getService = async (req, res) => {
+  try {
+    const service = await Service.findById(req.params.id);
+    if (!service) return res.json({ success: false, error: "Service not found" });
+    res.json({ success: true, data: service });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
 
-export async function updateService  (req,res)  {
-    try {
-        const {title,content} = req.body;
-        const updatedService = await Service.findByIdAndUpdate(req.params.id,{title,content},{
-            new:true,
-        })
+/* GET ONE and INCREMENT VIEWS (atomic) */
+export const viewAndGetService = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const service = await Service.findByIdAndUpdate(
+      id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    if (!service) return res.json({ success: false, error: "Service not found" });
 
-        if(!updatedService) return res.status(404).json({message:"Service not found"})
-        res.status(200).json({message :"Service updated successfully"})
-    } catch (error) {
-        console.error("error in updateService controller ",error)
-        res.status(500).json({message : "Internal server error"}) 
-        
-    }
-}
+    const reviews = await Review.find({ service: id, approved: true }).sort({ createdAt: -1 }).limit(10);
+    res.json({ success: true, data: { service, reviews } });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+};
 
-export async function deleteService  (req,res)  {
-    try {
-        const deletedService = await Service.findByIdAndDelete(req.params.id)
-        if(!deletedService) return res.status(404).json({message:"Service not found"})
-        res.status(200).json({message :"Service deleted successfully"})
-        
-    } catch (error) {
-        console.error("error in deleteService controller ",error)
-        res.status(500).json({message : "Internal server error"}) 
-        
-    }
-}
+/* UPDATE */
+export const updateService = async (req, res) => {
+  try {
+    const { title, category, price, description, features, duration, featured } = req.body;
+    const slug = title?.toLowerCase().replace(/ /g, "-");
+
+    const updated = await Service.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        category,
+        price,
+        description,
+        features: features || [],
+        duration: duration || "",
+        featured: !!featured,
+        slug
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+/* DELETE */
+export const deleteService = async (req, res) => {
+  try {
+    await Service.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "Service deleted" });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+/* GET ALL CATEGORIES (if you have Category model) */
+export const getCategories = async (req, res) => {
+  try {
+    // If you use Category model:
+    // const categories = await Category.find({}, "key name");
+    // res.json({ success: true, data: categories });
+
+    // Fallback: derive from services
+    const services = await Service.find({}, "category").lean();
+    const map = {};
+    services.forEach(s => { if (s.category) map[s.category] = true; });
+    const categories = Object.keys(map).map(k => ({ key: k, name: k }));
+    res.json({ success: true, data: categories });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+/* GET BY CATEGORY */
+export const getServiceByCategory = async (req, res) => {
+  try {
+    const services = await Service.find({ category: req.params.category });
+    res.json({ success: true, data: services });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+};
+
+
+/* GET FEATURED */
+export const getFeaturedServices = async (req, res) => {
+  try {
+    const featured = await Service.find({ featured: true }).sort({ createdAt: -1 }).limit(20);
+    res.json({ success: true, data: featured });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+};
+
+/* GET POPULAR (by views) */
+export const getPopularServices = async (req, res) => {
+  try {
+    const category = req.params.category;
+    const q = category ? { category } : {};
+    const popular = await Service.find(q).sort({ views: -1 }).limit(20);
+    res.json({ success: true, data: popular });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
+};
+

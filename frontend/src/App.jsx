@@ -6,7 +6,6 @@ import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Landing from "./pages/Landing"
 import Home from "./pages/Home"
-import Electrical from "./pages/Electrical"
 import Installation from "./pages/Installation"
 import Personal from "./pages/Personal"
 import HomeServices from "./pages/HomeServices"
@@ -15,6 +14,15 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import Stats from "./components/Stats"
 import Booking from "./pages/Booking"
+import Legacy from "./pages/Legacy"
+import Support from "./pages/Support"
+import Shop from "./pages/Shop"
+import AdminBookings from "./pages/admin/AdminBookings"
+import AdminServices from "./pages/admin/AdminServices"
+import Dashboard from "./pages/admin/Dashboard"
+import ServiceDetails from "./pages/ServiceDetails.jsx"
+import ElectricalPage from "./pages/ElectricalPage";
+
 
 const App = () => {
   return (
@@ -24,19 +32,25 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Landing />} />
+        
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/legacy" element={<Legacy />} />
+        <Route path="/support" element={<Support />} />
         <Route path="/home" element={<Home />} />
-
-        {/* IMPORTANT: Correct setup for nested routes */}
-        <Route path="/electrical/*" element={<Electrical />} />
-
-        <Route path="/installation" element={<Installation />} />
-        <Route path="/personal" element={<Personal />} />
-        <Route path="/homeservices" element={<HomeServices />} /> 
-        <Route path="/renovation" element={<Renovation />} /> 
+        <Route path="/electrical" element={<ElectricalPage />} />
+        <Route path="/installation/*" element={<Installation />} />
+        <Route path="/personal/*" element={<Personal />} />
+        <Route path="/homeservices/*" element={<HomeServices />} /> 
+        <Route path="/renovation/*" element={<Renovation />} /> 
         <Route path="/login" element={<Login />} /> 
         <Route path="/signup" element={<Signup />} /> 
         <Route path="/stats" element={<Stats />} />
-        <Route path="/booking/:topic" element={<Booking />} /> 
+        <Route path="/booking/service/:id" element={<Booking />} />
+        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
+        <Route path="/admin/services" element={<AdminServices />} />
+        <Route path="/service/:id" element={<ServiceDetails />} />
+
       </Routes>
 
       <Footer />
