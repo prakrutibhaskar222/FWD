@@ -1,19 +1,11 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-//step 1 - create schema 
-//step 2 - create model
+const CategorySchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  description: { type: String, default: "" },
+  icon: { type: String, default: "" },  // emoji or URL
+  sortOrder: { type: Number, default: 0 }
+}, { timestamps: true });
 
-const categorySchema = new mongoose.Schema(
-    {
-        title:{
-            type: String,
-            required: true,
-        },
-    },
-    {timestamps: true}
-);
-
-
-const Category = mongoose.model("Category",categorySchema)
-
-export default Category;
+export default mongoose.model("Category", CategorySchema);

@@ -29,6 +29,12 @@ const Navbar = () => {
                             </Link>
                     
             </button>
+            < button className="btn glass bg-[#e5d4c0]">
+                <Link to="/homeservices" >
+                                HOME SERVICES
+                            </Link>
+                            
+            </button>
             <button className="btn glass bg-[#e5d4c0]">
                 <Link to="/installation" >
                                 INSTALLATION
@@ -38,12 +44,6 @@ const Navbar = () => {
             <button className="btn glass bg-[#e5d4c0]">
                 <Link to="/personal" >
                                 PERSONAL
-                            </Link>
-                            
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
-                <Link to="/homeservices" >
-                                HOME SERVICES
                             </Link>
                             
             </button>

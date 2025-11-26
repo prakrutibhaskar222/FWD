@@ -1,23 +1,30 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-//step 1 - create schema 
-//step 2 - create model
+const ServiceSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  sub_category: { type: String, default: "" },
 
-const serviceSchema = new mongoose.Schema(
-    {
-        title:{
-            type: String,
-            required: true,
-        },
-        content:{
-            type: String,
-            required: true,
-        },
-    },
-    {timestamps: true}
-);
+  // 🆕 Duration of the service in minutes  
+  duration: { type: Number, default: 60 },  // Example: 30, 45, 60, 90 etc.
+
+  price: { type: Number, required: true },
+
+  description: { type: String, default: "" },
+
+  // Optional: what the customer gets
+  features: { type: [String], default: [] },
+
+  // 🆕 Working hours override (per service)
+  workingHours: {
+    start: { type: String, default: "09:00" },
+    end: { type: String, default: "18:00" }
+  },
+
+  slug: { type: String },
+
+}, { timestamps: true });
+
+export default mongoose.model("Service", ServiceSchema);
 
 
-const Service = mongoose.model("Service",serviceSchema)
-
-export default Service;

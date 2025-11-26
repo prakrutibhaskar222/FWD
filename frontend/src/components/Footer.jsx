@@ -6,15 +6,15 @@ const Footer = () => {
     <div><footer className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm pt-10 border-t border-gray-300">
         <div className="space-y-2">
           <h4 className="font-semibold uppercase text-xs">Navigation</h4>
-          <p>Shop</p>
-          <p>Legacy</p>
-          <p>Support</p>
+          <Link to="/shop" className="block hover:text-blue-500">Shop</Link>
+          <Link to="/legacy" className="block hover:text-blue-500">Legacy</Link>
+          <Link to="/support" className="block hover:text-blue-500">Support</Link>
         </div>
         <div className="space-y-2">
         <h4 className="font-semibold uppercase text-xs">Services</h4>
 
         <Link to="/electrical" className="block hover:text-blue-500">Electrical</Link>
-          <Link to="/installation" className="block hover:text-[#25e93f]">Installation</Link>
+        <Link to="/installation" className="block hover:text-blue-500">Installation</Link>
         <Link to="/personal" className="block hover:text-blue-500">Personal</Link>
         <Link to="/homeservices" className="block hover:text-blue-500">Home Services</Link>
         <Link to="/renovation" className="block hover:text-blue-500">Renovation</Link>

@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Installation Services (Bulk Create)",
+    "_postman_id": "a12f3b7c-ff23-4c8f-9b92-installation-bulk",
+    "description": "Bulk creation of all Installation category services extracted from uploaded files.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+
+    {
+      "name": "CCTV Camera Installation",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"CCTV Camera Installation\",\"category\":\"installation\",\"price\":2500,\"description\":\"Secure your home or office with professional CCTV installation including wiring, placement, configuration, and testing.\",\"features\":[\"Camera mounting\",\"Wiring setup\",\"DVR/NVR configuration\",\"App setup & mobile view\",\"Safety testing\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    },
+
+    {
+      "name": "Water Purifier Installation",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Water Purifier Installation\",\"category\":\"installation\",\"price\":800,\"description\":\"Professional installation of RO/UV/UF water purifiers with leak-proof plumbing and TDS setup.\",\"features\":[\"Wall mounting\",\"Inlet/outlet pipe setup\",\"TDS check\",\"Leak-proof installation\",\"System testing\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    },
+
+    {
+      "name": "TV Wall Mounting",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"TV Wall Mounting\",\"category\":\"installation\",\"price\":650,\"description\":\"Secure and leveled mounting for all TV sizes with professional alignment.\",\"features\":[\"Strong bracket fitting\",\"Drilling & alignment\",\"Safe TV mounting\",\"Wire organization\",\"Final testing\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    },
+
+    {
+      "name": "Door / Window / Curtain Installation",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Door / Window / Curtain Installation\",\"category\":\"installation\",\"price\":1200,\"description\":\"Expert installation of curtain rods, doors, windows, frames and fittings with precision.\",\"features\":[\"Measurement & marking\",\"Rod/frame mounting\",\"Secure fitting\",\"Smooth operation check\",\"Cleanup\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    },
+
+    {
+      "name": "Modular Furniture Installation",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Modular Furniture Installation\",\"category\":\"installation\",\"price\":1800,\"description\":\"Assembly of wardrobes, beds, tables, and modular units with secure fittings.\",\"features\":[\"Component inspection\",\"Step-by-step assembly\",\"Screw tightening\",\"Alignment checks\",\"Final stability test\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    },
+
+    {
+      "name": "Solar Panel Installation",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Solar Panel Installation\",\"category\":\"installation\",\"price\":20000,\"description\":\"Complete rooftop solar installation with wiring, inverter setup, and safety testing.\",\"features\":[\"Rooftop inspection\",\"Panel mounting\",\"Inverter setup\",\"System wiring\",\"Efficiency testing\"]}"
+        },
+        "url": "http://localhost:5001/api/services/create"
+      }
+    }
+
+  ]
+}

@@ -33,9 +33,7 @@ export default function KitchenApplianceInstallation({ setActive }) {
         <h2 className="text-3xl font-semibold mb-10 text-center">How It Works</h2>
         <div className="space-y-6">
           {[
-            "A certified technician inspects the kitchen layout and appliance placement requirements.",
-            "Chimneys, hobs, and dishwashers are installed with proper alignment, sealing, and electrical/water-line connections.",
-            "Final testing is done to ensure proper suction, ignition, drainage, and safe operation.",
+
           ].map((text, index) => (
             <motion.div
               key={index}
