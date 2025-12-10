@@ -22,12 +22,15 @@ const BookingSchema = new mongoose.Schema({
     ref: "Worker",
     default: null,
   },
-
+  priority: { type: String, enum: ['low','medium','high'], default: 'medium' },
+  qualityScore: Number,
+  safetyChecklistCompleted: Boolean,
   status: {
     type: String,
     enum: ["pending", "in-progress", "completed"],
     default: "pending",
-  },
-});
+  },},
+  { timestamps: true }
+);
 
 export default mongoose.model("Booking", BookingSchema);
