@@ -1,211 +1,63 @@
-<<<<<<< HEAD
-// LoginPage.jsx
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
-import toast from "react-hot-toast";
+import { useState } from "react";
+import { loginUser } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-const PALETTE = {
-  beige: "#F3D79E",
-  brown: "#B57655",
-  cream: "#F2E3C6",
-  tan: "#E7D2AC",
-  nude: "#D0B79A",
-  black: "#000000",
-};
-
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function Login() {
   const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (localStorage.getItem("token")) navigate("/home");
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!email.trim() || !password.trim()) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await fetch(`${API_URL}/api/users/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // Backend returns: { token, user: { _id, name, email } }
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        window.dispatchEvent(new Event("storage")); // update nav instantly
-
-        toast.success(`Welcome back, ${data.user.name || "friend"}!`);
-        navigate("/home");
-      } else {
-        toast.error(data.message || "Invalid credentials");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      toast.error("Server error");
-=======
-import React, { useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
-
-export default function Login({ navigate }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5001/api/auth/login", { email, password }, { withCredentials: true });
-      toast.success(res.data.message);
+      const res = await loginUser(form);
       localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
->>>>>>> fab8b6de725a54588d4e6356e19418cf522650ce
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-<<<<<<< HEAD
-    <div
-      className="kanit-light min-h-screen flex items-center justify-center"
-      style={{
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="w-full max-w-6xl mx-4 md:mx-0 rounded-2xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2">
-        
-        {/* LEFT: Form */}
-        <div className="p-8 md:p-12 bg-white">
-          <h2
-            className="text-3xl font-bold mb-2"
-            style={{ color: PALETTE.brown }}
-          >
-            Sign In
-          </h2>
-          <p className="text-sm text-gray-600 mb-6">
-            Use your email and password to login
-          </p>
+    <div style={styles.container}>
+      <form onSubmit={handleSubmit} style={styles.card}>
+        <h2>Login</h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              className="input input-bordered w-full"
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ borderColor: PALETTE.tan }}
-              required
-            />
+        {error && <p style={styles.error}>{error}</p>}
 
-            <input
-              className="input input-bordered w-full"
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ borderColor: PALETTE.tan }}
-              required
-            />
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
 
-            <div className="flex items-center justify-between text-sm">
-              <Link
-                to="/forgot-password"
-                className="underline"
-                style={{ color: PALETTE.brown }}
-              >
-                Forgot Password?
-              </Link>
+        <button type="submit">Login</button>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-2 rounded-lg text-white"
-                style={{ background: PALETTE.brown }}
-              >
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-6 text-sm text-gray-600">
-            <p>
-              Don’t have an account?{" "}
-              <Link
-                to="/signup"
-                className="font-semibold"
-                style={{ color: PALETTE.brown }}
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* RIGHT: Welcome Panel */}
-        <div
-          className="relative hidden md:flex items-center justify-center p-8"
-          style={{ background: PALETTE.nude }}
-        >
-          <div className="p-8 max-w-sm text-center text-white backdrop-blur-sm">
-            <h3 className="text-3xl font-bold mb-2">Hello, Friend!</h3>
-            <p className="mb-6">
-              Register with your personal details to access all features.
-            </p>
-
-            <Link
-              to="/signup"
-              className="inline-block px-6 py-2 rounded-full border"
-              style={{
-                background: "transparent",
-                color: "white",
-                borderColor: "rgba(255,255,255,0.35)",
-              }}
-            >
-              SIGN UP
-            </Link>
-          </div>
-
-          {/* Decorative curved overlay */}
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="absolute right-0 top-0 h-full w-12 fill-white"
-            style={{ opacity: 0.05 }}
-          >
-            <path d="M0,0 C40,50 40,50 0,100 L100,100 L100,0 Z" />
-          </svg>
-        </div>
-      </div>
+        <p onClick={() => navigate("/signup")} style={styles.link}>
+          Don’t have an account? Sign up
+        </p>
+      </form>
     </div>
-=======
-    <form onSubmit={handleSubmit}>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
-      <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
-    </form>
->>>>>>> fab8b6de725a54588d4e6356e19418cf522650ce
   );
-};
+}
 
-export default LoginPage;
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f4f6f8",
+  },
+  card: {
+    width: 320,
+    padding: 20,
+    background: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    borderRadius: 6,
+  },
+  error: { color: "red", fontSize: 14 },
+  link: { color: "blue", cursor: "pointer", fontSize: 14 },
+};
