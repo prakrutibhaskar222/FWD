@@ -12,8 +12,10 @@ import {
   getBookingsFiltered,
   getBooking,          
   assignWorker,
-  markPaid
-} from "../src/controllers/bookingController.js";
+  markPaid,
+  getBookingById
+} from "../src/controllers/bookingController.js"; 
+
 
 const router = express.Router();
  

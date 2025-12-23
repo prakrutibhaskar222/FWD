@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast"
+import toast from "react-hot-toast";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -9,27 +10,54 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Link } from "react-router";
+import { useNavigate, Link } from "react-router";
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email.endsWith("@gmail.com")) {
-      toast.error("Email must end with @gmail.com");
-      return; // Stop submission if invalid
+    // ✅ Option 2: Validate any valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
+      return;
     }
 
+    try {
+      setLoading(true);
 
-    console.log("Login attempt:", formData);
-    toast.success('Successfully login!!')
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData,
+        { withCredentials: true }
+      );
+
+      toast.success(response.data.message || "Login successful!");
+      navigate("/home");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Invalid email or password"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,7 +84,6 @@ export default function Login() {
               gutterBottom
               sx={{
                 textTransform: "uppercase",
-                color: "black",
                 letterSpacing: "1px",
               }}
             >
@@ -83,6 +110,7 @@ export default function Login() {
                 margin="normal"
                 required
               />
+
               <TextField
                 fullWidth
                 label="Password"
@@ -99,20 +127,19 @@ export default function Login() {
                 type="submit"
                 variant="contained"
                 fullWidth
+                disabled={loading}
                 sx={{
                   mt: 3,
                   py: 1.4,
                   fontSize: "1rem",
-                  backgroundColor: "#fbbf24", // amber-400
+                  backgroundColor: "#fbbf24",
                   color: "black",
                   borderRadius: "12px",
                   textTransform: "none",
                   "&:hover": { backgroundColor: "#facc15" },
                 }}
               >
-                <Link to="/home" >
-                Log In
-            </Link>
+                {loading ? "Logging in..." : "Log In"}
               </Button>
             </Box>
 
@@ -122,9 +149,9 @@ export default function Login() {
               sx={{ mt: 3, color: "gray" }}
             >
               Don’t have an account?{" "}
-            <Link to="/signup" className="text-amber-600 hover:underline">
+              <Link to="/signup" className="text-amber-600 hover:underline">
                 Sign up
-            </Link>
+              </Link>
             </Typography>
           </CardContent>
         </Card>
