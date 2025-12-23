@@ -8,13 +8,6 @@ import Worker from "../models/Worker.js";
 export const getWorkerCalendar = async (req, res) => {
   try {
     const { workerId } = req.params;
-<<<<<<< HEAD
-    const bookings = await Booking.find({ assignedWorker: workerId });
-
-    return res.json({ success: true, data: bookings });
-  } catch (err) {
-    console.error("Calendar fetch error:", err);
-=======
 
     if (!workerId) {
       return res.status(400).json({
@@ -41,7 +34,6 @@ export const getWorkerCalendar = async (req, res) => {
     });
   } catch (error) {
     console.error("Calendar fetch error:", error);
->>>>>>> fab8b6de725a54588d4e6356e19418cf522650ce
     return res.status(500).json({
       success: false,
       message: "Failed to load worker calendar",
@@ -91,16 +83,6 @@ export const reassignBooking = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-<<<<<<< HEAD
-      message: "Booking rescheduled",
-      data: updated,
-    });
-  } catch (err) {
-    console.error("Reassign error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to reschedule",
-=======
       message: "Booking rescheduled successfully",
       data: updatedBooking,
     });
@@ -109,7 +91,6 @@ export const reassignBooking = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to reschedule booking",
->>>>>>> fab8b6de725a54588d4e6356e19418cf522650ce
     });
   }
 };
