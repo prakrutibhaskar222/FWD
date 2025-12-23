@@ -13,7 +13,6 @@ import {
   getBooking,          
   assignWorker,
   markPaid,
-  getBookingById
 } from "../src/controllers/bookingController.js"; 
 
 

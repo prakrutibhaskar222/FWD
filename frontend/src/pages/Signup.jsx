@@ -1,173 +1,206 @@
+// SignUpPage.jsx
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
-import axios from "axios";
-import {
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  Typography,
-  Box,
-} from "@mui/material";
 import { Link, useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
-export default function Signup() {
+// Backend URL (change to your backend port if different)
+const API_URL = "http://localhost:5001";
+
+const PALETTE = {
+  beige: "#F3D79E",
+  brown: "#B57655",
+  cream: "#F2E3C6",
+  tan: "#E7D2AC",
+  nude: "#D0B79A",
+  black: "#000000",
+};
+
+export default function SignUpPage() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    confirm: "",
   });
-
   const [loading, setLoading] = useState(false);
 
   // Handle input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const onChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // Handle form submit
-  const handleSubmit = async (e) => {
+  // Handle signup submit
+  const handleCreate = async (e) => {
     e.preventDefault();
 
-    // ✅ Accept ALL valid emails
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error("Please enter a valid email address");
+    // Basic validation
+    if (!form.name || !form.email || !form.password || !form.confirm) {
+      toast.error("Please fill all fields");
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (form.password !== form.confirm) {
+      toast.error("Passwords do not match");
       return;
     }
+
+    // Optional: email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      setLoading(true);
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }),
+      });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        formData
-      );
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        toast.error("Server did not return valid JSON");
+        setLoading(false);
+        return;
+      }
 
-      toast.success(res.data.message || "Signup successful!");
-      navigate("/login"); // ✅ Redirect AFTER success
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Signup failed"
-      );
+      if (res.ok) {
+        // Save token and user
+        localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(
+            data.user || {
+              _id: data._id,
+              name: data.name,
+              email: data.email,
+            }
+          )
+        );
+
+        window.dispatchEvent(new Event("storage"));
+        toast.success(`Welcome, ${data.name}!`);
+        navigate("/home");
+      } else {
+        toast.error(data.message || "Signup failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4efe9] px-6">
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <Card
-          sx={{
-            maxWidth: 400,
-            padding: 4,
-            borderRadius: 4,
-            boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
-            backgroundColor: "white",
-          }}
+    <div
+      className="min-h-screen flex items-center justify-center bg-[#f4efe9] px-4"
+    >
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden shadow-xl">
+        {/* Left panel */}
+        <div
+          className="hidden md:flex items-center justify-center p-8"
+          style={{ background: PALETTE.nude }}
         >
-          <CardContent>
-            <Typography
-              variant="h4"
-              align="center"
-              fontWeight="700"
-              gutterBottom
-              sx={{
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-              }}
+          <div className="text-center text-white max-w-sm p-6 backdrop-blur-sm">
+            <h2 className="text-3xl font-bold mb-3">Welcome!</h2>
+            <p className="mb-6">
+              Join our community — save, like & share your favorite recipes.
+            </p>
+            <Link
+              to="/login"
+              className="inline-block px-6 py-2 rounded-full border border-white border-opacity-30 hover:bg-white hover:text-black transition"
             >
-              Sign Up
-            </Typography>
+              Sign In
+            </Link>
+          </div>
+        </div>
 
-            <Typography
-              variant="body2"
-              align="center"
-              color="text.secondary"
-              sx={{ mb: 3 }}
+        {/* Signup form */}
+        <div className="p-8 md:p-12 bg-white">
+          <h2
+            className="text-3xl font-bold mb-3"
+            style={{ color: PALETTE.brown }}
+          >
+            Create Account
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Register with your personal details
+          </p>
+
+          <form className="space-y-4" onSubmit={handleCreate}>
+            <input
+              name="name"
+              value={form.name}
+              onChange={onChange}
+              placeholder="Full Name"
+              className="input input-bordered w-full p-3 rounded-lg border"
+              style={{ borderColor: PALETTE.tan }}
+              required
+            />
+            <input
+              name="email"
+              value={form.email}
+              onChange={onChange}
+              placeholder="Email Address"
+              type="email"
+              className="input input-bordered w-full p-3 rounded-lg border"
+              style={{ borderColor: PALETTE.tan }}
+              required
+            />
+            <input
+              name="password"
+              value={form.password}
+              onChange={onChange}
+              placeholder="Password"
+              type="password"
+              className="input input-bordered w-full p-3 rounded-lg border"
+              style={{ borderColor: PALETTE.tan }}
+              required
+            />
+            <input
+              name="confirm"
+              value={form.confirm}
+              onChange={onChange}
+              placeholder="Confirm Password"
+              type="password"
+              className="input input-bordered w-full p-3 rounded-lg border"
+              style={{ borderColor: PALETTE.tan }}
+              required
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-lg text-white font-semibold"
+              style={{ background: PALETTE.brown }}
             >
-              Create an account to get started!
-            </Typography>
+              {loading ? "Creating..." : "Sign Up"}
+            </button>
+          </form>
 
-            <Box component="form" onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Full Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                margin="normal"
-                required
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={loading}
-                sx={{
-                  mt: 3,
-                  py: 1.4,
-                  fontSize: "1rem",
-                  backgroundColor: "#fbbf24",
-                  color: "black",
-                  borderRadius: "12px",
-                  textTransform: "none",
-                  "&:hover": { backgroundColor: "#facc15" },
-                }}
-              >
-                {loading ? "Creating account..." : "Sign Up"}
-              </Button>
-            </Box>
-
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ mt: 3, color: "gray" }}
+          <p className="mt-6 text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-semibold"
+              style={{ color: PALETTE.brown }}
             >
-              Already have an account?{" "}
-              <Link to="/login" className="text-amber-600 hover:underline">
-                Log in
-              </Link>
-            </Typography>
-          </CardContent>
-        </Card>
-      </motion.div>
+              Sign In
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

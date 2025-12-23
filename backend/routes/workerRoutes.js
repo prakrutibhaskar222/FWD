@@ -1,12 +1,23 @@
 import express from "express";
-import workersController from "../src/controllers/workersController.js";
-
+import {
+  getTasks,
+  updateTaskStatus,
+  clockEvent,
+  getTimesheet,
+  getNotifications
+} from "../src/controllers/workersController.js";
+import { protect } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/tasks", workersController.getTasks);
-router.put("/tasks/:id", workersController.updateTaskStatus);
-router.post("/attendance",workersController.clockEvent);
-router.get("/timesheet", workersController.getTimesheet);
+/* 🔐 AUTH REQUIRED */
+router.use(protect);
+
+router.get("/tasks", getTasks);
+router.put("/tasks/:id", updateTaskStatus);
+
+router.post("/attendance", clockEvent);
+router.get("/timesheet", getTimesheet);
+router.get("/notifications", getNotifications);
 
 export default router;

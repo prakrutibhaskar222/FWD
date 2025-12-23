@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 
 // ROUTES
-import authRoutes from "../routes/auth.js";
+import authRoutes from "../routes/authRoute.js";
 import adminRoutes from "../routes/admin.js";
 import serviceRoute from "../routes/serviceRoute.js";
 import bookingRoute from "../routes/bookingRoute.js";
