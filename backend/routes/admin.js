@@ -1,6 +1,6 @@
 // routes/admin.js
 import express from "express";
-import { protect, adminOnly } from "../src/middleware/authMiddleware.js";
+import { protect } from "../src/middleware/authMiddleware.js";
 import {
   getAllUsers,
   getAllBookings,
@@ -8,9 +8,6 @@ import {
 } from "../src/controllers/adminController.js"; // You can create this controller
 
 const router = express.Router();
-
-// All routes here require authentication and admin access
-router.use(protect, adminOnly);
 
 // Example routes
 router.get("/users", getAllUsers);            // Get all users

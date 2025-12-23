@@ -1,19 +1,30 @@
-
+// Navbar.jsx
 import React, { useState } from "react";
-import { Link } from 'react-router'
+import { Link } from "react-router";
+import { FaUserCircle } from "react-icons/fa";
+
+// Color palette
+const PALETTE = {
+  beige: "#F3D79E",
+  brown: "#B57655",
+  cream: "#F2E3C6",
+  tan: "#E7D2AC",
+  nude: "#D0B79A",
+  black: "#000000",
+};
 
 const Navbar = () => {
-
-// ✅ Define login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // ✅ Function to handle logout
+  // Optional: mobile menu state
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const handleLogout = () => {
     setIsLoggedIn(false);
-    alert("Logged out successfully!");}
+    alert("Logged out successfully!");
+  };
 
   return (
-    
     <div className='bg-[#e9e4de]' >
       <header className="flex justify-between items-center ">
         <Link
@@ -66,27 +77,46 @@ const Navbar = () => {
           />
         </div>
         
-        {!isLoggedIn ? (
-  <button className="btn glass bg-[#e5d4c0]">
-    <Link to="/login" className="text-black no-underline">
-      Log in
-    </Link>
-  </button>
-) : (
-  <button
-    onClick={() => setIsLoggedIn(false)}
-    className="btn glass bg-red-400 text-white hover:bg-red-500"
-  >
-    Logout
-  </button>
-)}
-
-
-
+        {/* Login / User Dropdown */}
+        <div className="ml-4 flex items-center space-x-2">
+          {!isLoggedIn ? (
+            <Link
+              to="/login"
+              className="px-4 py-1 rounded-lg font-medium bg-beige text-brown border-2 border-[#D0B79A]"
+            >
+              Log in
+            </Link>
+          ) : (
+            <div className="relative dropdown dropdown-end">
+              <label tabIndex={0} className="cursor-pointer">
+                <FaUserCircle className="text-3xl" style={{ color: PALETTE.brown }} />
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content mt-3 p-3 shadow-md rounded-lg w-40"
+                style={{
+                  background: PALETTE.cream,
+                  border: `1px solid ${PALETTE.tan}`,
+                  color: PALETTE.brown,
+                }}
+              >
+                <li>
+                  <Link to="/profile" className="font-medium">
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="font-medium text-left w-full">
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </header>
     </div>
-  )
-}
+  );
+};
 
-
-export default Navbar
+export default Navbar;

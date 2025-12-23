@@ -22,11 +22,7 @@ import AdminServices from "./pages/admin/AdminServices"
 import Dashboard from "./pages/admin/Dashboard"
 import ServiceDetails from "./pages/ServiceDetails.jsx"
 import ElectricalPage from "./pages/ElectricalPage";
-import WorkerDashboard from "./pages/workers/WorkerDashboard.jsx"
-import WorkerTasks from "./pages/workers/WorkerTasks.jsx"
-import WorkerRevenue from "./pages/workers/WorkerRevenue.jsx"
-import WorkerCalendar from "./pages/workers/WorkerCalender.jsx"
-
+import WorkerDashboard from "./pages/workers/WorkerDashboard.jsx" 
 
 const App = () => {
   return (
@@ -59,9 +55,6 @@ const App = () => {
         <Route path="/service/:id" element={<ServiceDetails />} />
 
         <Route path="/worker/dashboard" element={<WorkerDashboard />} />
-        <Route path="/worker/tasks" element={<WorkerTasks />} />
-        <Route path="/worker/revenue" element={<WorkerRevenue />} />
-        <Route path="/worker/calendar" element={<WorkerCalendar />} />
 
       </Routes>
 
