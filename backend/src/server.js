@@ -7,7 +7,7 @@ import bookingRoute from "../routes/bookingRoute.js";
 import categoryRoute from "../routes/categoryRoute.js";
 import reviewRoute from "../routes/reviewRoute.js";
 import workerRoute from "../routes/workerRoutes.js";
-import calendarRoute from "../routes/calenderRoute.js";
+import calendarRoute from "../routes/calendarRoute.js";
 
 dotenv.config();
 const app = express();
