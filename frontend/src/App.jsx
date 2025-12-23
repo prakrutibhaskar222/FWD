@@ -22,6 +22,10 @@ import AdminServices from "./pages/admin/AdminServices"
 import Dashboard from "./pages/admin/Dashboard"
 import ServiceDetails from "./pages/ServiceDetails.jsx"
 import ElectricalPage from "./pages/ElectricalPage";
+import WorkerDashboard from "./pages/workers/WorkerDashboard.jsx"
+import WorkerTasks from "./pages/workers/WorkerTasks.jsx"
+import WorkerRevenue from "./pages/workers/WorkerRevenue.jsx"
+import WorkerCalendar from "./pages/workers/WorkerCalender.jsx"
 
 
 const App = () => {
@@ -36,20 +40,28 @@ const App = () => {
         <Route path="/shop" element={<Shop />} />
         <Route path="/legacy" element={<Legacy />} />
         <Route path="/support" element={<Support />} />
+
+        <Route path="/login" element={<Login />} /> 
+        <Route path="/signup" element={<Signup />} /> 
         <Route path="/home" element={<Home />} />
+        
         <Route path="/electrical" element={<ElectricalPage />} />
         <Route path="/installation/*" element={<Installation />} />
         <Route path="/personal/*" element={<Personal />} />
         <Route path="/homeservices/*" element={<HomeServices />} /> 
         <Route path="/renovation/*" element={<Renovation />} /> 
-        <Route path="/login" element={<Login />} /> 
-        <Route path="/signup" element={<Signup />} /> 
+        
         <Route path="/stats" element={<Stats />} />
         <Route path="/booking/service/:id" element={<Booking />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/admin/bookings" element={<AdminBookings />} />
         <Route path="/admin/services" element={<AdminServices />} />
         <Route path="/service/:id" element={<ServiceDetails />} />
+
+        <Route path="/worker/dashboard" element={<WorkerDashboard />} />
+        <Route path="/worker/tasks" element={<WorkerTasks />} />
+        <Route path="/worker/revenue" element={<WorkerRevenue />} />
+        <Route path="/worker/calendar" element={<WorkerCalendar />} />
 
       </Routes>
 

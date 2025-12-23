@@ -184,7 +184,7 @@ export const getBookingsFiltered = async (req, res) => {
 };
 
 // GET single booking by id
-export const getBookingById = async (req, res) => {
+export const getBooking = async (req, res) => {
   try {
     const b = await Booking.findById(req.params.id);
     if (!b) return res.json({ success: false, error: "Booking not found" });
@@ -193,6 +193,7 @@ export const getBookingById = async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 };
+
 
 export const assignWorker = async (req, res) => {
   try {

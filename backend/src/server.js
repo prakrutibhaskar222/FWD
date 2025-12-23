@@ -2,6 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
+
+// ROUTES
+import authRoutes from "../routes/auth.js";
+import adminRoutes from "../routes/admin.js";
 import serviceRoute from "../routes/serviceRoute.js";
 import bookingRoute from "../routes/bookingRoute.js";
 import categoryRoute from "../routes/categoryRoute.js";
@@ -12,16 +16,13 @@ import calendarRoute from "../routes/calendarRoute.js";
 dotenv.config();
 const app = express();
 
-// MIDDLEWARE
+// Middleware
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"]
-  })
-);
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
-// ROUTES
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/services", serviceRoute);
 app.use("/api/bookings", bookingRoute);
 app.use("/api/categories", categoryRoute);
@@ -29,11 +30,11 @@ app.use("/api/reviews", reviewRoute);
 app.use("/api/workers", workerRoute);
 app.use("/api/calendar", calendarRoute);
 
+// Health check
+app.get("/", (req, res) => res.send("API is running..."));
 
-
-// START SERVER
+// Start server
 connectDB().then(() => {
-  app.listen(process.env.PORT || 5001, () =>
-    console.log("Server running on port", process.env.PORT)
-  );
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 });

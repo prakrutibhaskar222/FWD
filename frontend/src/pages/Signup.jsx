@@ -1,139 +1,52 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import {
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  Typography,
-  Box,
-} from "@mui/material";
-import { Link } from "react-router"; 
+import axios from "axios";
+import { Card, CardContent, Button, TextField, Typography, Box } from "@mui/material";
 
-export default function Signup() {
+export default function Signup({ navigate }) {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // ✅ Simple validation
-    if (!formData.email.endsWith("@gmail.com")) {
-      toast.error("Email must end with @gmail.com");
-      return;
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:5001/api/auth/signup", formData, {
+        withCredentials: true,
+      });
+      toast.success(res.data.message);
+      navigate("/login"); // pass navigate from parent or use react-router
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Signup successful!");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4efe9] px-6">
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-      >
-        <Card
-          sx={{
-            maxWidth: 400,
-            padding: 4,
-            borderRadius: 4,
-            boxShadow: "0 10px 20px rgba(0,0,0,0.15)",
-            backgroundColor: "white",
-          }}
-        >
+    <div className="min-h-screen flex items-center justify-center bg-[#f4efe9]">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+        <Card sx={{ maxWidth: 400, p: 4 }}>
           <CardContent>
-            <Typography
-              variant="h4"
-              align="center"
-              fontWeight="700"
-              gutterBottom
-              sx={{
-                textTransform: "uppercase",
-                color: "black",
-                letterSpacing: "1px",
-              }}
-            >
+            <Typography variant="h4" align="center" gutterBottom>
               Sign Up
             </Typography>
-
-            <Typography
-              variant="body2"
-              align="center"
-              color="text.secondary"
-              sx={{ mb: 3 }}
-            >
-              Create an account to get started!
-            </Typography>
-
             <Box component="form" onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Full Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-                required
-              />
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                variant="outlined"
-                margin="normal"
-                required
-              />
-
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{
-                  mt: 3,
-                  py: 1.4,
-                  fontSize: "1rem",
-                  backgroundColor: "#fbbf24",
-                  color: "black",
-                  borderRadius: "12px",
-                  textTransform: "none",
-                  "&:hover": { backgroundColor: "#facc15" },
-                }}
-              >
-                <Link to="/home" >
-                   Sign up
-                </Link>
+              <TextField fullWidth label="Name" name="name" margin="normal" value={formData.name} onChange={handleChange} required />
+              <TextField fullWidth label="Email" name="email" margin="normal" value={formData.email} onChange={handleChange} required />
+              <TextField fullWidth label="Password" name="password" type="password" margin="normal" value={formData.password} onChange={handleChange} required />
+              <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 2 }}>
+                {loading ? "Creating..." : "Sign Up"}
               </Button>
             </Box>
-
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ mt: 3, color: "gray" }}
-            >
-              Already have an account?{" "}
-              <Link to="/login" className="text-amber-600 hover:underline">
-                Log in
-              </Link>
+            <Typography align="center" sx={{ mt: 2 }}>
+              Already have an account? <Button onClick={() => navigate("/login")}>Login</Button>
             </Typography>
           </CardContent>
         </Card>

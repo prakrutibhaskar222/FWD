@@ -1,9 +1,41 @@
 // src/pages/admin/AdminDashboardPro.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Box, Button, Card, CardContent, Grid, Typography, Select, MenuItem,
-  Table, TableBody, TableHead, TableRow, TableCell,
-  IconButton, Drawer, Divider, TextField, Dialog, DialogTitle, DialogContent, DialogActions
+  CartesianGrid,
+  Tooltip as ReTooltip,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis
+} from "recharts";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  Select,
+  MenuItem,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+  IconButton,
+  Drawer,
+  Divider,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -13,10 +45,11 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import AdminLayout from "../../components/admin/AdminLayout";
 import toast from "react-hot-toast";
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip, BarChart, Bar } from "recharts";
 
+// Rest of your code remains the same...
 const API = "http://localhost:5001";
 const COLORS = ["#4B8CF5", "#1BC47D", "#FFB020", "#FF6B6B", "#9C6CFF"];
+
 
 function isoToday() {
   return new Date().toISOString().split("T")[0];
