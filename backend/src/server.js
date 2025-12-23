@@ -13,35 +13,16 @@ import reviewRoute from "../routes/reviewRoute.js";
 import workerRoute from "../routes/workerRoutes.js";
 import calendarRoute from "../routes/calendarRoute.js";
 
-
-
 dotenv.config();
 const app = express();
 
-/* =======================
-   GLOBAL MIDDLEWARE
-======================= */
+// Middleware
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-  })
-);
-
-/* =======================
-   ROUTES
-======================= */
-
-// AUTHENTICATION
+// Routes
 app.use("/api/auth", authRoutes);
-
-// ADMIN (protected internally)
 app.use("/api/admin", adminRoutes);
-
-// CORE MODULES
 app.use("/api/services", serviceRoute);
 app.use("/api/bookings", bookingRoute);
 app.use("/api/categories", categoryRoute);
@@ -49,19 +30,11 @@ app.use("/api/reviews", reviewRoute);
 app.use("/api/workers", workerRoute);
 app.use("/api/calendar", calendarRoute);
 
-/* =======================
-   HEALTH CHECK
-======================= */
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+// Health check
+app.get("/", (req, res) => res.send("API is running..."));
 
-/* =======================
-   START SERVER
-======================= */
+// Start server
 connectDB().then(() => {
   const PORT = process.env.PORT || 5001;
-  app.listen(PORT, () =>
-    console.log(`🚀 Server running on port ${PORT}`)
-  );
+  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 });
