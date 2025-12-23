@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -9,26 +10,58 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { Link } from "react-router"; 
+import { Link, useNavigate } from "react-router";
 
 export default function Signup() {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Simple validation
-    if (!formData.email.endsWith("@gmail.com")) {
-      toast.error("Email must end with @gmail.com");
+    // ✅ Accept ALL valid emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
-    toast.success("Signup successful!");
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        formData
+      );
+
+      toast.success(res.data.message || "Signup successful!");
+      navigate("/login"); // ✅ Redirect AFTER success
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Signup failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,7 +88,6 @@ export default function Signup() {
               gutterBottom
               sx={{
                 textTransform: "uppercase",
-                color: "black",
                 letterSpacing: "1px",
               }}
             >
@@ -78,20 +110,20 @@ export default function Signup() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                variant="outlined"
                 margin="normal"
                 required
               />
+
               <TextField
                 fullWidth
                 label="Email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                variant="outlined"
                 margin="normal"
                 required
               />
+
               <TextField
                 fullWidth
                 label="Password"
@@ -99,7 +131,6 @@ export default function Signup() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                variant="outlined"
                 margin="normal"
                 required
               />
@@ -108,6 +139,7 @@ export default function Signup() {
                 type="submit"
                 variant="contained"
                 fullWidth
+                disabled={loading}
                 sx={{
                   mt: 3,
                   py: 1.4,
@@ -119,9 +151,7 @@ export default function Signup() {
                   "&:hover": { backgroundColor: "#facc15" },
                 }}
               >
-                <Link to="/home" >
-                   Sign up
-                </Link>
+                {loading ? "Creating account..." : "Sign Up"}
               </Button>
             </Box>
 
