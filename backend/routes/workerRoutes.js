@@ -1,18 +1,12 @@
 import express from "express";
-import {
-  createWorker,
-  getWorkers,
-  getWorker,
-  updateWorker,
-  deleteWorker
-} from "../src/controllers/workerController.js";
+import workersController from "../src/controllers/workersController.js";
+
 
 const router = express.Router();
 
-router.post("/create", createWorker);
-router.get("/", getWorkers);
-router.get("/:id", getWorker);
-router.put("/:id", updateWorker);
-router.delete("/:id", deleteWorker);
+router.get("/tasks", workersController.getTasks);
+router.put("/tasks/:id", workersController.updateTaskStatus);
+router.post("/attendance",workersController.clockEvent);
+router.get("/timesheet", workersController.getTimesheet);
 
 export default router;

@@ -1,4 +1,5 @@
 import express from "express";
+ 
 import {
   createBooking,
   getAvailableSlots,
@@ -9,26 +10,26 @@ import {
   rescheduleBooking,
   updateBookingStatus,
   getBookingsFiltered,
+  getBooking,          
   assignWorker,
-  markPaid,
-  getBookingById
+  markPaid
 } from "../src/controllers/bookingController.js";
 
 const router = express.Router();
-
-router.post("/create", createBooking);
-router.get("/", getBookingsFiltered); // supports filters via query params
-
+ 
+router.post("/", createBooking);
 router.get("/slots", getAvailableSlots);
-
-router.get("/user/:id", getBookingsByUser);
+ 
+router.get("/", getAllBookings);
+router.get("/filter", getBookingsFiltered); 
+router.get("/:id", getBooking); 
+router.get("/user/:id", getBookingsByUser); 
 router.get("/service/:id", getBookingsByService);
-
-router.get("/:id", getBookingById); // booking detail for flyout
-router.put("/:id/cancel", cancelBooking);
-router.put("/:id/reschedule", rescheduleBooking);
-router.put("/:id/status", updateBookingStatus);
-router.put("/:id/assign", assignWorker);
-router.put("/:id/markpaid", markPaid);
+ 
+router.put("/:id/cancel", cancelBooking); 
+router.put("/:id/reschedule", rescheduleBooking); 
+router.put("/:id/status", updateBookingStatus); 
+router.put("/:id/assign-worker", assignWorker); 
+router.put("/:id/mark-paid", markPaid);
 
 export default router;
