@@ -11,11 +11,11 @@ import {
   getFeaturedServices,
   getPopularServices
 } from "../src/controllers/servicesController.js";
+import { protect, allowRoles } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Create
-router.post("/create", createService);
+/* ================= PUBLIC ROUTES ================= */
 
 // List all
 router.get("/", getAllServices);
@@ -32,9 +32,30 @@ router.get("/list/categories", getCategories);
 // View count
 router.get("/:id/view", viewAndGetService);
 
-// CRUD by ID
+// Get single service
 router.get("/:id", getService);
-router.put("/:id", updateService);
-router.delete("/:id", deleteService);
+
+/* ================= ADMIN ROUTES ================= */
+
+router.post(
+  "/create",
+  protect,
+  allowRoles("admin"),
+  createService
+);
+
+router.put(
+  "/:id",
+  protect,
+  allowRoles("admin"),
+  updateService
+);
+
+router.delete(
+  "/:id",
+  protect,
+  allowRoles("admin"),
+  deleteService
+);
 
 export default router;

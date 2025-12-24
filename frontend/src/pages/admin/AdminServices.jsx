@@ -114,7 +114,7 @@ export default function AdminServices() {
     const payload = {
       ...serviceForm,
       price: Number(serviceForm.price),
-      features: serviceForm.features.split(" ").filter(Boolean),
+      features: serviceForm.features.split(";").filter(Boolean),
     };
 
     const url = editServiceId
@@ -349,7 +349,7 @@ export default function AdminServices() {
             />
 
             <TextField
-              label="Features (space separated)"
+              label="Features (semicolon separated)"
               value={serviceForm.features}
               onChange={(e) =>
                 setServiceForm({ ...serviceForm, features: e.target.value })

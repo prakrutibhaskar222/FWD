@@ -1,10 +1,17 @@
 // backend/routes/reviewRoute.js
 import express from "express";
-import { createReview, getReviewsForService } from "../src/controllers/reviewsController.js";
+import {
+  createReview,
+  getReviewsForService
+} from "../src/controllers/reviewsController.js";
+import { protect } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", createReview);
+/* 🔐 Logged-in users only */
+router.post("/create", protect, createReview);
+
+/* 🌍 Public */
 router.get("/service/:serviceId", getReviewsForService);
 
 export default router;

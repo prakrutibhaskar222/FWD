@@ -6,13 +6,34 @@ import {
   updateCategory,
   deleteCategory
 } from "../src/controllers/categoryController.js";
+import { protect, allowRoles } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", createCategory);
+/* 🌍 PUBLIC ROUTES */
 router.get("/", getAllCategories);
 router.get("/:id", getCategory);
-router.put("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+
+/* 🔐 ADMIN ROUTES */
+router.post(
+  "/create",
+  protect,
+  allowRoles("admin"),
+  createCategory
+);
+
+router.put(
+  "/:id",
+  protect,
+  allowRoles("admin"),
+  updateCategory
+);
+
+router.delete(
+  "/:id",
+  protect,
+  allowRoles("admin"),
+  deleteCategory
+);
 
 export default router;
