@@ -216,3 +216,56 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+
+/* ================= CREATE ADMIN (ONE-TIME) ================= */
+export const createAdmin = async (req, res) => {
+  try {
+    // ✅ FIRST: destructure
+    const { name, email, password, secret } = req.body;
+
+    // ✅ THEN: debug logs (optional)
+    console.log("ENV SECRET:", process.env.ADMIN_CREATE_SECRET);
+    console.log("REQ SECRET:", secret);
+
+    // 🔒 Security check
+    if (secret !== process.env.ADMIN_CREATE_SECRET) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: "admin",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Admin created successfully",
+      user: {
+        id: admin._id,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+};

@@ -27,6 +27,16 @@ import AdminLayout from "../../components/admin/AdminLayout";
 export default function AdminServices() {
   const API = "http://localhost:5001";
 
+  /* ================= AUTH HEADER ================= */
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
   // SERVICES
   const [services, setServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(true);
@@ -58,7 +68,7 @@ export default function AdminServices() {
     sortOrder: 0,
   });
 
-  // FETCH SERVICES
+  /* ================= FETCH ================= */
   const fetchServices = async () => {
     setLoadingServices(true);
     const res = await fetch(`${API}/api/services`);
@@ -67,7 +77,6 @@ export default function AdminServices() {
     setLoadingServices(false);
   };
 
-  // FETCH CATEGORIES
   const fetchCategories = async () => {
     setLoadingCategories(true);
     const res = await fetch(`${API}/api/categories`);
@@ -83,7 +92,7 @@ export default function AdminServices() {
     fetchCategories();
   }, []);
 
-  // ========== SERVICE CRUD ==========
+  /* ================= SERVICE CRUD ================= */
   const openAddService = () => {
     setEditServiceId(null);
     setServiceForm({
@@ -105,7 +114,7 @@ export default function AdminServices() {
       price: service.price,
       description: service.description,
       duration: service.duration,
-      features: (service.features || []).join(" "),
+      features: (service.features || []).join(";"),
     });
     setServiceModal(true);
   };
@@ -125,28 +134,36 @@ export default function AdminServices() {
 
     const res = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     });
 
     const json = await res.json();
 
     if (json.success) {
-      toast.success(editServiceId ? "Updated" : "Created");
+      toast.success(editServiceId ? "Service updated" : "Service created");
       fetchServices();
       setServiceModal(false);
-    } else toast.error("Failed");
+    } else {
+      toast.error(json.message || "Failed to save service");
+    }
   };
 
   const deleteService = async (id) => {
     if (!confirm("Delete service?")) return;
-    await fetch(`${API}/api/services/${id}`, { method: "DELETE" });
-    toast.success("Deleted");
+
+    await fetch(`${API}/api/services/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    toast.success("Service deleted");
     fetchServices();
   };
 
-  // ========== CATEGORY CRUD ==========
+  /* ================= CATEGORY CRUD ================= */
   const openAddCategory = () => {
+    setEditCategory(null);
     setCategoryForm({
       key: "",
       name: "",
@@ -154,7 +171,6 @@ export default function AdminServices() {
       description: "",
       sortOrder: 0,
     });
-    setEditCategory(null);
     setCategoryModal(true);
   };
 
@@ -179,31 +195,38 @@ export default function AdminServices() {
 
     const res = await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(categoryForm),
     });
 
     const json = await res.json();
 
     if (json.success) {
-      toast.success(editCategory ? "Category Updated" : "Category Created");
+      toast.success(editCategory ? "Category updated" : "Category created");
       fetchCategories();
       setCategoryModal(false);
-    } else toast.error("Failed to save category");
+    } else {
+      toast.error("Failed to save category");
+    }
   };
 
   const deleteCategory = async (id) => {
     if (!confirm("Delete category?")) return;
-    await fetch(`${API}/api/categories/${id}`, { method: "DELETE" });
-    toast.success("Category Deleted");
+
+    await fetch(`${API}/api/categories/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    toast.success("Category deleted");
     fetchCategories();
   };
 
+  /* ================= UI ================= */
   return (
     <AdminLayout>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h4">Manage Services & Categories</Typography>
-
         <Box>
           <Button onClick={openAddCategory} variant="outlined" sx={{ mr: 2 }}>
             Add Category
@@ -215,10 +238,9 @@ export default function AdminServices() {
       </Box>
 
       <Grid container spacing={3} mt={3}>
-        {/* SERVICES LIST */}
+        {/* SERVICES */}
         <Grid item xs={12} md={8}>
           <Typography variant="h6">Services</Typography>
-
           {loadingServices ? (
             <CircularProgress />
           ) : (
@@ -230,9 +252,6 @@ export default function AdminServices() {
                       <Typography variant="h6">{s.title}</Typography>
                       <Typography color="gray">{s.category}</Typography>
                       <Typography>₹{s.price}</Typography>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        {s.description}
-                      </Typography>
 
                       <Box mt={2}>
                         <IconButton onClick={() => openEditService(s)}>
@@ -253,10 +272,9 @@ export default function AdminServices() {
           )}
         </Grid>
 
-        {/* CATEGORY LIST */}
+        {/* CATEGORIES */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6">Categories</Typography>
-
           {loadingCategories ? (
             <CircularProgress />
           ) : (
@@ -267,12 +285,6 @@ export default function AdminServices() {
                     {cat.icon} {cat.name}
                   </Typography>
                   <Typography variant="body2">/{cat.key}</Typography>
-                  <Typography variant="body2" color="gray">
-                    {cat.description}
-                  </Typography>
-                  <Typography variant="body2">
-                    Sort Order: {cat.sortOrder}
-                  </Typography>
 
                   <Box mt={2}>
                     <IconButton onClick={() => openEditCategoryModal(cat)}>
@@ -304,6 +316,7 @@ export default function AdminServices() {
                 setServiceForm({ ...serviceForm, title: e.target.value })
               }
             />
+
             <FormControl fullWidth>
               <InputLabel>Category</InputLabel>
               <Select
@@ -344,7 +357,10 @@ export default function AdminServices() {
               rows={3}
               value={serviceForm.description}
               onChange={(e) =>
-                setServiceForm({ ...serviceForm, description: e.target.value })
+                setServiceForm({
+                  ...serviceForm,
+                  description: e.target.value,
+                })
               }
             />
 
@@ -381,7 +397,6 @@ export default function AdminServices() {
                 setCategoryForm({ ...categoryForm, key: e.target.value })
               }
             />
-
             <TextField
               label="Name"
               value={categoryForm.name}
@@ -389,31 +404,34 @@ export default function AdminServices() {
                 setCategoryForm({ ...categoryForm, name: e.target.value })
               }
             />
-
             <TextField
-              label="Icon (emoji)"
+              label="Icon"
               value={categoryForm.icon}
               onChange={(e) =>
                 setCategoryForm({ ...categoryForm, icon: e.target.value })
               }
             />
-
             <TextField
               label="Description"
               multiline
               rows={2}
               value={categoryForm.description}
               onChange={(e) =>
-                setCategoryForm({ ...categoryForm, description: e.target.value })
+                setCategoryForm({
+                  ...categoryForm,
+                  description: e.target.value,
+                })
               }
             />
-
             <TextField
               label="Sort Order"
               type="number"
               value={categoryForm.sortOrder}
               onChange={(e) =>
-                setCategoryForm({ ...categoryForm, sortOrder: Number(e.target.value) })
+                setCategoryForm({
+                  ...categoryForm,
+                  sortOrder: Number(e.target.value),
+                })
               }
             />
           </Box>
