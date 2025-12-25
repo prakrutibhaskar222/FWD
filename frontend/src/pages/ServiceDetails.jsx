@@ -70,7 +70,7 @@ export default function ServiceDetails() {
             <div>
               <Clock9 className="w-7 h-7 text-purple-600 mx-auto mb-2" />
               <p className="font-medium text-gray-600">Estimated Duration</p>
-              <p className="text-lg font-semibold mt-1">{service.duration || "—"}</p>
+              <p className="text-lg font-semibold mt-1">{service.duration || "—"} hr </p>
             </div>
             <div>
               <IndianRupee className="w-7 h-7 text-yellow-600 mx-auto mb-2" />

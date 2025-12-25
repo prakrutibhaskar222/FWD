@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
+dotenv.config();
 
 // ROUTES
 import authRoutes from "../routes/authRoute.js";
@@ -13,8 +14,10 @@ import reviewRoute from "../routes/reviewRoute.js";
 import workerRoute from "../routes/workerRoutes.js";
 import calendarRoute from "../routes/calendarRoute.js";
 
-dotenv.config();
+
 const app = express();
+
+console.log("SERVER ENV SECRET:", process.env.ADMIN_CREATE_SECRET);
 
 // Middleware
 app.use(express.json());

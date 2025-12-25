@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { registerUser } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
-export default function Signup() {
+const Signup = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -10,61 +10,44 @@ export default function Signup() {
     password: "",
     phone: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await registerUser(form);
-      localStorage.setItem("token", res.data.token);
-      navigate("/login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
-    }
+
+    const res = await axios.post(
+      "http://localhost:5001/api/auth/register",
+      form
+    );
+
+    localStorage.setItem("token", res.data.token);
+    window.dispatchEvent(new Event("auth-change"));
+
+    navigate("/home");
   };
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleSubmit} style={styles.card}>
-        <h2>Sign Up</h2>
+    <div className="min-h-screen flex items-center justify-center">
+      <form onSubmit={handleSubmit} className="w-80 p-6 bg-white shadow">
+        <h2 className="text-xl mb-4">Sign Up</h2>
 
-        {error && <p style={styles.error}>{error}</p>}
+        <input name="name" placeholder="Name" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
+        <input name="email" placeholder="Email" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
+        <input name="phone" placeholder="Phone" className="border w-full mb-3 px-3 py-2" onChange={handleChange} />
+        <input type="password" name="password" placeholder="Password" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
 
-        <input name="name" placeholder="Name" onChange={handleChange} required />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="phone" placeholder="Phone" onChange={handleChange} />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+        <button className="w-full bg-[#B57655] text-white py-2">
+          Create Account
+        </button>
 
-        <button type="submit">Create Account</button>
-
-        <p onClick={() => navigate("/login")} style={styles.link}>
-          Already have an account? Login
+        <p className="text-sm mt-3">
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </form>
     </div>
   );
-}
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f4f6f8",
-  },
-  card: {
-    width: 320,
-    padding: 20,
-    background: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
-    borderRadius: 6,
-  },
-  error: { color: "red", fontSize: 14 },
-  link: { color: "blue", cursor: "pointer", fontSize: 14 },
 };
+
+export default Signup;

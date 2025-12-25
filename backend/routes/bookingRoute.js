@@ -15,16 +15,20 @@ import {
   markPaid,
 } from "../src/controllers/bookingController.js"; 
 
+import { protect } from "../src/middleware/authMiddleware.js";
+
+
 
 const router = express.Router();
  
-router.post("/", createBooking);
+router.post("/", protect, createBooking);
+
 router.get("/slots", getAvailableSlots);
  
 router.get("/", getAllBookings);
 router.get("/filter", getBookingsFiltered); 
 router.get("/:id", getBooking); 
-router.get("/user/:id", getBookingsByUser); 
+router.get("/user/:id", protect, getBookingsByUser);
 router.get("/service/:id", getBookingsByService);
  
 router.put("/:id/cancel", cancelBooking); 
