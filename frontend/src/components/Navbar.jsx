@@ -1,119 +1,169 @@
-// Navbar.jsx
-import React, { useState } from "react";
-import { Link } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 
-// Color palette
-const PALETTE = {
-  beige: "#F3D79E",
-  brown: "#B57655",
-  cream: "#F2E3C6",
-  tan: "#E7D2AC",
-  nude: "#D0B79A",
-  black: "#000000",
-};
-
 const Navbar = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Optional: mobile menu state
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    alert("Logged out successfully!");
+  /* ================= FETCH SEARCH RESULTS FROM DB ================= */
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSuggestions([]);
+      setActiveIndex(-1);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    const fetchSuggestions = async () => {
+      try {
+        const res = await fetch(
+  `http://localhost:5001/api/services/navbar-search?for=navbar&q=${searchTerm}`
+);
+
+        const json = await res.json();
+        setSuggestions(json.data || []);
+        setActiveIndex(-1);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("Search error:", err);
+        }
+      }
+    };
+
+    // small debounce
+    const timer = setTimeout(fetchSuggestions, 300);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [searchTerm]);
+
+  /* ================= KEYBOARD HANDLING ================= */
+
+  const handleKeyDown = (e) => {
+    if (!suggestions.length) return;
+
+    if (e.key === "ArrowDown") {
+      setActiveIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    }
+
+    if (e.key === "ArrowUp") {
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : -1));
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const selected =
+        activeIndex >= 0 ? suggestions[activeIndex] : suggestions[0];
+      navigate(selected.route); // ✅ ROUTING UNCHANGED
+      resetSearch();
+    }
+
+    if (e.key === "Escape") resetSearch();
   };
 
+  /* ================= HELPERS ================= */
+
+  const resetSearch = () => {
+    setSearchTerm("");
+    setSuggestions([]);
+    setActiveIndex(-1);
+  };
+
+  const highlightMatch = (text) => {
+    const regex = new RegExp(`(${searchTerm})`, "ig");
+    return text.replace(regex, "<strong>$1</strong>");
+  };
+
+  /* ================= JSX ================= */
+
   return (
-    <div className='bg-[#e9e4de]' >
-      <header className="flex justify-between items-center ">
-        <Link
-            to="/home"
-            className="text-xl font-semibold sixtyfour"
-        >
-        COOLIE
+    <div className="bg-[#e9e4de] px-4 relative z-[9999]">
+      <header className="flex justify-between items-center py-3">
+
+        {/* LOGO */}
+        <Link to="/home" className="text-xl font-semibold">
+          COOLIE
         </Link>
-        <nav className="space-x-4 text-sm  uppercase tracking-wide mt-2 mb-2">
-            <button className="btn glass bg-[#e5d4c0]">
-                <Link to="/electrical" >
-                                ELECTRICAL
-                            </Link>
-                    
-            </button>
-            < button className="btn glass bg-[#e5d4c0]">
-                <Link to="/homeservices" >
-                                HOME SERVICES
-                            </Link>
-                            
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
-                <Link to="/installation" >
-                                INSTALLATION
-                            </Link>
-                            
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
-                <Link to="/personal" >
-                                PERSONAL
-                            </Link>
-                            
-            </button>
-            <button className="btn glass bg-[#e5d4c0]">
-                <Link to="/renovation" >
-                                RENOVATION
-                            </Link>
-                            
-            </button>
-            
-            
-          
+
+        {/* NAV LINKS (AS REQUESTED) */}
+        <nav className="space-x-3 text-sm uppercase tracking-wide">
+          {[
+            { name: "Electrical", path: "/electrical" },
+            { name: "Home Services", path: "/homeservices" },
+            { name: "Installation", path: "/installation" },
+            { name: "Personal", path: "/personal" },
+            { name: "Renovation", path: "/renovation" },
+          ].map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className="btn glass bg-[#e5d4c0]"
+            >
+              {item.name}
+            </Link>
+          ))}
         </nav>
-        
-        <div className="flex items-end space-x-3">
+
+        {/* SEARCH BAR */}
+        <div className="relative w-72 overflow-visible">
           <input
             type="text"
-            placeholder="🕵️ Search for services"
-            className="border rounded-lg px-3 py-1 text-sm focus:outline-none"
+            placeholder="Search services..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none"
           />
+
+          {/* DROPDOWN */}
+          {suggestions.length > 0 && (
+            <ul className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl z-[9999] max-h-64 overflow-auto">
+              {suggestions.map((item, index) => (
+                <li
+                  key={index}
+                  onMouseDown={() => {
+                    navigate(item.route); // ✅ SAME ROUTING
+                    resetSearch();
+                  }}
+                  className={`px-3 py-2 cursor-pointer text-sm ${
+                    index === activeIndex
+                      ? "bg-[#f3ede6]"
+                      : "hover:bg-[#f3ede6]"
+                  }`}
+                  dangerouslySetInnerHTML={{
+                    __html: highlightMatch(item.label),
+                  }}
+                />
+              ))}
+            </ul>
+          )}
         </div>
-        
-        {/* Login / User Dropdown */}
-        <div className="ml-4 flex items-center space-x-2">
+
+        {/* LOGIN / PROFILE */}
+        <div className="ml-4">
           {!isLoggedIn ? (
             <Link
               to="/login"
-              className="px-4 py-1 rounded-lg font-medium bg-beige text-brown border-2 border-[#D0B79A]"
+              className="px-4 py-1 rounded-lg font-medium border"
             >
               Log in
             </Link>
           ) : (
-            <div className="relative dropdown dropdown-end">
-              <label tabIndex={0} className="cursor-pointer">
-                <FaUserCircle className="text-3xl" style={{ color: PALETTE.brown }} />
-              </label>
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content mt-3 p-3 shadow-md rounded-lg w-40"
-                style={{
-                  background: PALETTE.cream,
-                  border: `1px solid ${PALETTE.tan}`,
-                  color: PALETTE.brown,
-                }}
-              >
-                <li>
-                  <Link to="/profile" className="font-medium">
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <button onClick={handleLogout} className="font-medium text-left w-full">
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
+            <FaUserCircle className="text-3xl cursor-pointer" />
           )}
         </div>
+
       </header>
     </div>
   );

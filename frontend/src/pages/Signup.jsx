@@ -1,57 +1,70 @@
-// SignUpPage.jsx
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
-import axios from "axios";
-import { Card, CardContent, Button, TextField, Typography, Box } from "@mui/material";
+import { useState } from "react";
+import { registerUser } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-export default function Signup({ navigate }) {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
-  const [loading, setLoading] = useState(false);
+export default function Signup() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5001/api/auth/signup", formData, {
-        withCredentials: true,
-      });
-      toast.success(res.data.message);
-      navigate("/login"); // pass navigate from parent or use react-router
+      const res = await registerUser(form);
+      localStorage.setItem("token", res.data.token);
+      navigate("/login");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || "Signup failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4efe9]">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-        <Card sx={{ maxWidth: 400, p: 4 }}>
-          <CardContent>
-            <Typography variant="h4" align="center" gutterBottom>
-              Sign Up
-            </Typography>
-            <Box component="form" onSubmit={handleSubmit}>
-              <TextField fullWidth label="Name" name="name" margin="normal" value={formData.name} onChange={handleChange} required />
-              <TextField fullWidth label="Email" name="email" margin="normal" value={formData.email} onChange={handleChange} required />
-              <TextField fullWidth label="Password" name="password" type="password" margin="normal" value={formData.password} onChange={handleChange} required />
-              <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 2 }}>
-                {loading ? "Creating..." : "Sign Up"}
-              </Button>
-            </Box>
-            <Typography align="center" sx={{ mt: 2 }}>
-              Already have an account? <Button onClick={() => navigate("/login")}>Login</Button>
-            </Typography>
-          </CardContent>
-        </Card>
-      </motion.div>
+    <div style={styles.container}>
+      <form onSubmit={handleSubmit} style={styles.card}>
+        <h2>Sign Up</h2>
+
+        {error && <p style={styles.error}>{error}</p>}
+
+        <input name="name" placeholder="Name" onChange={handleChange} required />
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+        <input name="phone" placeholder="Phone" onChange={handleChange} />
+        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+
+        <button type="submit">Create Account</button>
+
+        <p onClick={() => navigate("/login")} style={styles.link}>
+          Already have an account? Login
+        </p>
+      </form>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "#f4f6f8",
+  },
+  card: {
+    width: 320,
+    padding: 20,
+    background: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    borderRadius: 6,
+  },
+  error: { color: "red", fontSize: 14 },
+  link: { color: "blue", cursor: "pointer", fontSize: 14 },
+};

@@ -28,6 +28,30 @@ export const createService = async (req, res) => {
 /* GET ALL */
 export const getAllServices = async (req, res) => {
   try {
+    const q = req.query.q || "";
+
+    if (req.query.slug) {
+      const service = await Service.find({ slug: req.query.slug });
+      return res.json({ success: true, data: service });
+    }
+
+    // 🔍 IF CALLED FROM NAVBAR
+if (req.query.for === "navbar") {
+  const services = await Service.find({
+    title: { $regex: q, $options: "i" }
+  })
+    .select("title category _id")
+    .limit(10);
+
+  const data = services.map(s => ({
+    label: s.title,
+    route: `/service/${s._id}`   
+  }));
+
+  return res.json({ success: true, data });
+}
+
+
     // optional ids filter: ?ids=id1,id2
     if (req.query.ids) {
       const ids = req.query.ids.split(",");
@@ -158,4 +182,5 @@ export const getPopularServices = async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 };
+
 

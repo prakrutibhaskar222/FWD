@@ -14,6 +14,8 @@ import {
 
 const router = express.Router();
 
+router.get("/navbar-search", getAllServices);
+
 // Create
 router.post("/create", createService);
 
@@ -29,6 +31,9 @@ router.get("/popular/:category", getPopularServices);
 router.get("/category/:category", getServiceByCategory);
 router.get("/list/categories", getCategories);
 
+
+
+
 // View count
 router.get("/:id/view", viewAndGetService);
 
@@ -36,5 +41,8 @@ router.get("/:id/view", viewAndGetService);
 router.get("/:id", getService);
 router.put("/:id", updateService);
 router.delete("/:id", deleteService);
+
+
+
 
 export default router;

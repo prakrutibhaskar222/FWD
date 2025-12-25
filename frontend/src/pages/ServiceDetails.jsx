@@ -1,6 +1,6 @@
 // src/pages/ServiceDetails.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import { CheckCircle, ArrowLeft, Clock9, IndianRupee } from "lucide-react";
 import Reviews from "../components/Reviews"; // new component
 
