@@ -64,6 +64,14 @@ router.delete(
   deleteService
 );
 
+router.post("/by-ids", async (req, res) => {
+  const services = await Service.find({
+    _id: { $in: req.body.ids }
+  });
+
+  res.json({ success: true, data: services });
+});
+
 
 
 

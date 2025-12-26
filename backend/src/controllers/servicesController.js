@@ -28,30 +28,6 @@ export const createService = async (req, res) => {
 /* GET ALL */
 export const getAllServices = async (req, res) => {
   try {
-    const q = req.query.q || "";
-
-    if (req.query.slug) {
-      const service = await Service.find({ slug: req.query.slug });
-      return res.json({ success: true, data: service });
-    }
-
-    // 🔍 IF CALLED FROM NAVBAR
-if (req.query.for === "navbar") {
-  const services = await Service.find({
-    title: { $regex: q, $options: "i" }
-  })
-    .select("title category _id")
-    .limit(10);
-
-  const data = services.map(s => ({
-    label: s.title,
-    route: `/service/${s._id}`   
-  }));
-
-  return res.json({ success: true, data });
-}
-
-
     // optional ids filter: ?ids=id1,id2
     if (req.query.ids) {
       const ids = req.query.ids.split(",");
@@ -66,7 +42,7 @@ if (req.query.for === "navbar") {
   }
 };
 
-/* GET ONE (non-incrementing) */
+ 
 export const getService = async (req, res) => {
   try {
     const service = await Service.findById(req.params.id);
@@ -76,8 +52,7 @@ export const getService = async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 };
-
-/* GET ONE and INCREMENT VIEWS (atomic) */
+ 
 export const viewAndGetService = async (req, res) => {
   try {
     const id = req.params.id;
@@ -94,8 +69,7 @@ export const viewAndGetService = async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 };
-
-/* UPDATE */
+ 
 export const updateService = async (req, res) => {
   try {
     const { title, category, price, description, features, duration, featured } = req.body;
@@ -121,8 +95,7 @@ export const updateService = async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 };
-
-/* DELETE */
+ 
 export const deleteService = async (req, res) => {
   try {
     await Service.findByIdAndDelete(req.params.id);
@@ -131,15 +104,10 @@ export const deleteService = async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 };
-
-/* GET ALL CATEGORIES (if you have Category model) */
+ 
 export const getCategories = async (req, res) => {
   try {
-    // If you use Category model:
-    // const categories = await Category.find({}, "key name");
-    // res.json({ success: true, data: categories });
-
-    // Fallback: derive from services
+ 
     const services = await Service.find({}, "category").lean();
     const map = {};
     services.forEach(s => { if (s.category) map[s.category] = true; });
@@ -149,8 +117,7 @@ export const getCategories = async (req, res) => {
     res.json({ success: false, error: error.message });
   }
 };
-
-/* GET BY CATEGORY */
+ 
 export const getServiceByCategory = async (req, res) => {
   try {
     const services = await Service.find({ category: req.params.category });
@@ -160,8 +127,7 @@ export const getServiceByCategory = async (req, res) => {
   }
 };
 
-
-/* GET FEATURED */
+ 
 export const getFeaturedServices = async (req, res) => {
   try {
     const featured = await Service.find({ featured: true }).sort({ createdAt: -1 }).limit(20);
@@ -170,8 +136,7 @@ export const getFeaturedServices = async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 };
-
-/* GET POPULAR (by views) */
+ 
 export const getPopularServices = async (req, res) => {
   try {
     const category = req.params.category;
@@ -182,5 +147,4 @@ export const getPopularServices = async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 };
-
 

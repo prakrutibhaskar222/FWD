@@ -1,4 +1,5 @@
 // src/controllers/adminController.js
+import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js"; // assuming you have a Booking model
 
@@ -38,4 +39,47 @@ export const updateUserRole = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+export const registerWorker = async (req, res) => {
+  const { name, email, password, phone } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({
+      message: "Name, email, and password are required"
+    });
+  }
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({
+      message: "User already exists"
+    });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const worker = await User.create({
+    name,
+    email,
+    phone,
+    password: hashedPassword,
+    role: "worker"
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Worker registered successfully",
+    worker: {
+      id: worker._id,
+      name: worker.name,
+      email: worker.email,
+      role: worker.role
+    }
+  });
+};
+
+export const getAllWorkers = async (req, res) => {
+  const workers = await User.find({ role: "worker" }).select("-password");
+  res.json({ success: true, data: workers });
 };

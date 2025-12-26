@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Worker from "../models/Worker.js";
+import {sendEmail} from "../utils/sendEmail.js";
+import { validatePasswordStrength } from "../utils/passwordPolicy.js";
+
 
 
 /* ================= JWT TOKEN ================= */
@@ -136,84 +139,130 @@ export const me = async (req, res) => {
 };
 
 /* ================= FORGOT PASSWORD ================= */
+
 export const forgotPassword = async (req, res) => {
   try {
+    console.log("FORGOT PASSWORD HIT", req.body);
+
     const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email required" });
+    }
 
     const user = await User.findOne({ email });
+    console.log("FORGOT USER FOUND:", !!user);
 
-    // ✅ Always return success (prevents email enumeration)
     if (!user) {
-      return res.json({
-        success: true,
-        message: "If the email exists, a reset link has been sent",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto
+
+    user.resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+
     await user.save();
 
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    console.log("FORGOT RAW TOKEN:", resetToken);
+    console.log("FORGOT HASH SAVED:", user.resetPasswordToken);
 
-    // ⛔ Replace with email service later
-    console.log("🔐 PASSWORD RESET LINK:", resetUrl);
+    // 🔥 TEMP: log link instead of email
+    console.log(
+      `RESET LINK: http://localhost:5173/reset-password/${resetToken}`
+    );
 
-    res.json({
+    return res.json({
       success: true,
-      message: "If the email exists, a reset link has been sent",
+      message: "Reset token generated (email temporarily disabled)"
     });
+
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    console.error("FORGOT PASSWORD CRASH:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
+
+
 /* ================= RESET PASSWORD ================= */
+
 export const resetPassword = async (req, res) => {
   try {
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(req.params.token)
-      .digest("hex");
+    const { token } = req.params;
+    const { password } = req.body;
 
-    const user = await User.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpire: { $gt: Date.now() },
-    });
+    console.log("RESET BODY:", req.body);
 
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token",
-      });
+    // 1️⃣ Validate input
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const strengthError = validatePasswordStrength(password);
+    if (strengthError) {
+      return res.status(400).json({ message: strengthError });
+    }
 
-    user.password = hashedPassword;
+    // 2️⃣ Hash the token from URL (ONLY use `token`)
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    console.log("RESET HASH:", hashedToken);
+
+    // 3️⃣ Find user
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    console.log("RESET USER FOUND:", !!user);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    // 4️⃣ Update password
+    user.password = password;
+
+    // 5️⃣ Audit log
+    if (!Array.isArray(user.passwordResetHistory)) {
+      user.passwordResetHistory = [];
+    }
+
+    user.passwordResetHistory.push({
+      at: new Date(),
+      ip: req.ip,
+      userAgent: req.headers["user-agent"]
+    });
+
+    // 6️⃣ Invalidate token
     user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+    user.resetPasswordExpires = undefined;
 
     await user.save();
 
-    res.json({
+    // 7️⃣ Auto-login
+    const jwt = generateToken(user._id);
+
+    return res.json({
       success: true,
       message: "Password reset successful",
+      token: jwt,
+      user: {
+        id: user._id,
+        email: user.email
+      }
     });
+
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    console.error("RESET PASSWORD CRASH:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

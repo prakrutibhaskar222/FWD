@@ -13,13 +13,11 @@ import categoryRoute from "../routes/categoryRoute.js";
 import reviewRoute from "../routes/reviewRoute.js";
 import workerRoute from "../routes/workerRoutes.js";
 import calendarRoute from "../routes/calendarRoute.js";
+import profileRoute from "../routes/profileRoute.js";
 
 
 const app = express();
 
-console.log("SERVER ENV SECRET:", process.env.ADMIN_CREATE_SECRET);
-
-// Middleware
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
@@ -32,6 +30,7 @@ app.use("/api/categories", categoryRoute);
 app.use("/api/reviews", reviewRoute);
 app.use("/api/workers", workerRoute);
 app.use("/api/calendar", calendarRoute);
+app.use("/api/profile", profileRoute);
 
 // Health check
 app.get("/", (req, res) => res.send("API is running..."));
