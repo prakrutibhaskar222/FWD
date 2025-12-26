@@ -1,67 +1,115 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.email || !form.password) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
     try {
-      const res = await axios.post(
-        "http://localhost:5001/api/auth/login",
-        { email, password }
-      );
+      setLoading(true);
 
-      // 🔑 THIS IS REQUIRED
+      // 🔐 LOGIN REQUEST
+      const res = await api.post("/api/auth/login", form);
+
+      // SAVE TOKEN
       localStorage.setItem("token", res.data.token);
-      window.dispatchEvent(new Event("auth-change"));
 
-      navigate("/home");
+      const role = res.data.user.role;
+
+      toast.success("Login successful");
+
+      // ROLE-BASED REDIRECT
+      if (role === "admin") navigate("/admin");
+      else if (role === "worker") navigate("/worker/dashboard");
+      else navigate("/home");
+
     } catch (err) {
-      setError("Invalid credentials");
+      toast.error(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-80 p-6 bg-white shadow">
-        <h2 className="text-xl mb-4">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white w-full max-w-md p-6 rounded shadow">
 
-        {error && <p className="text-red-600">{error}</p>}
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Login to COOLIE
+        </h2>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="border w-full mb-3 px-3 py-2"
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="border w-full mb-3 px-3 py-2"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="input input-bordered w-full"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-        <button className="w-full bg-[#B57655] text-white py-2">
-          Login
-        </button>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="input input-bordered w-full"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
 
-        <Link to="/forgot-password" className="text-sm text-blue-600">
-          Forgot password?
-        </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary w-full"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
+        {/* FORGOT PASSWORD */}
+        <div className="text-right mt-2">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
 
-        <p className="text-sm mt-3">
-          No account? <Link to="/signup">Sign up</Link>
-        </p>
-      </form>
+        {/* SIGNUP OPTION */}
+        <div className="text-center mt-6 text-sm">
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Sign up
+          </Link>
+        </div>
+
+      </div>
     </div>
   );
 };

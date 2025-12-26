@@ -47,20 +47,19 @@ export default function AdminWorkers() {
 
   // Fetch all workers
   const fetchWorkers = async () => {
-    try {
-      const res = await fetch(`${API}/api/workers`);
-      const data = await res.json();
+    const token = localStorage.getItem("token");
 
-      if (data.success) {
-        setWorkers(data.data);
-      } else {
-        toast.error("Failed to load workers");
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/admin/workers`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (err) {
-      toast.error("Server error loading workers");
-    } finally {
-      setLoading(false);
-    }
+    );
+
+    const data = await res.json();
+    if (data.success) setWorkers(data.data);
   };
 
   useEffect(() => {
@@ -108,7 +107,7 @@ export default function AdminWorkers() {
     try {
       const url = editWorkerId
         ? `${API}/api/workers/${editWorkerId}`
-        : `${API}/api/workers/create`;
+        : `${API}/api/workers/register-worker`;
 
       const method = editWorkerId ? "PUT" : "POST";
 

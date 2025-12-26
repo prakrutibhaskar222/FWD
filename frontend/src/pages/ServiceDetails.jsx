@@ -35,6 +35,20 @@ export default function ServiceDetails() {
     fetchService();
   }, [id]);
 
+  useEffect(() => {
+    if (!service?._id) return;
+
+    const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    const updated = [
+      service._id,
+      ...viewed.filter((id) => id !== service._id)
+    ].slice(0, 6);
+
+    localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+  }, [service]);
+
+
   if (loading) return <div className="p-10 text-center text-gray-500">Loading...</div>;
   if (!service) return <div className="p-10 text-center text-red-500">Service not found.</div>;
 

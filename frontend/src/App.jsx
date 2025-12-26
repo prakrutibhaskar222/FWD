@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 
@@ -33,7 +32,12 @@ import WorkerRoute from "./routes/WorkerRoute";
 import Unauthorized from "./pages/Unauthorised.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
-import WorkerRegister from "./pages/WorkerRegister.jsx";
+import AdminWorkers from "./pages/admin/AdminBookings";
+import AddWorker from "./pages/admin/AddWorker.jsx";
+import Profile from "./pages/profile/Profile.jsx";
+import Favorites from "./pages/profile/Favorites.jsx";
+import ServiceHistory from "./pages/profile/ServiceHistory.jsx";
+import Invoices from "./pages/profile/Invoices.jsx";
 
 const App = () => {
   return (
@@ -78,6 +82,24 @@ const App = () => {
             </AdminRoute>
           }
         />
+
+        <Route
+          path="/admin/workers"
+          element={
+            <AdminRoute>
+              <AdminWorkers />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/workers/add"
+          element={
+            <AdminRoute>
+              <AddWorker />
+            </AdminRoute>
+          }
+        />
         <Route
           path="/admin/bookings"
           element={
@@ -95,6 +117,9 @@ const App = () => {
           }
         />
 
+
+
+        
         {/* WORKER */}
         <Route
           path="/worker/dashboard"
@@ -106,9 +131,12 @@ const App = () => {
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/register-worker" element={<WorkerRegister />} />
-
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/favorites" element={<Favorites />} />
+        <Route path="/profile/history" element={<ServiceHistory />} />
+        <Route path="/profile/invoices" element={<Invoices />} />
+
       </Routes>
 
       <Footer />

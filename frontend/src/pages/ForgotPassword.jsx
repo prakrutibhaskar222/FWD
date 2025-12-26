@@ -1,44 +1,48 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
+import toast from "react-hot-toast";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+
+    if (!email) return toast.error("Enter your email");
+
     try {
-      await console.log(
-  "URL==>",
-  "http://localhost:5001/api/auth/forgot-password"
-);
-
-
-      setMessage("If the email exists, a reset link has been sent.");
+      setLoading(true);
+      await api.post("/api/auth/forgot-password", { email });
+      toast.success("Password reset link sent to your email");
+      setEmail("");
     } catch (err) {
-      console.error("❌ Forgot password error:", err);
+      toast.error(err.response?.data?.message || "Failed to send reset link");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-80 p-6 bg-white shadow">
-        <h2 className="text-xl mb-3">Forgot Password</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={submit}
+        className="bg-white p-6 rounded shadow w-full max-w-md space-y-4"
+      >
+        <h2 className="text-xl font-bold text-center">Forgot Password</h2>
 
         <input
           type="email"
-          placeholder="Enter your email"
-          className="border w-full mb-3 px-3 py-2"
+          placeholder="Enter your registered email"
+          className="input input-bordered w-full"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
 
-        <button className="w-full bg-[#B57655] text-white py-2">
-          Send Reset Link
+        <button className="btn btn-primary w-full" disabled={loading}>
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
-
-        {message && <p className="text-sm mt-3">{message}</p>}
       </form>
     </div>
   );

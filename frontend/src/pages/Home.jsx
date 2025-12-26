@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router";
 import Stats from "../components/Stats";
+import RecentlyViewed from "../components/RecentlyViewed";
 
 const API = "http://localhost:5001";
 
@@ -87,6 +88,7 @@ export default function HomePage() {
           })}
         </div>
       </section>
+      <RecentlyViewed />
 
       <Stats />
     </div>

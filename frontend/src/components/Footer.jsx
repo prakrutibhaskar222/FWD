@@ -22,7 +22,7 @@ const Footer = () => {
 
         <div className="space-y-2">
           <h4 className="font-semibold uppercase text-xs">Contact</h4>
-          <p>Email-rvandanaa.cs24@bmsce.ac.in</p>
+          <p>Email-coolie96913@gmail.com</p>
           <p>Contact-7619443280</p>
           <p>FAQ</p>
         </div>
