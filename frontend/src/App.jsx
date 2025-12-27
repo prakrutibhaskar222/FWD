@@ -32,12 +32,13 @@ import WorkerRoute from "./routes/WorkerRoute";
 import Unauthorized from "./pages/Unauthorised.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
-import AdminWorkers from "./pages/admin/AdminBookings";
+import AdminWorkers from "./pages/admin/AdminWorkers.jsx";
 import AddWorker from "./pages/admin/AddWorker.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import Favorites from "./pages/profile/Favorites.jsx";
 import ServiceHistory from "./pages/profile/ServiceHistory.jsx";
 import Invoices from "./pages/profile/Invoices.jsx";
+import AdminWorkerVerification from "./pages/admin/AdminWorkerVerfication.jsx";
 
 const App = () => {
   return (
@@ -53,6 +54,9 @@ const App = () => {
         <Route path="/support" element={<Support />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* USER */}
         <Route path="/home" element={<Home />} />
@@ -63,79 +67,22 @@ const App = () => {
         <Route path="/renovation/*" element={<Renovation />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/service/:id" element={<ServiceDetails />} />
-
-        <Route
-          path="/booking/service/:id"
-          element={
-            <ProtectedRoute>
-              <Booking />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ADMIN */}
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <Dashboard />
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/workers"
-          element={
-            <AdminRoute>
-              <AdminWorkers />
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/workers/add"
-          element={
-            <AdminRoute>
-              <AddWorker />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/bookings"
-          element={
-            <AdminRoute>
-              <AdminBookings />
-            </AdminRoute>
-          }
-        />
-        <Route
-          path="/admin/services"
-          element={
-            <AdminRoute>
-              <AdminServices />
-            </AdminRoute>
-          }
-        />
-
-
-
-        
-        {/* WORKER */}
-        <Route
-          path="/worker/dashboard"
-          element={
-            <WorkerRoute>
-              <WorkerDashboard />
-            </WorkerRoute>
-          }
-        />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/booking/service/:id" element={<ProtectedRoute> <Booking /> </ProtectedRoute>}/>
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/favorites" element={<Favorites />} />
         <Route path="/profile/history" element={<ServiceHistory />} />
         <Route path="/profile/invoices" element={<Invoices />} />
+
+        {/* ADMIN */}
+        <Route path="/admin" element={<AdminRoute> <Dashboard /> </AdminRoute>}/>
+        <Route path="/admin/workers" element={<AdminRoute> <AdminWorkers /> </AdminRoute>}/>
+        <Route path="/admin/workers/add" element={<AdminRoute> <AddWorker /> </AdminRoute>}/>
+        <Route path="/admin/bookings" element={<AdminRoute> <AdminBookings /> </AdminRoute>}/>
+        <Route path="/admin/services" element={<AdminRoute> <AdminServices /> </AdminRoute>}/>
+        <Route path="/admin/workers/verify" element={<AdminWorkerVerification />}/>
+      
+        {/* WORKER */}
+        <Route path="/worker/dashboard" element={<WorkerRoute> <WorkerDashboard /> </WorkerRoute>}/>
 
       </Routes>
 

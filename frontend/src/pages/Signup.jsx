@@ -1,49 +1,121 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: "",
     phone: "",
+    password: ""
   });
 
-  const handleChange = (e) =>
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await axios.post(
-      "http://localhost:5001/api/auth/register",
-      form
-    );
+    if (!form.name || !form.email || !form.password) {
+      return toast.error("Name, email and password are required");
+    }
 
-    localStorage.setItem("token", res.data.token);
-    window.dispatchEvent(new Event("auth-change"));
+    if (form.password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
 
-    navigate("/home");
+    try {
+      setLoading(true);
+
+      await api.post("/api/auth/register", {
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim() || undefined,
+        password: form.password
+      });
+
+      toast.success("Account created successfully");
+      navigate("/login");
+
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Signup failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-80 p-6 bg-white shadow">
-        <h2 className="text-xl mb-4">Sign Up</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow w-full max-w-md space-y-4"
+      >
+        <h2 className="text-2xl font-bold text-center">Create Account</h2>
 
-        <input name="name" placeholder="Name" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
-        <input name="email" placeholder="Email" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
-        <input name="phone" placeholder="Phone" className="border w-full mb-3 px-3 py-2" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" className="border w-full mb-3 px-3 py-2" onChange={handleChange} required />
+        {/* NAME */}
+        <input
+          type="text"
+          name="name"
+          placeholder="Full name"
+          value={form.name}
+          onChange={handleChange}
+          className="input input-bordered w-full"
+          required
+        />
 
-        <button className="w-full bg-[#B57655] text-white py-2">
-          Create Account
+        {/* EMAIL */}
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          value={form.email}
+          onChange={handleChange}
+          className="input input-bordered w-full"
+          required
+        />
+
+        {/* PHONE (OPTIONAL) */}
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone number (optional)"
+          value={form.phone}
+          onChange={handleChange}
+          className="input input-bordered w-full"
+        />
+
+        {/* PASSWORD */}
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          className="input input-bordered w-full"
+          required
+        />
+
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={loading}
+        >
+          {loading ? "Creating account..." : "Sign Up"}
         </button>
 
-        <p className="text-sm mt-3">
-          Already have an account? <Link to="/login">Login</Link>
+        <p className="text-sm text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 underline">
+            Log in
+          </Link>
         </p>
       </form>
     </div>

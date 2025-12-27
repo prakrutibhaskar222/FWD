@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../../utils/api";
+import api from "../../api";
 import AdminLayout from "../../components/admin/AdminLayout";
 
 const AdminWorkers = () => {
