@@ -83,3 +83,39 @@ export const getAllWorkers = async (req, res) => {
   const workers = await User.find({ role: "worker" }).select("-password");
   res.json({ success: true, data: workers });
 };
+
+
+/* ================= GET PENDING WORKERS ================= */
+export const getPendingWorkers = async (req, res) => {
+  const workers = await Worker.find({
+    complianceStatus: "pending"
+  }).select("-password");
+
+  res.json({ success: true, data: workers });
+};
+
+/* ================= VERIFY / REJECT WORKER ================= */
+export const verifyWorker = async (req, res) => {
+  const { action } = req.body; // approve | reject
+
+  if (!["approve", "reject"].includes(action)) {
+    return res.status(400).json({ message: "Invalid action" });
+  }
+
+  const worker = await Worker.findById(req.params.id);
+
+  if (!worker) {
+    return res.status(404).json({ message: "Worker not found" });
+  }
+
+  worker.verified = action === "approve";
+  worker.complianceStatus =
+    action === "approve" ? "approved" : "rejected";
+
+  await worker.save();
+
+  res.json({
+    success: true,
+    message: `Worker ${action}d successfully`
+  });
+};

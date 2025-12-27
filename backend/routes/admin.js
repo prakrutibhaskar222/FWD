@@ -5,7 +5,9 @@ import {
   getAllBookings,
   updateUserRole,
   registerWorker,
-  getAllWorkers
+  getAllWorkers,
+  getPendingWorkers,
+  verifyWorker
 } from "../src/controllers/adminController.js";
 
 const router = express.Router();
@@ -21,5 +23,7 @@ router.put("/user/:id/role", updateUserRole);
 /* 👷 REGISTER WORKER */
 router.post("/register-worker", registerWorker);
 router.get("/workers", getAllWorkers);
+router.get("/workers/pending", getPendingWorkers);
+router.put("/workers/:id/verify", verifyWorker);
 
 export default router;
