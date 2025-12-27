@@ -12,6 +12,13 @@ const BookingSchema = new mongoose.Schema({
   customerName: String,
   customerPhone: String,
 
+  address: {
+  type: String,
+  required: true,
+  trim: true,
+},
+
+
   date: { type: String, required: true }, // e.g. "2025-01-25"
   slot: { type: String, required: true }, // e.g. "10:30"
 
@@ -25,7 +32,7 @@ const BookingSchema = new mongoose.Schema({
   
   status: {
     type: String,
-    enum: ["pending", "in-progress", "completed"],
+    enum: ["pending", "in-progress","completed", "completed"],
     default: "pending",
   },},
   { timestamps: true }

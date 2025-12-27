@@ -28,19 +28,40 @@ export const createService = async (req, res) => {
 /* GET ALL */
 export const getAllServices = async (req, res) => {
   try {
-    // optional ids filter: ?ids=id1,id2
+    const q = req.query.q || "";
+
+    // 🔍 NAVBAR SEARCH MODE
+    if (req.query.for === "navbar") {
+      const services = await Service.find({
+        title: { $regex: q, $options: "i" },
+      })
+        .select("title _id")
+        .limit(10);
+
+      const data = services.map((s) => ({
+        label: s.title,
+        route: `/service/${s._id}`,
+      }));
+
+      return res.json({ success: true, data });
+    }
+
+    // OPTIONAL IDS FILTER
     if (req.query.ids) {
       const ids = req.query.ids.split(",");
       const services = await Service.find({ _id: { $in: ids } });
       return res.json({ success: true, data: services });
     }
 
+    // NORMAL SERVICE LIST
     const services = await Service.find().sort({ createdAt: -1 });
     res.json({ success: true, data: services });
+
   } catch (error) {
     res.json({ success: false, error: error.message });
   }
 };
+
 
  
 export const getService = async (req, res) => {

@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     default: "user"
   },
 
+  address: {
+  type: String,
+  trim: true,
+},
+
 
   // 🔍 Audit logging
   passwordResetHistory: [

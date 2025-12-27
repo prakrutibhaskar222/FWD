@@ -9,7 +9,23 @@ export const WORK_HOURS = {
 /* ---------------- CREATE BOOKING ---------------- */
 export const createBooking = async (req, res) => {
   try {
-    const { customerName, customerPhone, notes, date, slot, serviceId, userId } = req.body;
+    const { customerName, customerPhone,address, notes, date, slot, serviceId, userId } = req.body;
+
+    if (!/^\d{10}$/.test(customerPhone)) {
+        return res.json({
+          success: false,
+          error: "Phone number must be exactly 10 digits",
+        });
+      }
+
+    if (!address || address.trim().length < 5) {
+  return res.json({
+    success: false,
+    error: "Please enter a valid address",
+  });
+}
+
+
 
     const service = await Service.findById(serviceId);
     if (!service) return res.json({ success: false, error: "Service not found" });
@@ -22,6 +38,7 @@ export const createBooking = async (req, res) => {
     const booking = await Booking.create({
       customerName,
       customerPhone,
+      address,
       notes,
       date,
       slot,
@@ -52,7 +69,7 @@ export const getAvailableSlots = async (req, res) => {
     const service = await Service.findById(serviceId);
     if (!service) return res.json({ success: false, error: "Service not found" });
 
-    const allSlots = generateTimeSlots("10:00", "18:00", service.duration);
+    const allSlots = generateTimeSlots("10:00", "18:00");
 
     const booked = await Booking.find({ serviceId, date }).select("slot");
 

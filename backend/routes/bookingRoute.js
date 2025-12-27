@@ -21,7 +21,7 @@ import { protect } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
  
-router.post("/", protect, createBooking);
+router.post("/", createBooking);
 
 router.get("/slots", getAvailableSlots);
  

@@ -80,10 +80,15 @@ const Navbar = () => {
     setActiveIndex(-1);
   };
 
-  const highlightMatch = (text) => {
-    const regex = new RegExp(`(${searchTerm})`, "ig");
-    return text.replace(regex, "<strong>$1</strong>");
-  };
+  const highlightMatch = (text = "") => {
+  if (typeof text !== "string" || !searchTerm) return text || "";
+
+  return text.replace(
+    new RegExp(`(${searchTerm})`, "gi"),
+    "<mark>$1</mark>"
+  );
+};
+
 
   /* ================= JSX ================= */
 
@@ -141,7 +146,7 @@ const Navbar = () => {
                       : "hover:bg-[#f3ede6]"
                   }`}
                   dangerouslySetInnerHTML={{
-                    __html: highlightMatch(item.label),
+                    __html: highlightMatch(item?.label || ""),
                   }}
                 />
               ))}

@@ -11,6 +11,7 @@ import {
   getFeaturedServices,
   getPopularServices
 } from "../src/controllers/servicesController.js";
+import Service from "../src/models/Service.js";
 import { protect, allowRoles } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();

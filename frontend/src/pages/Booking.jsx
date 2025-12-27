@@ -2,33 +2,34 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import toast from "react-hot-toast";
 
-/**
- * Booking.jsx
- * - shows service info (fetched)
- * - select date -> fetch available slots
- * - pick slot, fill customer details
- * - confirm booking (POST /api/bookings/create)
- */
-
 const API = "http://localhost:5001";
 
 export default function Booking() {
-  const { id } = useParams(); // service id
+  const { id } = useParams();
+
   const [service, setService] = useState(null);
   const [loadingService, setLoadingService] = useState(true);
 
   const [date, setDate] = useState("");
-  const [slots, setSlots] = useState([]);
+  const [allSlots, setAllSlots] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState("");
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+
+  const [address, setAddress] = useState("");
+  const [savedAddress, setSavedAddress] = useState("");
+  const [addressMode, setAddressMode] = useState("new"); // saved | new
+
+
   const [notes, setNotes] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [successBooking, setSuccessBooking] = useState(null);
 
+  /* ---------------- FETCH SERVICE ---------------- */
   useEffect(() => {
     const fetchService = async () => {
       try {
@@ -37,8 +38,7 @@ export default function Booking() {
         const json = await res.json();
         if (json.success) setService(json.data);
         else toast.error("Service not found");
-      } catch (err) {
-        console.error(err);
+      } catch {
         toast.error("Failed to load service");
       } finally {
         setLoadingService(false);
@@ -47,9 +47,15 @@ export default function Booking() {
     fetchService();
   }, [id]);
 
+
+
+
+
+  /* ---------------- FETCH SLOTS ---------------- */
   useEffect(() => {
     if (!date) {
-      setSlots([]);
+      setAllSlots([]);
+      setBookedSlots([]);
       setSelectedSlot("");
       return;
     }
@@ -57,21 +63,19 @@ export default function Booking() {
     const fetchSlots = async () => {
       try {
         setLoadingSlots(true);
-        const res = await fetch(`${API}/api/bookings/slots?serviceId=${id}&date=${date}`);
+        const res = await fetch(
+          `${API}/api/bookings/slots?serviceId=${id}&date=${date}`
+        );
         const json = await res.json();
+
         if (json.success) {
-          // compatible with either {data: ["10:00", ...]} or {data: {availableSlots: [...], ...}}
-          const d = json.data;
-          if (Array.isArray(d)) setSlots(d);
-          else if (d.availableSlots) setSlots(d.availableSlots);
-          else if (d) setSlots(d); // fallback
+          setAllSlots(json.data.allSlots || []);
+          setBookedSlots(json.data.bookedSlots || []);
         } else {
-          setSlots([]);
-          toast.error(json.error || "Could not load slots");
+          toast.error(json.error || "Failed to load slots");
         }
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch slots");
+      } catch {
+        toast.error("Error fetching slots");
       } finally {
         setLoadingSlots(false);
       }
@@ -80,168 +84,265 @@ export default function Booking() {
     fetchSlots();
   }, [date, id]);
 
+  /* ---------------- SUBMIT BOOKING ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!customerName || !customerPhone || !date || !selectedSlot) {
-      toast.error("Please fill required fields and select a slot");
+      toast.error("Please fill all required fields");
       return;
     }
 
-    const payload = {
-      userId: null, // keep null or fill with real user id later
-      serviceId: id,
-      customerName,
-      customerPhone,
-      notes,
-      date,
-      slot: selectedSlot,
-    };
-
     try {
       setSubmitting(true);
-      const res = await fetch(`${API}/api/bookings/create`, {
+      const res = await fetch(`${API}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          userId: null,
+          serviceId: id,
+          customerName,
+          customerPhone,
+          address,
+          notes,
+          date,
+          slot: selectedSlot,
+        }),
       });
+
       const json = await res.json();
       if (json.success) {
         toast.success("Booking confirmed");
         setSuccessBooking(json.data);
-        // clear form
+
+        // reset form
         setCustomerName("");
         setCustomerPhone("");
+        setAddress("");
+        setAddressMode("saved");
         setNotes("");
         setDate("");
         setSelectedSlot("");
-        setSlots([]);
+        setAllSlots([]);
+        setBookedSlots([]);
       } else {
         toast.error(json.error || "Booking failed");
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("Server error during booking");
+    } catch {
+      toast.error("Server error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loadingService) return <div className="p-8 text-center">Loading service…</div>;
-  if (!service) return <div className="p-8 text-center text-red-500">Service not found</div>;
+  /* ---------------- FETCH SAVED ADDRESS FROM PROFILE ---------------- */
+useEffect(() => {
+  const fetchProfileAddress = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return; // not logged in
+
+      const res = await fetch(`${API}/api/users/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const json = await res.json();
+      if (json.success && json.data?.address) {
+        setSavedAddress(json.data.address);
+        setAddress(json.data.address);
+        setAddressMode("saved");
+              }
+    } catch (err) {
+      console.log("No saved address found");
+    }
+  };
+
+  fetchProfileAddress();
+}, []);
+
+
+  /* ---------------- UI ---------------- */
+  if (loadingService)
+    return <div className="p-8 text-center">Loading service…</div>;
+
+  if (!service)
+    return <div className="p-8 text-center text-red-500">Service not found</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-8">
-        <div className="flex items-center justify-between mb-6">
+
+        {/* HEADER */}
+        <div className="flex justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold">{service.title}</h1>
             <p className="text-sm text-gray-600">{service.category}</p>
           </div>
           <div className="text-right">
             <p className="text-lg font-semibold">₹{service.price}</p>
-            <p className="text-xs text-gray-500">Duration: {service.duration || 60} mins</p>
+            <p className="text-xs text-gray-500">30-minute slots</p>
           </div>
         </div>
 
         <p className="text-gray-700 mb-6">{service.description}</p>
 
         {!successBooking ? (
-          <>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Date */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Select Date</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
-                  className="w-full border rounded-md px-3 py-2"
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Slots */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Available Slots</label>
+            {/* DATE */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Date</label>
+              <input
+                type="date"
+                value={date}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full border rounded-md px-3 py-2"
+                required
+              />
+            </div>
 
-                {loadingSlots ? (
-                  <div className="p-4 text-center text-sm text-gray-600">Loading slots…</div>
-                ) : slots.length === 0 ? (
-                  <div className="p-3 text-sm text-gray-500">No slots available for selected date</div>
-                ) : (
-                  <div className="grid grid-cols-3 gap-2">
-                    {slots.map((s) => (
+            {/* SLOTS */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Slot</label>
+
+              {loadingSlots ? (
+                <p className="text-sm text-gray-500">Loading slots…</p>
+              ) : allSlots.length === 0 ? (
+                <p className="text-sm text-gray-500">No slots available</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  {allSlots.map((slot) => {
+                    const taken = bookedSlots.includes(slot);
+
+                    return (
                       <button
-                        key={s}
+                        key={slot}
                         type="button"
-                        onClick={() => setSelectedSlot(s)}
-                        className={`py-2 px-3 rounded-md text-sm border ${
-                          selectedSlot === s ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-800"
-                        }`}
+                        disabled={taken}
+                        onClick={() => setSelectedSlot(slot)}
+                        className={`py-2 px-3 rounded-md text-sm border
+                          ${
+                            taken
+                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                              : selectedSlot === slot
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white"
+                          }
+                        `}
                       >
-                        {s}
+                        {slot}
+                        {taken && (
+                          <div className="text-xs text-red-500">
+                            Already Taken
+                          </div>
+                        )}
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
-              {/* Customer info */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Your name</label>
-                <input
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full border rounded-md px-3 py-2"
-                  placeholder="Full name"
-                  required
-                />
-              </div>
+            {/* CUSTOMER INFO */}
+            <input
+              placeholder="Your name"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              className="w-full border rounded-md px-3 py-2"
+              required
+            />
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone</label>
-                <input
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="w-full border rounded-md px-3 py-2"
-                  placeholder="Mobile number"
-                  required
-                />
-              </div>
+            <input
+              type="tel"
+              value={customerPhone}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ""); // only digits
+                if (value.length <= 10) {
+                  setCustomerPhone(value);
+                }
+              }}
+              maxLength={10}
+              pattern="[0-9]{10}"
+              className="w-full border rounded-md px-3 py-2"
+              placeholder="10-digit mobile number"
+              required
+            />
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Notes (optional)</label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full border rounded-md px-3 py-2 min-h-[80px]"
-                  placeholder="Anything we should know?"
-                />
-              </div>
+            {/* ADDRESS */}
+<div>
+  <label className="block text-sm font-medium mb-2">
+    Service Address
+  </label>
 
-              <div className="flex gap-3 items-center">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-60"
-                >
-                  {submitting ? "Booking…" : "Confirm Booking"}
-                </button>
+  {savedAddress && (
+    <div className="flex gap-4 mb-2 text-sm">
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={addressMode === "saved"}
+          onChange={() => {
+            setAddressMode("saved");
+            setAddress(savedAddress);
+          }}
+        />
+        Use saved address
+      </label>
 
-                <Link to={`/${service.category || ""}`} className="text-sm text-gray-600 hover:underline">
-                  Back to category
-                </Link>
-              </div>
-            </form>
-          </>
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          checked={addressMode === "new"}
+          onChange={() => {
+            setAddressMode("new");
+            setAddress("");
+          }}
+        />
+        Enter new address
+            </label>
+          </div>
+        )}
+
+        <textarea
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          disabled={addressMode === "saved"}
+          className="w-full border rounded-md px-3 py-2 min-h-[90px]"
+          placeholder="House no, street, area, city, pincode"
+          required
+        />
+      </div>
+
+
+            <textarea
+              placeholder="Notes (optional)"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full border rounded-md px-3 py-2"
+            />
+
+            <div className="flex gap-4 items-center">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="bg-blue-600 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-60"
+              >
+                {submitting ? "Booking…" : "Confirm Booking"}
+              </button>
+
+              <Link to={`/${service.category || ""}`} className="text-sm text-gray-600 hover:underline">
+                Back
+              </Link>
+            </div>
+          </form>
         ) : (
           <div className="text-center py-8">
-            <h2 className="text-2xl font-semibold mb-2">Booking Confirmed</h2>
-            <p className="text-gray-700 mb-4">Booking ID: <strong>{successBooking._id}</strong></p>
-            <p className="text-gray-700">Date: <strong>{successBooking.date}</strong></p>
-            <p className="text-gray-700 mb-6">Slot: <strong>{successBooking.slot}</strong></p>
-            <Link to="/admin/bookings" className="text-blue-600 hover:underline">View in admin</Link>
+            <h2 className="text-2xl font-semibold mb-2">Booking Confirmed 🎉</h2>
+            <p>Booking ID: <b>{successBooking._id}</b></p>
+            <p>Date: <b>{successBooking.date}</b></p>
+            <p>Slot: <b>{successBooking.slot}</b></p>
           </div>
         )}
       </div>
