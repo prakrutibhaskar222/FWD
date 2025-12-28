@@ -1,25 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react";
-import { Link } from "react-router";
+import api from "../api";
+import ServiceCard from "../components/ServiceCard";
 
 export default function Installation() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]);
+
+
 
   const API = "http://localhost:5001";
 
-  useEffect(() => {
-    const fetchData = async () => {
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // 1️⃣ Fetch electrical services
       const res = await fetch(`${API}/api/services/category/installation`);
       const json = await res.json();
 
-      if (json.success) setServices(json.data);
-      setLoading(false);
-    };
+      if (json.success) {
+        setServices(json.data);
+      }
 
-    fetchData();
-  }, []);
+      // 2️⃣ Fetch favorites ONLY if logged in
+      if (localStorage.getItem("token")) {
+        const profileRes = await api.get("/api/profile");
+        const favIds = profileRes.data.data.favorites.map((f) => f._id);
+        setFavorites(favIds);
+      }
+
+    } catch (err) {
+      console.error("Page load error:", err);
+      setFavorites([]); // safe fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
+
 
   return (
     <div className="min-h-screen bg-[#f9f8f6] text-[#1a1a1a] font-sans">
@@ -39,39 +60,19 @@ export default function Installation() {
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 gap-15">
             {services.map((service) => (
-              <Link
+              <ServiceCard
                 key={service._id}
-                to={`/service/${service._id}`}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.3 }}
-                  className="cursor-pointer bg-white rounded-2xl shadow-md hover:shadow-lg p-6 
-                            flex items-start gap-3 border border-gray-100"
-                >
-                  <CheckCircle className="text-blue-500 w-6 h-6 flex-shrink-0 mt-1" />
-                  <p className="text-gray-700 font-medium">{service.title}</p>
-                </motion.div>
-              </Link>
+                service={service}
+                favorites={favorites}
+                setFavorites={setFavorites}
+              />
             ))}
           </div>
         )}
       </section>
 
-      {/* CTA */}
-      <section className="text-center bg-black text-white py-20">
-        <h2 className="text-3xl font-light mb-6">Need an Installer Today?</h2>
-
-        <a 
-          href="/booking/installation"
-          className="bg-blue-400 text-black px-8 py-3 text-lg rounded-xl hover:bg-blue-300 transition inline-block"
-        >
-          Book a Service
-        </a>
-      </section>
 
     </div>
   );
