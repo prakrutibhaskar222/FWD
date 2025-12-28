@@ -1,6 +1,9 @@
 import Booking from "../models/Booking.js";
 import Service from "../models/Service.js";
 import { generateTimeSlots } from "../utils/slotGenerator.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { bookingConfirmationTemplate } from "../emails/bookingConfirmation.js";
+
 
 export const WORK_HOURS = {
   start: "09:00",
@@ -9,7 +12,7 @@ export const WORK_HOURS = {
 /* ---------------- CREATE BOOKING ---------------- */
 export const createBooking = async (req, res) => {
   try {
-    const { customerName, customerPhone,address, notes, date, slot, serviceId, userId } = req.body;
+    const { customerName, customerPhone,customerEmail,address, notes, date, slot, serviceId, userId } = req.body;
 
     if (!/^\d{10}$/.test(customerPhone)) {
         return res.json({
@@ -18,14 +21,18 @@ export const createBooking = async (req, res) => {
         });
       }
 
-    if (!address || address.trim().length < 5) {
-  return res.json({
-    success: false,
-    error: "Please enter a valid address",
-  });
-}
-
-
+          if (!address || address.trim().length < 5) {
+        return res.json({
+          success: false,
+          error: "Please enter a valid address",
+        });
+      }
+      if (!customerEmail) {
+        return res.status(400).json({
+          success: false,
+          error: "Customer email is required for confirmation"
+        });
+      }
 
     const service = await Service.findById(serviceId);
     if (!service) return res.json({ success: false, error: "Service not found" });
@@ -38,6 +45,7 @@ export const createBooking = async (req, res) => {
     const booking = await Booking.create({
       customerName,
       customerPhone,
+      customerEmail,
       address,
       notes,
       date,
@@ -51,6 +59,13 @@ export const createBooking = async (req, res) => {
     });
 
     res.json({ success: true, data: booking });
+ 
+    await sendEmail({
+      to: booking.customerEmail,
+      subject: "Your COOLIE booking is confirmed",
+      html: bookingConfirmationTemplate(booking)
+    });
+
 
   } catch (e) {
     res.json({ success: false, error: e.message });

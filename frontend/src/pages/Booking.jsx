@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const API = "http://localhost:5001";
@@ -18,6 +18,8 @@ export default function Booking() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
 
   const [address, setAddress] = useState("");
   const [savedAddress, setSavedAddress] = useState("");
@@ -87,11 +89,21 @@ export default function Booking() {
   /* ---------------- SUBMIT BOOKING ---------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
+        console.log("SUBMIT DATA:", {
+        customerName,
+        customerPhone,
+        customerEmail,
+        date,
+        selectedSlot
+      });
 
-    if (!customerName || !customerPhone || !date || !selectedSlot) {
+
+    if (!customerName || !customerPhone || !date || !selectedSlot || !customerEmail) {
       toast.error("Please fill all required fields");
       return;
     }
+
+
 
     try {
       setSubmitting(true);
@@ -103,6 +115,7 @@ export default function Booking() {
           serviceId: id,
           customerName,
           customerPhone,
+          customerEmail,
           address,
           notes,
           date,
@@ -112,12 +125,13 @@ export default function Booking() {
 
       const json = await res.json();
       if (json.success) {
-        toast.success("Booking confirmed");
+        toast.success("Booking confirmed! A confirmation email has been sent.");
         setSuccessBooking(json.data);
 
         // reset form
         setCustomerName("");
         setCustomerPhone("");
+        setCustomerEmail("");
         setAddress("");
         setAddressMode("saved");
         setNotes("");
@@ -270,6 +284,15 @@ useEffect(() => {
               placeholder="10-digit mobile number"
               required
             />
+            <input
+              type="email"
+              placeholder="Email address"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              className="w-full border rounded-md px-3 py-2"
+              required
+            />
+
 
             {/* ADDRESS */}
 <div>

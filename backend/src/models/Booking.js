@@ -17,6 +17,11 @@ const BookingSchema = new mongoose.Schema({
   required: true,
   trim: true,
 },
+    customerEmail: {
+      type: String,
+      required: true
+    },
+
 
 
   date: { type: String, required: true }, // e.g. "2025-01-25"
@@ -24,18 +29,38 @@ const BookingSchema = new mongoose.Schema({
 
   notes: String,
 
-  assignedWorker: {
+  workerassigned: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Worker",
     default: null,
   },
+
+  serviceOTP: {
+    code: String,        // hashed
+    expiresAt: Date,
+    verified: { type: Boolean, default: false }
+  },
+
+  reminderSent: {
+    type: Boolean,
+    default: false
+  },
   
   status: {
     type: String,
-    enum: ["pending", "in-progress","completed", "completed"],
+    enum: ["pending","assigned","on_the_way","service_started", "in-progress","completed", "cancelled"],
     default: "pending",
-  },},
-  { timestamps: true }
-);
+  },statusTimeline: [
+  {
+    status: String,
+    at: { type: Date, default: Date.now }
+  }
+],
+
+  serviceOTP: String,
+  serviceOTPExpires: Date,
+  otpVerified: { type: Boolean, default: false }},
+    { timestamps: true }
+  );
 
 export default mongoose.model("Booking", BookingSchema);
