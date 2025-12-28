@@ -28,3 +28,18 @@ export const allowRoles = (...roles) => {
     next();
   };
 };
+
+export const workerOnly = (req, res, next) => {
+  if (req.user.role !== "worker") {
+    return res.status(403).json({ message: "Worker access only" });
+  }
+
+  if (!req.user.verified) {
+    return res.status(403).json({
+      message: "Your account is pending admin verification"
+    });
+  }
+
+  next();
+};
+

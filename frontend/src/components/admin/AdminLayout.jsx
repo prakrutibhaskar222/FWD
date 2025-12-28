@@ -24,6 +24,13 @@ const AdminLayout = ({ children }) => {
           </Link>
         </nav>
 
+        <Link
+          to="/admin/workers/verify"
+          className="block px-3 py-2 rounded hover:bg-gray-100 text-red-600 font-semibold"
+        >
+          Verify Workers
+        </Link>
+
         <button
           onClick={logout}
           className="mt-6 bg-red-600 px-3 py-2 rounded w-full"

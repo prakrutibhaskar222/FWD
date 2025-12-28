@@ -1,7 +1,8 @@
 // src/controllers/adminController.js
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
-import Booking from "../models/Booking.js"; // assuming you have a Booking model
+import Booking from "../models/Booking.js"; 
+import Worker from "../models/Worker.js";
 
 // Get all users
 export const getAllUsers = async (req, res) => {

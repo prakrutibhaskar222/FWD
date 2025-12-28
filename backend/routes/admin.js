@@ -16,6 +16,7 @@ const router = express.Router();
 router.use(protect);
 router.use(allowRoles("admin"));
 
+
 router.get("/users", getAllUsers);
 router.get("/bookings", getAllBookings);
 router.put("/user/:id/role", updateUserRole);
@@ -25,5 +26,6 @@ router.post("/register-worker", registerWorker);
 router.get("/workers", getAllWorkers);
 router.get("/workers/pending", getPendingWorkers);
 router.put("/workers/:id/verify", verifyWorker);
+
 
 export default router;

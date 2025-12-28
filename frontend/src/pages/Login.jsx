@@ -38,7 +38,7 @@ const Login = () => {
       toast.success("Login successful");
 
       // ROLE-BASED REDIRECT
-      if (role === "admin") navigate("/admin");
+      if (role === "admin") navigate("/admin/overview");
       else if (role === "worker") navigate("/worker/dashboard");
       else navigate("/home");
 

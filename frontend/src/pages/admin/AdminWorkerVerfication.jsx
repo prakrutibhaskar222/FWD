@@ -34,7 +34,9 @@ const AdminWorkerVerification = () => {
 
   return (
     <AdminLayout>
-      <h2 className="text-2xl font-bold mb-6">Pending Worker Verification</h2>
+      <h2 className="text-2xl font-bold mb-6">
+        Pending Worker Verification
+      </h2>
 
       {loading && <p>Loading...</p>}
 
@@ -51,7 +53,7 @@ const AdminWorkerVerification = () => {
             <div>
               <h3 className="font-semibold">{w.name}</h3>
               <p className="text-sm text-gray-600">{w.email}</p>
-              <p className="text-sm">Phone: {w.phone}</p>
+              <p className="text-sm">Phone: {w.phone || "—"}</p>
             </div>
 
             <div className="flex gap-2">

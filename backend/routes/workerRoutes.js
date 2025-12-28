@@ -6,13 +6,13 @@ import {
   getTimesheet,
   getNotifications
 } from "../src/controllers/workersController.js";
-import { protect, allowRoles } from "../src/middleware/authMiddleware.js";
+import { protect, workerOnly } from "../src/middleware/authMiddleware.js";
 
 const router = express.Router();
 
 /* 🔐 AUTH + WORKER ROLE REQUIRED */
 router.use(protect);
-router.use(allowRoles("worker"));
+router.use(workerOnly);
 
 router.get("/tasks", getTasks);
 router.put("/tasks/:id", updateTaskStatus);
