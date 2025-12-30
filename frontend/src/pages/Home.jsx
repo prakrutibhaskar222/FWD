@@ -106,7 +106,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
       {/* Refresh Indicator */}
       {isRefreshing && (
         <motion.div
@@ -127,7 +127,7 @@ export default function HomePage() {
         </div>
       )}
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-600 to-primary-800 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary-600 to-primary-800 dark:from-primary-700 dark:to-primary-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container-custom py-20 lg:py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -157,7 +157,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-neutral-800 transition-colors duration-300">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
@@ -168,13 +168,13 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mx-auto mb-4">
+                <div className="w-16 h-16 bg-primary-100 dark:bg-primary-800 rounded-2xl flex items-center justify-center text-primary-600 dark:text-primary-400 mx-auto mb-4 transition-colors duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2 transition-colors duration-300">
                   {feature.title}
                 </h3>
-                <p className="text-neutral-600 text-sm leading-relaxed">
+                <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed transition-colors duration-300">
                   {feature.description}
                 </p>
               </motion.div>
@@ -184,7 +184,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-neutral-50">
+      <section className="py-20 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,10 +195,10 @@ export default function HomePage() {
             <Badge variant="primary" className="mb-4">
               Our Services
             </Badge>
-            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-6 transition-colors duration-300">
               Choose Your Service Category
             </h2>
-            <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
+            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto transition-colors duration-300">
               From routine maintenance to major renovations, find the perfect professional for your needs.
             </p>
           </motion.div>
@@ -260,14 +260,14 @@ export default function HomePage() {
       </section>
 
       {/* Recently Viewed Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-neutral-800 transition-colors duration-300">
         <div className="container-custom">
           <RecentlyViewed />
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-neutral-50">
+      <section className="py-16 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
         <div className="container-custom">
           <Stats />
         </div>

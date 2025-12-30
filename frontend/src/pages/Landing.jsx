@@ -33,7 +33,8 @@ export default function Landing() {
       icon: <Zap className="w-8 h-8" />,
       color: "from-yellow-400 to-orange-500",
       features: ["Licensed Electricians", "Emergency Service", "Safety Certified"],
-      stats: "500+ Projects"
+      stats: "500+ Projects",
+      link: "/electrical"
     },
     {
       title: "Installation Services", 
@@ -41,7 +42,8 @@ export default function Landing() {
       icon: <CheckCircle className="w-8 h-8" />,
       color: "from-blue-400 to-blue-600",
       features: ["Expert Installation", "Warranty Included", "Quality Assured"],
-      stats: "1000+ Installs"
+      stats: "1000+ Installs",
+      link: "/installation"
     },
     {
       title: "Personal Services",
@@ -49,7 +51,8 @@ export default function Landing() {
       icon: <Users className="w-8 h-8" />,
       color: "from-purple-400 to-pink-500", 
       features: ["Personalized Care", "Flexible Scheduling", "Premium Quality"],
-      stats: "2000+ Happy Clients"
+      stats: "2000+ Happy Clients",
+      link: "/personal"
     },
     {
       title: "Home Services",
@@ -57,7 +60,8 @@ export default function Landing() {
       icon: <Shield className="w-8 h-8" />,
       color: "from-green-400 to-emerald-500",
       features: ["Eco-Friendly", "Insured Workers", "Satisfaction Guaranteed"],
-      stats: "3000+ Homes Served"
+      stats: "3000+ Homes Served",
+      link: "/homeservices"
     },
     {
       title: "Renovation",
@@ -65,7 +69,8 @@ export default function Landing() {
       icon: <Clock className="w-8 h-8" />,
       color: "from-red-400 to-rose-500",
       features: ["Design Consultation", "Project Management", "Quality Materials"],
-      stats: "200+ Renovations"
+      stats: "200+ Renovations",
+      link: "/renovation"
     },
   ];
 
@@ -119,7 +124,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-50 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-primary-50 dark:from-neutral-900 dark:to-primary-950 overflow-hidden transition-colors duration-300">
       {/* Refresh Indicator */}
       {isRefreshing && (
         <motion.div
@@ -451,15 +456,17 @@ export default function Landing() {
                     ))}
                   </div>
                   
-                  <Button 
-                    variant="ghost" 
-                    className="w-full group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:border-primary-200"
-                    autoRefresh={true}
-                    refreshDelay={800}
-                  >
-                    <span className="mr-2">Learn More</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                  <Link to={service.link}>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:border-primary-200"
+                      autoRefresh={true}
+                      refreshDelay={800}
+                    >
+                      <span className="mr-2">Learn More</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </Card>
               </motion.div>
             ))}

@@ -1,5 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 
+// Debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
 /**
  * Custom hook for handling auto-refresh functionality
  * @param {Function} refreshCallback - Function to call when refresh is triggered
@@ -118,18 +131,5 @@ export const useAutoRefresh = (refreshCallback, options = {}) => {
     enabled,
   };
 };
-
-// Debounce utility function
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
 
 export default useAutoRefresh;

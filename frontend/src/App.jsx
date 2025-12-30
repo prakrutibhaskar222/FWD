@@ -1,10 +1,12 @@
 import { Route, Routes, useLocation } from "react-router";
 import { Toaster } from "react-hot-toast";
 
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import RefreshNotification from "./components/RefreshNotification";
+import LiveChat from "./components/LiveChat";
 
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
@@ -50,6 +52,7 @@ import Profile from "./pages/profile/Profile.jsx";
 import Favorites from "./pages/profile/Favorites.jsx";
 import ServiceHistory from "./pages/profile/ServiceHistory.jsx";
 import Invoices from "./pages/profile/Invoices.jsx";
+import SavedServices from "./pages/SavedServices.jsx";
 import AdminWorkerVerification from "./pages/admin/AdminWorkerVerfication.jsx";
 
 // Footer Pages
@@ -74,39 +77,43 @@ const App = () => {
   // Don't show navbar and footer for admin and worker routes
   const showNavbarAndFooter = !isAdminRoute && !isWorkerRoute;
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-neutral-50">
-        {showNavbarAndFooter && <Navbar />}
-        
-        {/* Global Refresh Notifications */}
-        <RefreshNotification />
-        
-        {/* Toast Notifications */}
-        <Toaster 
-          position="top-center"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#ffffff',
-              color: '#1f2937',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
-            },
-            success: {
-              iconTheme: {
-                primary: '#22c55e',
-                secondary: '#ffffff',
+    <ThemeProvider>
+      <ErrorBoundary>
+        <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
+          {showNavbarAndFooter && <Navbar />}
+          
+          {/* Global Refresh Notifications */}
+          <RefreshNotification />
+          
+          {/* Live Chat */}
+          {showNavbarAndFooter && <LiveChat />}
+          
+          {/* Toast Notifications */}
+          <Toaster 
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#ffffff',
+                color: '#1f2937',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
               },
-            },
-            error: {
-              iconTheme: {
-                primary: '#ef4444',
-                secondary: '#ffffff',
+              success: {
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#ffffff',
+                },
               },
-            },
-          }}
-        />
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#ffffff',
+                },
+              },
+            }}
+          />
 
         <main className={showNavbarAndFooter ? "flex-1" : "min-h-screen"}>
           <Routes>
@@ -145,6 +152,7 @@ const App = () => {
             <Route path="/profile/favorites" element={<Favorites />} />
             <Route path="/profile/history" element={<ServiceHistory />} />
             <Route path="/profile/invoices" element={<Invoices />} />
+            <Route path="/saved-services" element={<ProtectedRoute> <SavedServices /> </ProtectedRoute>} />
 
             {/* ADMIN */}
             <Route path="/admin/" element={<AdminRoute> <Dashboard /> </AdminRoute>}/>
@@ -174,6 +182,7 @@ const App = () => {
         {showNavbarAndFooter && <Footer />}
       </div>
     </ErrorBoundary>
+  </ThemeProvider>
   );
 };
 

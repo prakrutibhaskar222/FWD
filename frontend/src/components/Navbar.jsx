@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Menu, X, User, Settings, LogOut, Heart, History, FileText, Bell, Shield, BarChart3, Users, Wrench, Calendar } from "lucide-react";
+import { Search, Menu, X, User, Settings, LogOut, Heart, History, FileText, Bell, Shield, BarChart3, Users, Wrench, Calendar, Bookmark } from "lucide-react";
 import { Button, Badge } from "./ui";
+import ThemeToggle from "./ThemeToggle";
 import api from "../api.js";
 
 const Navbar = () => {
@@ -17,6 +18,9 @@ const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,10 +52,98 @@ const Navbar = () => {
       api.get("/api/auth/me")
         .then(res => {
           setIsAdmin(res.data.user.role === "admin");
+          // Fetch notifications for logged in users
+          fetchNotifications();
         })
-        .catch(() => setIsAdmin(false));
+        .catch(err => {
+          console.error("Auth check failed:", err);
+        });
     }
   }, []);
+
+  /* ================= NOTIFICATIONS ================= */
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await api.get("/api/notifications");
+      if (response.data.success) {
+        const notifs = response.data.data || [];
+        setNotifications(notifs);
+        setUnreadCount(notifs.filter(n => !n.read).length);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      // Mock notifications for demo
+      const mockNotifications = [
+        {
+          id: 1,
+          title: "Service Booking Confirmed",
+          message: "Your electrical repair service has been confirmed for tomorrow at 10:00 AM",
+          type: "booking",
+          read: false,
+          timestamp: new Date().toISOString()
+        },
+        {
+          id: 2,
+          title: "Payment Successful",
+          message: "Payment of ₹1,500 has been processed successfully",
+          type: "payment",
+          read: false,
+          timestamp: new Date(Date.now() - 3600000).toISOString()
+        },
+        {
+          id: 3,
+          title: "Service Completed",
+          message: "Your home cleaning service has been completed. Please rate your experience",
+          type: "service",
+          read: true,
+          timestamp: new Date(Date.now() - 86400000).toISOString()
+        }
+      ];
+      setNotifications(mockNotifications);
+      setUnreadCount(mockNotifications.filter(n => !n.read).length);
+    }
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      await api.patch(`/api/notifications/${notificationId}/read`);
+      
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      // Mock update for demo
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      await api.patch("/api/notifications/mark-all-read");
+      
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      // Mock update for demo
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -74,14 +166,27 @@ const Navbar = () => {
 
     const fetchSuggestions = async () => {
       try {
+        console.log('Searching for:', searchTerm); // Debug log
         const res = await fetch(
-          `http://localhost:5001/api/services/navbar-search?for=navbar&q=${searchTerm}`
+          `http://localhost:5001/api/services/navbar-search?for=navbar&q=${encodeURIComponent(searchTerm)}`
         );
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const json = await res.json();
-        setSuggestions(json.data || []);
+        console.log('Search results:', json); // Debug log
+        
+        if (json.success && Array.isArray(json.data)) {
+          setSuggestions(json.data.slice(0, 5)); // Limit to 5 suggestions
+        } else {
+          setSuggestions([]);
+        }
         setActiveIndex(-1);
       } catch (err) {
         console.error("Search error:", err);
+        setSuggestions([]);
       }
     };
 
@@ -130,6 +235,7 @@ const Navbar = () => {
   const profileMenuItems = [
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Heart, label: "Favorites", path: "/profile/favorites" },
+    { icon: Bookmark, label: "Saved Services", path: "/saved-services" },
     { icon: History, label: "History", path: "/profile/history" },
     { icon: FileText, label: "Invoices", path: "/profile/invoices" },
   ];
@@ -219,7 +325,7 @@ const Navbar = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                  isSearchFocused ? 'text-primary-500' : 'text-neutral-400'
+                  isSearchFocused ? 'text-primary-500 dark:text-primary-400' : 'text-neutral-400 dark:text-neutral-500'
                 }`} />
                 <input
                   type="text"
@@ -229,10 +335,10 @@ const Navbar = () => {
                   onKeyDown={handleKeyDown}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-4 focus:outline-none transition-all duration-300 bg-white ${
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-4 focus:outline-none transition-all duration-300 bg-white dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-100 ${
                     isSearchFocused 
-                      ? 'border-primary-500 ring-primary-200 shadow-medium' 
-                      : 'border-neutral-200 hover:border-neutral-300'
+                      ? 'border-primary-500 ring-primary-200 dark:ring-primary-800 shadow-medium' 
+                      : 'border-neutral-200 dark:border-neutral-600 hover:border-neutral-300 dark:hover:border-neutral-500'
                   }`}
                 />
                 
@@ -256,7 +362,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-large border border-neutral-200 max-h-80 overflow-y-auto z-50"
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-800 rounded-xl shadow-large border border-neutral-200 dark:border-neutral-600 max-h-80 overflow-y-auto z-50 transition-colors duration-300"
                   >
                     {suggestions.map((service, index) => (
                       <motion.button
@@ -264,8 +370,8 @@ const Navbar = () => {
                         onClick={() => handleSuggestionClick(service)}
                         className={`w-full text-left px-4 py-3 transition-all duration-200 ${
                           index === activeIndex 
-                            ? 'bg-primary-50 border-l-4 border-primary-500' 
-                            : 'hover:bg-neutral-50'
+                            ? 'bg-primary-50 dark:bg-primary-900/50 border-l-4 border-primary-500' 
+                            : 'hover:bg-neutral-50 dark:hover:bg-neutral-700'
                         } ${index === 0 ? 'rounded-t-xl' : ''} ${
                           index === suggestions.length - 1 ? 'rounded-b-xl' : ''
                         }`}
@@ -274,8 +380,8 @@ const Navbar = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-neutral-900">{service.title}</p>
-                            <p className="text-sm text-neutral-500 capitalize">{service.category}</p>
+                            <p className="font-medium text-neutral-900 dark:text-neutral-100">{service.title}</p>
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400 capitalize">{service.category}</p>
                           </div>
                           <Badge variant="primary" size="sm" className="bg-gradient-to-r from-primary-500 to-primary-600">
                             ₹{service.price}
@@ -349,14 +455,101 @@ const Navbar = () => {
                   )}
 
                   {/* Notifications */}
-                  <motion.button
-                    className="relative p-2 rounded-xl hover:bg-neutral-100 transition-colors duration-200"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Bell className="w-5 h-5 text-neutral-600" />
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-error-500 rounded-full"></span>
-                  </motion.button>
+                  <div className="relative">
+                    <motion.button
+                      onClick={() => setShowNotifications(!showNotifications)}
+                      className="relative p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors duration-200"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
+                      {unreadCount > 0 && (
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-error-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
+                        >
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </motion.span>
+                      )}
+                    </motion.button>
+
+                    {/* Notifications Dropdown */}
+                    <AnimatePresence>
+                      {showNotifications && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          className="absolute right-0 mt-2 w-80 bg-white dark:bg-neutral-800 rounded-xl shadow-large border border-neutral-200 dark:border-neutral-600 max-h-96 overflow-hidden z-50"
+                        >
+                          <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-600 flex items-center justify-between">
+                            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">Notifications</h3>
+                            {unreadCount > 0 && (
+                              <button
+                                onClick={markAllAsRead}
+                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                              >
+                                Mark all read
+                              </button>
+                            )}
+                          </div>
+                          
+                          <div className="max-h-80 overflow-y-auto">
+                            {notifications.length === 0 ? (
+                              <div className="px-4 py-8 text-center">
+                                <Bell className="w-8 h-8 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
+                                <p className="text-neutral-500 dark:text-neutral-400">No notifications yet</p>
+                              </div>
+                            ) : (
+                              notifications.map((notification) => (
+                                <motion.div
+                                  key={notification.id}
+                                  className={`px-4 py-3 border-b border-neutral-100 dark:border-neutral-700 last:border-b-0 cursor-pointer transition-colors duration-200 ${
+                                    !notification.read 
+                                      ? 'bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30' 
+                                      : 'hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                                  }`}
+                                  onClick={() => markAsRead(notification.id)}
+                                  whileHover={{ x: 4 }}
+                                >
+                                  <div className="flex items-start space-x-3">
+                                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                                      !notification.read ? 'bg-primary-500' : 'bg-transparent'
+                                    }`} />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium text-neutral-900 dark:text-neutral-100 text-sm">
+                                        {notification.title}
+                                      </p>
+                                      <p className="text-neutral-600 dark:text-neutral-400 text-xs mt-1 line-clamp-2">
+                                        {notification.message}
+                                      </p>
+                                      <p className="text-neutral-400 dark:text-neutral-500 text-xs mt-1">
+                                        {new Date(notification.timestamp).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              ))
+                            )}
+                          </div>
+                          
+                          {notifications.length > 0 && (
+                            <div className="px-4 py-3 border-t border-neutral-200 dark:border-neutral-600">
+                              <Link 
+                                to="/notifications" 
+                                onClick={() => setShowNotifications(false)}
+                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                              >
+                                View all notifications →
+                              </Link>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
                   {/* Profile Menu */}
                   <div className="relative">
@@ -434,6 +627,9 @@ const Navbar = () => {
                   </Link>
                 </div>
               )}
+
+              {/* Theme Toggle */}
+              <ThemeToggle />
 
               {/* Mobile Menu Button */}
               <motion.button
