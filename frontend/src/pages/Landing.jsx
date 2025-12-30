@@ -242,7 +242,7 @@ export default function Landing() {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link to="/signup">
+                <Link to="/careers">
                   <Button 
                     variant="outline" 
                     size="lg" 

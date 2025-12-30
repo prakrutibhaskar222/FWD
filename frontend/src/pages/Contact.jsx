@@ -32,7 +32,7 @@ export default function Contact() {
       icon: <Phone className="w-8 h-8" />,
       title: "Phone Support",
       description: "Speak directly with our support team",
-      contact: "+91 7619443280",
+      contact: "+91 7619443208",
       availability: "Mon-Fri, 9 AM - 6 PM IST",
       color: "from-blue-500 to-blue-600",
       action: "Call Now"
@@ -59,7 +59,7 @@ export default function Contact() {
       icon: <HeadphonesIcon className="w-8 h-8" />,
       title: "WhatsApp Support",
       description: "Quick support via WhatsApp",
-      contact: "+91 7619443280",
+      contact: "+91 7619443208",
       availability: "24/7 Available",
       color: "from-green-600 to-green-700",
       action: "Message Us"
@@ -68,24 +68,10 @@ export default function Contact() {
 
   const offices = [
     {
-      city: "Mumbai",
-      address: "123 Business District, Andheri East, Mumbai - 400069",
-      phone: "+91 22 1234 5678",
-      email: "mumbai@coolie.com",
-      hours: "Mon-Fri: 9 AM - 6 PM"
-    },
-    {
       city: "Bangalore",
-      address: "456 Tech Park, Electronic City, Bangalore - 560100",
-      phone: "+91 80 1234 5678",
-      email: "bangalore@coolie.com",
-      hours: "Mon-Fri: 9 AM - 6 PM"
-    },
-    {
-      city: "Delhi",
-      address: "789 Corporate Hub, Connaught Place, New Delhi - 110001",
-      phone: "+91 11 1234 5678",
-      email: "delhi@coolie.com",
+      address: "1908 Bull Temple Road, Bangalore - 560 019 ",
+      phone: "+91 76 19 4432 0819",
+      email: "support@coolie.com",
       hours: "Mon-Fri: 9 AM - 6 PM"
     }
   ];

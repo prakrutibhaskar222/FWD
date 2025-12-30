@@ -115,10 +115,11 @@ export default function About() {
             
             <p className="text-xl md:text-2xl text-primary-100 mb-8 leading-relaxed">
               We're on a mission to make professional home services accessible, reliable, and affordable for everyone. 
-              Connecting homeowners with trusted professionals since 2019.
+              Connecting homeowners with trusted professionals since 2025.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/home">
               <Button 
                 size="lg" 
                 variant="secondary" 
@@ -129,6 +130,8 @@ export default function About() {
                 Our Services
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
+              </Link>
+              <Link to="/contact">
               <Button 
                 size="lg" 
                 variant="outline" 
@@ -138,6 +141,7 @@ export default function About() {
               >
                 Contact Us
               </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

@@ -318,9 +318,11 @@ export default function ServiceDetails() {
                 </div>
                 
                 <div className="mt-4 pt-4 border-t border-neutral-200">
+                  <Link to="/contact">
                   <Button variant="outline" size="sm" className="w-full">
                     Contact Support
                   </Button>
+                  </Link>
                 </div>
               </Card>
             </motion.div>

@@ -136,9 +136,6 @@ export default function FAQ() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <Badge variant="secondary" className="mb-6 bg-white/20 text-white border-white/30">
-              Help Center
-            </Badge>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 leading-tight">
               Frequently Asked
@@ -165,6 +162,7 @@ export default function FAQ() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/home">
               <Button 
                 size="lg" 
                 variant="secondary" 
@@ -175,6 +173,8 @@ export default function FAQ() {
                 Browse Categories
                 <HelpCircle className="ml-2 w-5 h-5" />
               </Button>
+              </Link>
+              <Link to="/contact">
               <Button 
                 size="lg" 
                 variant="outline" 
@@ -185,6 +185,7 @@ export default function FAQ() {
                 Contact Support
                 <MessageCircle className="ml-2 w-5 h-5" />
               </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

@@ -136,10 +136,6 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Badge variant="secondary" className="mb-6 bg-white/20 text-white border-white/30">
-                🏠 Professional Home Services
-              </Badge>
-              
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 leading-tight">
                 Home Services at Your
                 <span className="block text-accent-300">Doorstep</span>
@@ -150,27 +146,6 @@ export default function HomePage() {
                 we make it simple, reliable, and affordable.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  variant="secondary" 
-                  className="w-full sm:w-auto"
-                  autoRefresh={true}
-                  refreshDelay={1500}
-                >
-                  Browse Services
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary-600"
-                  autoRefresh={true}
-                  refreshDelay={1200}
-                >
-                  How It Works
-                </Button>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -314,7 +289,9 @@ export default function HomePage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
               <Button 
+
                 variant="secondary" 
                 size="lg" 
                 className="w-full sm:w-auto"
@@ -323,15 +300,8 @@ export default function HomePage() {
               >
                 Contact Support
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary-600"
-                autoRefresh={true}
-                refreshDelay={1300}
-              >
-                View All Services
-              </Button>
+              </Link>
+              
             </div>
           </motion.div>
         </div>
