@@ -7,7 +7,9 @@ import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import RefreshNotification from "./components/RefreshNotification";
 import LiveChat from "./components/LiveChat";
-
+import RoleGuard from "./components/RoleGuard";
+import { useRoleRedirect } from "./hooks/useRoleRedirect";
+ 
 import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Installation from "./pages/Installation";
@@ -73,6 +75,9 @@ const App = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isWorkerRoute = location.pathname.startsWith('/worker');
   
+  // Use role-based redirect hook
+  useRoleRedirect();
+  
   // Don't show navbar and footer for admin and worker routes
   const showNavbarAndFooter = !isAdminRoute && !isWorkerRoute;
   return (
@@ -137,6 +142,7 @@ const App = () => {
             <Route path="/press" element={<Press />} />
             <Route path="/blog" element={<Blog />} />
 
+
             {/* USER */}
             <Route path="/home" element={<Home />} />
             <Route path="/electrical" element={<ElectricalPage />} />
@@ -150,30 +156,31 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/favorites" element={<Favorites />} />
             <Route path="/profile/history" element={<ServiceHistory />} />
-            <Route path="/profile/invoices" element={<Invoices />} /> 
+            <Route path="/profile/invoices" element={<Invoices />} />
 
-            {/* ADMIN */}
-            <Route path="/admin/" element={<AdminRoute> <Dashboard /> </AdminRoute>}/>
-            <Route path="/admin/workers" element={<AdminRoute> <AdminWorkers /> </AdminRoute>}/>
-            <Route path="/admin/workers/add" element={<AdminRoute> <AddWorker /> </AdminRoute>}/>
-            <Route path="/admin/bookings" element={<AdminRoute> <AdminBookings /> </AdminRoute>}/>
-            <Route path="/admin/services" element={<AdminRoute> <AdminServices /> </AdminRoute>}/>
-            <Route path="/admin/workers/verify" element={<AdminWorkerVerification />}/>
-            <Route path="/admin/analytics" element={<AdminRoute> <Analytics /> </AdminRoute>}/>
-            <Route path="/admin/settings" element={<AdminRoute> <Settings /> </AdminRoute>}/>
+            {/* ADMIN - Protected for admin users only */}
+            <Route path="/admin/" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><Dashboard /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/workers" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><AdminWorkers /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/workers/add" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><AddWorker /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/bookings" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><AdminBookings /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/services" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><AdminServices /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/workers/verify" element={<RoleGuard allowedRoles={['admin']}><AdminWorkerVerification /></RoleGuard>}/>
+            <Route path="/admin/analytics" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><Analytics /></AdminRoute></RoleGuard>}/>
+            <Route path="/admin/settings" element={<RoleGuard allowedRoles={['admin']}><AdminRoute><Settings /></AdminRoute></RoleGuard>}/>
           
-            {/* WORKER */}
-            <Route path="/worker/dashboard" element={<WorkerRoute> <WorkerDashboard /> </WorkerRoute>}/>
-            <Route path="/worker/jobs" element={<WorkerRoute> <WorkerJobs /> </WorkerRoute>}/>
-            <Route path="/worker/jobs/:jobId" element={<WorkerRoute> <JobDetail /> </WorkerRoute>}/>
-            <Route path="/worker/schedule" element={<WorkerRoute> <WorkerSchedule /> </WorkerRoute>}/>
-            <Route path="/worker/availability" element={<WorkerRoute> <WorkerAvailability /> </WorkerRoute>}/>
-            <Route path="/worker/services" element={<WorkerRoute> <WorkerServices /> </WorkerRoute>}/>
-            <Route path="/worker/earnings" element={<WorkerRoute> <WorkerEarnings /> </WorkerRoute>}/>
-            <Route path="/worker/reviews" element={<WorkerRoute> <WorkerReviews /> </WorkerRoute>}/>
-            <Route path="/worker/notifications" element={<WorkerRoute> <WorkerNotifications /> </WorkerRoute>}/>
-            <Route path="/worker/profile" element={<WorkerRoute> <WorkerProfile /> </WorkerRoute>}/>
-            <Route path="/worker/help" element={<WorkerRoute> <WorkerHelp /> </WorkerRoute>}/>
+            {/* WORKER - Protected for worker users only */}
+            <Route path="/worker/dashboard" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerDashboard /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/jobs" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerJobs /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/jobs/:jobId" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><JobDetail /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/schedule" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerSchedule /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/availability" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerAvailability /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/services" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerServices /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/earnings" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerEarnings /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/reviews" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerReviews /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/notifications" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerNotifications /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/profile" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerProfile /></WorkerRoute></RoleGuard>}/>
+            <Route path="/worker/help" element={<RoleGuard allowedRoles={['worker']}><WorkerRoute><WorkerHelp /></WorkerRoute></RoleGuard>}/>
+
           </Routes>
         </main>
 
