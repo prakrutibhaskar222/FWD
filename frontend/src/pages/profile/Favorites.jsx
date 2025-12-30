@@ -38,8 +38,9 @@ const Favorites = () => {
       <div className="flex flex-col items-center justify-center mt-20 text-center">
         <Heart className="w-12 h-12 text-neutral-300 mb-4" />
         <h2 className="text-xl font-semibold mb-2">No saved services</h2>
-        <p className="text-neutral-500 mb-4">
-          Save services you like and find them here later.
+        <p className="text-neutral-500 mb-4 max-w-md">
+          You haven’t saved any services yet. Tap the heart icon on any
+          service card to save it for quick access later.
         </p>
         <Link
           to="/"
@@ -53,8 +54,15 @@ const Favorites = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">My Favorites</h1>
+      {/* ================= PAGE HEADER ================= */}
+      <h1 className="text-2xl font-bold mb-2">My Favorites</h1>
+      <p className="text-neutral-600 mb-6 max-w-2xl">
+        This page contains all the services you have marked as favorites.
+        Use it to quickly revisit services you liked, compare prices,
+        or book them later without searching again.
+      </p>
 
+      {/* ================= FAVORITES GRID ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {favorites.map((service, index) => (
           <motion.div
@@ -94,6 +102,13 @@ const Favorites = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* ================= FOOTER NOTE ================= */}
+      <p className="text-sm text-neutral-500 mt-10 max-w-2xl">
+        Tip: Saved services remain available here until you remove them.
+        Prices and availability may change over time, so review details
+        before booking.
+      </p>
     </div>
   );
 };

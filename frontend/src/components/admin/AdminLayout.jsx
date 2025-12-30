@@ -1,6 +1,6 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   LogOut,
   Menu,
   X,
@@ -11,47 +11,45 @@ import {
   Heart,
   History,
   FileText,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Button } from "../ui";
+
+import AdminSidebar from "./AdminSidebar";
 import QuickActions from "./QuickActions";
 import AdminFAB from "./AdminFAB";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifications, setNotifications] = useState(3); // Mock notification count
+  const [notifications] = useState(3); // mock count
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Get user data
+  /* ================= LOAD USER ================= */
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
       try {
         setUser(JSON.parse(userData));
-      } catch (e) {
-        console.error("Error parsing user data:", e);
+      } catch {
+        setUser(null);
       }
     }
   }, []);
+
+  useEffect(() => {
+  if (window.innerWidth >= 1024) {
+    setSidebarOpen(true);
+  }
+}, []);
+
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
-  };
-
-  const handleSidebarItemClick = (item) => {
-    setSidebarOpen(false);
-    console.log("Navigating to:", item.title, item.path);
-  };
-
-  const handleQuickActionClick = (action) => {
-    setSidebarOpen(false);
-    console.log("Quick action:", action.title, action.path);
   };
 
   const profileMenuItems = [
@@ -62,221 +60,145 @@ const AdminLayout = ({ children }) => {
     { icon: Settings, label: "Admin Settings", path: "/admin/settings" },
   ];
 
-  const handleBackToMainSite = () => {
-    setShowProfileMenu(false);
-    navigate("/");
-  };
-
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden">
-      {/* Mobile Sidebar Overlay */}
+      {/* ================= MOBILE OVERLAY ================= */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <motion.aside 
+      {/* ================= SIDEBAR ================= */}
+      <motion.aside
         initial={false}
-        animate={{ x: sidebarOpen ? 0 : "-100%" }}
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white border-r border-neutral-200 shadow-lg lg:shadow-none lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto`}
+        animate={{
+          x: sidebarOpen ? 0 : "-100%",
+        }}
+        className="
+          fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-neutral-200
+          lg:static lg:translate-x-0 lg:z-auto
+        "
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-neutral-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-accent-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-neutral-900">COOLIE</h2>
-                <p className="text-sm text-neutral-500">Admin Panel</p>
-              </div>
+          <div className="flex items-center justify-between p-6 border-b">
+            <div>
+              <h2 className="text-xl font-bold">COOLIE</h2>
+              <p className="text-sm text-neutral-500">Admin Panel</p>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="lg:hidden p-2"
             >
-              <X className="w-5 h-5" />
+              <X />
             </button>
           </div>
 
           {/* Quick Actions */}
-          <div className="p-6 border-b border-neutral-200">
-            <QuickActions onActionClick={handleQuickActionClick} />
+          <div className="p-6 border-b">
+            <QuickActions />
           </div>
 
           {/* Navigation */}
           <div className="flex-1 p-6">
-            <AdminSidebar onItemClick={handleSidebarItemClick} />
+            <AdminSidebar />
           </div>
         </div>
       </motion.aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* ================= MAIN ================= */}
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="bg-white border-b border-neutral-200 px-6 py-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-200 w-64"
-                  />
-                </div>
-              </div>
+        <header className="bg-white border-b px-6 py-4 flex justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2"
+            >
+              <Menu />
+            </button>
+
+            <div className="hidden md:flex relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+              <input
+                placeholder="Search admin..."
+                className="pl-9 pr-4 py-2 border rounded-lg"
+              />
             </div>
+          </div>
 
-            <div className="flex items-center space-x-4">
-              {/* Quick Stats */}
-              <div className="hidden sm:flex items-center space-x-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-neutral-600">24 Active</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-neutral-600">8 Pending</span>
-                </div>
-              </div>
+          {/* Right */}
+          <div className="flex items-center gap-4">
+            {/* Notifications */}
+            <button className="relative p-2">
+              <Bell />
+              {notifications > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {notifications}
+                </span>
+              )}
+            </button>
 
-              {/* Notifications */}
-              <motion.button 
-                className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            {/* Profile */}
+            <div className="relative">
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center gap-3 p-2 border rounded-xl"
               >
-                <Bell className="w-5 h-5 text-neutral-600" />
-                {notifications > 0 && (
-                  <motion.span 
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {notifications}
-                  </motion.span>
-                )}
-              </motion.button>
-              
-              {/* User Profile Menu */}
-              <div className="relative">
-                <motion.button
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-primary-50 to-accent-50 hover:from-primary-100 hover:to-accent-100 transition-all duration-200 border border-primary-200"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-accent-600 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="hidden sm:block text-left">
-                    <p className="text-sm font-semibold text-neutral-900">{user?.name || 'Admin User'}</p>
-                    <p className="text-xs text-primary-600 font-medium">Administrator</p>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
-                </motion.button>
+                <User />
+                <ChevronDown />
+              </button>
 
-                {/* Profile Dropdown */}
-                <AnimatePresence>
-                  {showProfileMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-large border border-neutral-200 py-2 z-50"
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-64 bg-white border rounded-xl shadow z-50"
+                  >
+                    <div className="px-4 py-3 border-b">
+                      <p className="font-medium">{user?.name || "Admin"}</p>
+                      <p className="text-sm text-neutral-500">
+                        {user?.email || "admin@coolie.com"}
+                      </p>
+                    </div>
+
+                    {profileMenuItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setShowProfileMenu(false)}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50"
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.label}
+                      </Link>
+                    ))}
+
+                    <button
+                      onClick={logout}
+                      className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 w-full"
                     >
-                      <div className="px-4 py-3 border-b border-neutral-100">
-                        <p className="font-medium text-neutral-900">{user?.name || 'Admin User'}</p>
-                        <p className="text-sm text-neutral-500">{user?.email || 'admin@coolie.com'}</p>
-                      </div>
-                      
-                      {profileMenuItems.map((item) => (
-                        <Link
-                          key={item.path}
-                          to={item.path}
-                          onClick={() => setShowProfileMenu(false)}
-                        >
-                          <motion.div
-                            className="flex items-center space-x-3 px-4 py-3 hover:bg-neutral-50 transition-colors duration-200"
-                            whileHover={{ x: 4 }}
-                          >
-                            <item.icon className="w-4 h-4 text-neutral-500" />
-                            <span className="text-neutral-700">{item.label}</span>
-                          </motion.div>
-                        </Link>
-                      ))}
-                      
-                      <div className="border-t border-neutral-100 mt-2 pt-2">
-                        <motion.button
-                          onClick={handleBackToMainSite}
-                          className="flex items-center space-x-3 px-4 py-3 w-full text-left hover:bg-primary-50 transition-colors duration-200 text-primary-600"
-                          whileHover={{ x: 4 }}
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                          </svg>
-                          <span>Back to Main Site</span>
-                        </motion.button>
-                        
-                        <motion.button
-                          onClick={logout}
-                          className="flex items-center space-x-3 px-4 py-3 w-full text-left hover:bg-error-50 transition-colors duration-200 text-error-600"
-                          whileHover={{ x: 4 }}
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Logout</span>
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-6 overflow-y-auto bg-neutral-50">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
+        {/* Content */}
+        <main className="flex-1 p-6 overflow-y-auto">
+          {children}
         </main>
 
-        {/* Floating Action Button */}
         <AdminFAB />
       </div>
-
-      {/* Overlay for profile menu */}
-      <AnimatePresence>
-        {showProfileMenu && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowProfileMenu(false)}
-            className="fixed inset-0 z-40"
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 };

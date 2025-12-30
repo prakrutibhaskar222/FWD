@@ -45,7 +45,7 @@ export const updateUserRole = async (req, res) => {
 export const registerWorker = async (req, res) => {
   const { name, email, password, phone } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !phone || !email || !password) {
     return res.status(400).json({
       message: "Name, email, and password are required"
     });

@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Invoice from "../models/Invoice.js";
 import Booking from "../models/Booking.js";
 
 export const getProfile = async (req, res) => {
@@ -39,20 +40,42 @@ export const toggleFavorite = async (req, res) => {
   res.json({ success: true, favorites: user.favorites });
 };
 
+/* ================= SERVICE HISTORY ================= */
 export const getServiceHistory = async (req, res) => {
-  const history = await Booking.find({
-    userId: req.user.id,
-    status: "completed"
-  }).populate("serviceId");
+  try {
+    const history = await Booking.find({
+      userId: req.user._id,
+      status: "completed",
+    })
+      .populate("serviceId", "title")
+      .sort({ createdAt: -1 });
 
-  res.json({ success: true, data: history });
+    res.json({
+      success: true,
+      data: history,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch service history",
+    });
+  }
 };
 
-export const getInvoices = async (req, res) => {
-  const invoices = await Booking.find({
-    userId: req.user.id,
-    paid: true
-  });
 
-  res.json({ success: true, data: invoices });
+export const getInvoices = async (req, res) => {
+  try {
+    const invoices = await Invoice.find({ userId: req.user._id })
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: invoices,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch invoices",
+    });
+  }
 };

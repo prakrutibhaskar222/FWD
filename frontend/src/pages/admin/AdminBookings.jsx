@@ -21,6 +21,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
+import AdminBookingActions from "../../components/admin/AdminBookingActions";
 import DataTable from "../../components/admin/DataTable";
 import StatsCard from "../../components/admin/StatsCard";
 import { Button, Card, Badge, Input } from "../../components/ui";
@@ -262,6 +263,32 @@ export default function AdminBookings() {
       toast.error("Server error");
     }
   };
+const markPaymentPaid = async (booking) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      `${API}/api/bookings/${booking._id}/mark-paid`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      toast.success("Payment marked as paid");
+      fetchBookings();
+    } else {
+      toast.error("Failed to mark payment");
+    }
+  } catch {
+    toast.error("Server error");
+  }
+};
 
   const confirmWorkerAssignment = async () => {
     if (!selectedBooking || !selectedWorker) return;
@@ -428,54 +455,26 @@ export default function AdminBookings() {
         />
       </div>
 
-      {/* Bookings Table */}
-      <DataTable
-        data={bookings}
-        columns={columns}
-        loading={loading}
-        searchable={true}
-        filterable={true}
-        exportable={true}
-        pagination={true}
-        pageSize={15}
-        onRowClick={handleViewBooking}
-        actions={(row) => (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewBooking(row);
-              }}
-              autoRefresh={true}
-              refreshDelay={600}
-            >
-              <Eye className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleStatusUpdate(row);
-              }}
-            >
-              <Edit className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleWorkerAssignment(row);
-              }}
-            >
-              <UserPlus className="w-4 h-4" />
-            </Button>
-          </>
-        )}
-      />
+<DataTable
+  data={bookings}
+  columns={columns}
+  loading={loading}
+  searchable
+  filterable
+  pagination
+  pageSize={15}
+  onRowClick={handleViewBooking}
+  actions={(row) => (
+    <AdminBookingActions
+      booking={row}
+      onView={handleViewBooking}
+      onStatusChange={handleStatusUpdate}
+      onAssignWorker={handleWorkerAssignment}
+      onMarkPaid={markPaymentPaid}
+    />
+  )}
+/>
+
 
       {/* Booking Details Modal */}
       {showDetails && selectedBooking && (
