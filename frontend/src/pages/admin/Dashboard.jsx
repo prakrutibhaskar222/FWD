@@ -1,532 +1,568 @@
-// src/pages/admin/AdminDashboardPro.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
-  Box, Button, Card, CardContent, Grid, Typography, Select, MenuItem,
-  Table, TableBody, TableHead, TableRow, TableCell,
-  IconButton, Drawer, Divider, TextField, Dialog, DialogTitle, DialogContent, DialogActions
-} from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import DownloadIcon from "@mui/icons-material/Download";
-import AssignIcon from "@mui/icons-material/PersonAdd";
-import PaidIcon from "@mui/icons-material/Paid";
-import CancelIcon from "@mui/icons-material/Cancel";
-import EditIcon from "@mui/icons-material/Edit";
+  Calendar,
+  Users,
+  Briefcase,
+  DollarSign,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+  Download,
+  Filter,
+  MoreVertical
+} from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
+import StatsCard from "../../components/admin/StatsCard";
+import DataTable from "../../components/admin/DataTable";
+import { Button, Card, Badge } from "../../components/ui";
+import { useAutoRefresh } from "../../hooks/useAutoRefresh";
 import toast from "react-hot-toast";
-import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ReTooltip, BarChart, Bar } from "recharts";
 
 const API = "http://localhost:5001";
-const COLORS = ["#4B8CF5", "#1BC47D", "#FFB020", "#FF6B6B", "#9C6CFF"];
-
-function isoToday() {
-  return new Date().toISOString().split("T")[0];
-}
 
 export default function Dashboard() {
   const [services, setServices] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState("7d");
 
-  // filters
-  const [serviceFilter, setServiceFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [start, setStart] = useState(""); // YYYY-MM-DD
-  const [end, setEnd] = useState("");
-
-  // flyout (booking details)
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [activeBooking, setActiveBooking] = useState(null);
-
-  // assign modal (create quick worker or assign existing)
-  const [assignOpen, setAssignOpen] = useState(false);
-  const [assignWorker, setAssignWorker] = useState("");
-
-  // reschedule modal
-  const [resOpen, setResOpen] = useState(false);
-  const [resDate, setResDate] = useState("");
-  const [resSlots, setResSlots] = useState([]);
-  const [resSelected, setResSelected] = useState("");
-  const [loadingSlots, setLoadingSlots] = useState(false);
-
-  // presets
-  const applyPreset = (preset) => {
-    const today = new Date();
-    if (preset === "today") {
-      const iso = today.toISOString().split("T")[0];
-      setStart(iso); setEnd(iso);
-    } else if (preset === "7d") {
-      const s = new Date(); s.setDate(today.getDate() - 6);
-      setStart(s.toISOString().split("T")[0]); setEnd(today.toISOString().split("T")[0]);
-    } else if (preset === "30d") {
-      const s = new Date(); s.setDate(today.getDate() - 29);
-      setStart(s.toISOString().split("T")[0]); setEnd(today.toISOString().split("T")[0]);
-    } else {
-      setStart(""); setEnd("");
-    }
+  // Auto-refresh functionality
+  const refreshDashboardData = async (source = 'manual') => {
+    console.log(`Dashboard refreshed from ${source}`);
+    await fetchAllData();
   };
 
-  const fetchServices = async () => {
-    try {
-      const res = await fetch(`${API}/api/services`);
-      const j = await res.json();
-      if (j.success) setServices((j.data || []).sort((a,b) => (a.title||"").localeCompare(b.title||"")));
-    } catch (err) {
-      console.error(err);
+  const { isRefreshing, refreshCount } = useAutoRefresh(
+    refreshDashboardData,
+    {
+      enabled: true,
+      onButtonClick: true,
+      debounceMs: 2000,
     }
-  };
+  );
 
-  const fetchBookings = async () => {
+  const fetchAllData = async () => {
     try {
       setLoading(true);
-      const qs = [];
-      if (start) qs.push(`start=${start}`);
-      if (end) qs.push(`end=${end}`);
-      if (serviceFilter) qs.push(`serviceId=${serviceFilter}`);
-      if (statusFilter && statusFilter !== "all") qs.push(`status=${statusFilter}`);
-      const url = `${API}/api/bookings${qs.length ? ("?"+qs.join("&")) : ""}`;
-      const res = await fetch(url);
-      const j = await res.json();
-      if (j.success) setBookings(j.data || []);
-      else toast.error(j.error || "Failed to load bookings");
-    } catch (err) {
-      console.error(err);
-      toast.error("Server error");
+      const [servicesRes, bookingsRes, workersRes] = await Promise.all([
+        fetch(`${API}/api/services`),
+        fetch(`${API}/api/bookings`),
+        fetch(`${API}/api/workers`)
+      ]);
+
+      const [servicesData, bookingsData, workersData] = await Promise.all([
+        servicesRes.json(),
+        bookingsRes.json(),
+        workersRes.json()
+      ]);
+
+      if (servicesData.success) setServices(servicesData.data || []);
+      if (bookingsData.success) setBookings(bookingsData.data || []);
+      if (workersData.success) setWorkers(workersData.data || []);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchServices();
-    fetchBookings();
+    fetchAllData();
   }, []);
 
-  // re-fetch when filter inputs changed
-  useEffect(() => {
-    // small debounce could be added; for now fetch directly
-    fetchBookings();
-  }, [start, end, serviceFilter, statusFilter]);
-
+  // Calculate metrics
   const metrics = useMemo(() => {
-    const total = bookings.length;
-    const completed = bookings.filter(b => b.status === "completed").length;
-    const revenuePaid = bookings.reduce((acc, b) => acc + (b.paid ? (b.price || 0) : 0), 0);
-    const revenueUnpaid = bookings.reduce((acc, b) => acc + (!b.paid ? (b.price || 0) : 0), 0);
-    const todayCount = bookings.filter(b => b.date === isoToday()).length;
-    return { total, completed, revenuePaid, revenueUnpaid, todayCount };
-  }, [bookings]);
+    const today = new Date();
+    const last7Days = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const last30Days = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  // charts: status distribution, bookings per day (last 14), top services
-  const statusDistribution = useMemo(() => {
-    const map = {};
-    bookings.forEach(b => map[b.status] = (map[b.status]||0) + 1);
-    return Object.keys(map).map(k => ({ name: k, value: map[k] }));
-  }, [bookings]);
+    const totalBookings = bookings.length;
+    const completedBookings = bookings.filter(b => b.status === "completed").length;
+    const pendingBookings = bookings.filter(b => b.status === "pending").length;
+    const todayBookings = bookings.filter(b => {
+      const bookingDate = new Date(b.createdAt);
+      return bookingDate.toDateString() === today.toDateString();
+    }).length;
 
-  const bookingsPerDay = useMemo(() => {
-    const N = 14;
-    const bucket = {};
-    for (let i = N-1; i>=0; i--) {
-      const d = new Date(); d.setDate(d.getDate()-i);
-      const k = d.toISOString().split("T")[0];
-      bucket[k] = 0;
-    }
-    bookings.forEach(b => { if (bucket[b.date] !== undefined) bucket[b.date]++; });
-    return Object.keys(bucket).map(k => ({ date: k.slice(5), count: bucket[k] }));
-  }, [bookings]);
+    const totalRevenue = bookings
+      .filter(b => b.status === "completed" && b.paid)
+      .reduce((sum, b) => sum + (b.price || 0), 0);
 
-  const topServices = useMemo(() => {
-    const map = {};
-    bookings.forEach(b => { const id = String(b.serviceId); map[id] = (map[id]||0) + 1; });
-    const arr = Object.entries(map).map(([id, count]) => {
-      const svc = services.find(s => String(s._id) === id);
-      return { id, name: svc ? svc.title : "Unknown", count };
-    }).sort((a,b) => b.count - a.count).slice(0,8);
-    return arr;
-  }, [bookings, services]);
+    const pendingRevenue = bookings
+      .filter(b => b.status === "completed" && !b.paid)
+      .reduce((sum, b) => sum + (b.price || 0), 0);
 
-  // open booking details flyout
-  const openBooking = async (bookingId) => {
-    try {
-      const res = await fetch(`${API}/api/bookings/${bookingId}`);
-      const j = await res.json();
-      if (j.success) {
-        setActiveBooking(j.data);
-        setDrawerOpen(true);
-      } else toast.error(j.error || "Failed to load booking");
-    } catch (err) {
-      toast.error("Server error");
-    }
-  };
+    const activeWorkers = workers.filter(w => w.status === "available").length;
+    const totalWorkers = workers.length;
 
-  // assign worker action (calls backend /api/bookings/:id/assign)
-  const doAssignWorker = async () => {
-    if (!assignWorker || !activeBooking) return toast.error("Enter worker name/id");
-    try {
-      const res = await fetch(`${API}/api/bookings/${activeBooking._id}/assign`, {
-        method: "PUT",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ worker: assignWorker })
-      });
-      const j = await res.json();
-      if (j.success) {
-        toast.success("Worker assigned");
-        setAssignOpen(false);
-        // refresh active booking details
-        openBooking(activeBooking._id);
-        fetchBookings();
-      } else toast.error(j.error || "Failed to assign");
-    } catch (err) { toast.error("Server error"); }
-  };
+    // Calculate growth rates
+    const last7DaysBookings = bookings.filter(b => new Date(b.createdAt) >= last7Days).length;
+    const previous7DaysBookings = bookings.filter(b => {
+      const date = new Date(b.createdAt);
+      return date >= new Date(last7Days.getTime() - 7 * 24 * 60 * 60 * 1000) && date < last7Days;
+    }).length;
 
-  // mark booking as paid
-  const doMarkPaid = async () => {
-    if (!activeBooking) return;
-    try {
-      const res = await fetch(`${API}/api/bookings/${activeBooking._id}/markpaid`, {
-        method: "PUT",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ provider: "admin", transactionId: "MANUAL-"+Date.now(), amount: activeBooking.price || 0, currency: "INR" })
-      });
-      const j = await res.json();
-      if (j.success) {
-        toast.success("Marked paid");
-        openBooking(activeBooking._id);
-        fetchBookings();
-      } else toast.error(j.error || "Failed");
-    } catch (err) { toast.error("Server error"); }
-  };
+    const bookingGrowth = previous7DaysBookings > 0 
+      ? ((last7DaysBookings - previous7DaysBookings) / previous7DaysBookings * 100).toFixed(1)
+      : "0";
 
-  // cancel booking
-  const doCancel = async (id) => {
-    if (!confirm("Cancel booking?")) return;
-    try {
-      const res = await fetch(`${API}/api/bookings/${id}/cancel`, { method: "PUT" });
-      const j = await res.json();
-      if (j.success) {
-        toast.success("Cancelled");
-        setDrawerOpen(false);
-        fetchBookings();
-      } else toast.error(j.error || "Failed");
-    } catch (err) { toast.error("Server error"); }
-  };
-
-  // open reschedule modal
-  const openRescheduleFor = (b) => {
-    setActiveBooking(b);
-    setResOpen(true);
-    setResDate("");
-    setResSlots([]);
-    setResSelected("");
-  };
-
-  // fetch slots for reschedule
-  useEffect(() => {
-    if (!resDate || !activeBooking) return;
-    const fetchSlots = async () => {
-      try {
-        setLoadingSlots(true);
-        const res = await fetch(`${API}/api/bookings/slots?serviceId=${activeBooking.serviceId}&date=${resDate}`);
-        const j = await res.json();
-        if (j.success) {
-          if (Array.isArray(j.data)) setResSlots(j.data);
-          else if (j.data.availableSlots) setResSlots(j.data.availableSlots);
-          else setResSlots(j.data || []);
-        } else {
-          toast.error(j.error || "No slots");
-        }
-      } catch (err) {
-        toast.error("Server error");
-      } finally {
-        setLoadingSlots(false);
-      }
+    return {
+      totalBookings,
+      completedBookings,
+      pendingBookings,
+      todayBookings,
+      totalRevenue,
+      pendingRevenue,
+      activeWorkers,
+      totalWorkers,
+      bookingGrowth: parseFloat(bookingGrowth),
+      completionRate: totalBookings > 0 ? ((completedBookings / totalBookings) * 100).toFixed(1) : "0"
     };
-    fetchSlots();
-  }, [resDate, activeBooking]);
+  }, [bookings, workers]);
 
-  const doReschedule = async () => {
-    if (!activeBooking || !resDate || !resSelected) return toast.error("Choose new date & slot");
-    try {
-      const res = await fetch(`${API}/api/bookings/${activeBooking._id}/reschedule`, {
-        method: "PUT",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ date: resDate, slot: resSelected })
-      });
-      const j = await res.json();
-      if (j.success) {
-        toast.success("Rescheduled");
-        setResOpen(false);
-        setDrawerOpen(false);
-        fetchBookings();
-      } else toast.error(j.error || "Failed to reschedule");
-    } catch (err) { toast.error("Server error"); }
+  // Recent bookings for table
+  const recentBookings = useMemo(() => {
+    return bookings
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10)
+      .map(booking => ({
+        id: booking._id,
+        customer: booking.customerName,
+        phone: booking.customerPhone,
+        service: booking.serviceTitle || "Unknown Service",
+        date: new Date(booking.createdAt).toLocaleDateString(),
+        time: booking.slot || "Not scheduled",
+        status: booking.status,
+        amount: booking.price || 0,
+        paid: booking.paid,
+        worker: booking.workerAssigned || "Unassigned"
+      }));
+  }, [bookings]);
+
+  const bookingColumns = [
+    {
+      key: "customer",
+      title: "Customer",
+      sortable: true,
+      render: (value, row) => (
+        <div>
+          <div className="font-medium text-neutral-900">{value}</div>
+          <div className="text-sm text-neutral-500">{row.phone}</div>
+        </div>
+      )
+    },
+    {
+      key: "service",
+      title: "Service",
+      sortable: true
+    },
+    {
+      key: "date",
+      title: "Date",
+      sortable: true
+    },
+    {
+      key: "time",
+      title: "Time",
+      sortable: false
+    },
+    {
+      key: "status",
+      title: "Status",
+      sortable: true,
+      render: (value) => (
+        <Badge 
+          variant={
+            value === "completed" ? "success" :
+            value === "pending" ? "warning" :
+            value === "in-progress" ? "primary" :
+            "secondary"
+          }
+        >
+          {value}
+        </Badge>
+      )
+    },
+    {
+      key: "amount",
+      title: "Amount",
+      sortable: true,
+      render: (value) => `₹${value}`
+    },
+    {
+      key: "paid",
+      title: "Payment",
+      sortable: true,
+      render: (value) => (
+        <Badge variant={value ? "success" : "warning"}>
+          {value ? "Paid" : "Pending"}
+        </Badge>
+      )
+    }
+  ];
+
+  const handleBookingAction = (booking) => {
+    // Handle booking actions
+    console.log("Booking action:", booking);
   };
 
-  // export CSV (same CSV helper as before)
-  const csvDownload = (filename, rows) => {
-    if (!rows.length) return toast.error("No data");
-    const csv = [
-      Object.keys(rows[0]).join(","), 
-      ...rows.map(r => Object.values(r).map(v => `"${String(v || "") .replace(/"/g,'""')}"`).join(","))
-    ].join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportDashboardData = () => {
+    const csvData = [
+      ["Metric", "Value"],
+      ["Total Bookings", metrics.totalBookings],
+      ["Completed Bookings", metrics.completedBookings],
+      ["Pending Bookings", metrics.pendingBookings],
+      ["Total Revenue", `₹${metrics.totalRevenue}`],
+      ["Pending Revenue", `₹${metrics.pendingRevenue}`],
+      ["Active Workers", metrics.activeWorkers],
+      ["Total Workers", metrics.totalWorkers],
+      ["Completion Rate", `${metrics.completionRate}%`]
+    ];
+
+    const csvContent = csvData.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dashboard-metrics.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <AdminLayout>
-      <Box mb={4} className="flex justify-between items-center">
-        <Typography variant="h4" fontWeight={700}>Admin Dashboard</Typography>
-        <Box display="flex" gap={2}>
-          <Button startIcon={<RefreshIcon />} onClick={fetchBookings}>Refresh</Button>
-          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => csvDownload("bookings.csv", bookings)}>Export CSV</Button>
-        </Box>
-      </Box>
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl p-8 mb-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="w-12 h-12 bg-gradient-to-r from-primary-600 to-accent-600 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-neutral-900">Admin Dashboard</h1>
+                <p className="text-neutral-600">Welcome back! Here's your business overview</p>
+              </div>
+            </div>
+            
+            {/* Quick Stats Summary */}
+            <div className="flex flex-wrap items-center gap-6 mt-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-neutral-700">
+                  {metrics.activeWorkers} Active Workers
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span className="text-sm font-medium text-neutral-700">
+                  {metrics.todayBookings} Today's Bookings
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm font-medium text-neutral-700">
+                  {metrics.pendingBookings} Pending
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            <select 
+              value={dateRange} 
+              onChange={(e) => setDateRange(e.target.value)}
+              className="px-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none bg-white"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+            </select>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportDashboardData}
+              className="bg-white hover:bg-neutral-50"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => refreshDashboardData('manual')}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      {/* Filters */}
-      <Card className="mb-6"><CardContent>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle2">Date range</Typography>
-            <Box display="flex" gap={2} alignItems="center">
-              <TextField type="date" value={start} onChange={(e)=>setStart(e.target.value)} />
-              <TextField type="date" value={end} onChange={(e)=>setEnd(e.target.value)} />
-              <Select value="" onChange={(e)=>applyPreset(e.target.value)} displayEmpty>
-                <MenuItem value="">Presets</MenuItem>
-                <MenuItem value="today">Today</MenuItem>
-                <MenuItem value="7d">Last 7 days</MenuItem>
-                <MenuItem value="30d">Last 30 days</MenuItem>
-                <MenuItem value="clear">Clear</MenuItem>
-              </Select>
-            </Box>
-          </Grid>
+      {/* Enhanced Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <StatsCard
+            title="Total Bookings"
+            value={metrics.totalBookings}
+            change={`${metrics.bookingGrowth > 0 ? '+' : ''}${metrics.bookingGrowth}% vs last week`}
+            changeType={metrics.bookingGrowth >= 0 ? "positive" : "negative"}
+            icon={<Calendar className="w-6 h-6" />}
+            color="primary"
+            loading={loading}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <StatsCard
+            title="Total Revenue"
+            value={`₹${metrics.totalRevenue.toLocaleString()}`}
+            change={`₹${metrics.pendingRevenue} pending`}
+            changeType="positive"
+            icon={<DollarSign className="w-6 h-6" />}
+            color="success"
+            loading={loading}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <StatsCard
+            title="Active Workers"
+            value={`${metrics.activeWorkers}/${metrics.totalWorkers}`}
+            change={`${((metrics.activeWorkers / metrics.totalWorkers) * 100).toFixed(0)}% available`}
+            changeType="positive"
+            icon={<Users className="w-6 h-6" />}
+            color="info"
+            loading={loading}
+          />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <StatsCard
+            title="Completion Rate"
+            value={`${metrics.completionRate}%`}
+            change={`${metrics.completedBookings} completed`}
+            changeType="positive"
+            icon={<CheckCircle className="w-6 h-6" />}
+            color="purple"
+            loading={loading}
+          />
+        </motion.div>
+      </div>
 
-          <Grid item xs={12} md={3}>
-            <Typography variant="subtitle2">Service</Typography>
-            <Select fullWidth value={serviceFilter} onChange={(e)=>setServiceFilter(e.target.value)}>
-              <MenuItem value="">All services</MenuItem>
-              {services.map(s => <MenuItem key={s._id} value={s._id}>{s.title}</MenuItem>)}
-            </Select>
-          </Grid>
+      {/* Enhanced Quick Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-700">Today's Bookings</p>
+                <p className="text-3xl font-bold text-blue-900">{metrics.todayBookings}</p>
+                <p className="text-xs text-blue-600 mt-1">
+                  {((metrics.todayBookings / metrics.totalBookings) * 100).toFixed(1)}% of total
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-yellow-700">Pending Bookings</p>
+                <p className="text-3xl font-bold text-yellow-900">{metrics.pendingBookings}</p>
+                <p className="text-xs text-yellow-600 mt-1">
+                  Requires attention
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
+                <AlertCircle className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-700">Total Services</p>
+                <p className="text-3xl font-bold text-green-900">{services.length}</p>
+                <p className="text-xs text-green-600 mt-1">
+                  Available categories
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
 
-          <Grid item xs={12} md={3}>
-            <Typography variant="subtitle2">Status</Typography>
-            <Select fullWidth value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)}>
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="in-progress">In Progress</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-              <MenuItem value="cancelled">Cancelled</MenuItem>
-            </Select>
-          </Grid>
+      {/* Enhanced Recent Bookings Table */}
+      <motion.div 
+        className="mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+      >
+        <Card className="overflow-hidden">
+          <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 px-6 py-4 border-b border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-neutral-900">Recent Bookings</h2>
+                <p className="text-sm text-neutral-600 mt-1">Latest customer bookings and their status</p>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => window.location.href = '/admin/bookings'}
+              >
+                View All Bookings
+              </Button>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <DataTable
+              data={recentBookings}
+              columns={bookingColumns}
+              loading={loading}
+              searchable={true}
+              exportable={true}
+              pagination={false}
+              onRowClick={handleBookingAction}
+              actions={(row) => (
+                <Button variant="ghost" size="sm">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              )}
+            />
+          </div>
+        </Card>
+      </motion.div>
 
-          <Grid item xs={12} md={2}>
-            <Typography variant="subtitle2">Quick</Typography>
-            <Box display="flex" gap={1}>
-              <Button onClick={()=>{setStart(""); setEnd(""); setServiceFilter(""); setStatusFilter("all");}}>Reset</Button>
-            </Box>
-          </Grid>
-        </Grid>
-      </CardContent></Card>
+      {/* Enhanced Quick Actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+      >
+        <Card className="overflow-hidden">
+          <div className="bg-gradient-to-r from-primary-50 to-accent-50 px-6 py-4 border-b border-neutral-200">
+            <h3 className="text-lg font-semibold text-neutral-900">Quick Actions</h3>
+            <p className="text-sm text-neutral-600 mt-1">Frequently used admin functions</p>
+          </div>
+          
+          <div className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outline"
+                  className="justify-start h-auto p-4 w-full bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:from-blue-100 hover:to-blue-200"
+                  onClick={() => window.location.href = '/admin/workers/add'}
+                >
+                  <Users className="w-5 h-5 mr-3 text-blue-600" />
+                  <div className="text-left">
+                    <div className="font-medium text-blue-900">Add Worker</div>
+                    <div className="text-sm text-blue-600">Register new worker</div>
+                  </div>
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outline"
+                  className="justify-start h-auto p-4 w-full bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-100 hover:to-green-200"
+                  onClick={() => window.location.href = '/admin/services'}
+                >
+                  <Briefcase className="w-5 h-5 mr-3 text-green-600" />
+                  <div className="text-left">
+                    <div className="font-medium text-green-900">Manage Services</div>
+                    <div className="text-sm text-green-600">Add or edit services</div>
+                  </div>
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outline"
+                  className="justify-start h-auto p-4 w-full bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 hover:from-yellow-100 hover:to-yellow-200"
+                  onClick={() => window.location.href = '/admin/workers/verify'}
+                >
+                  <CheckCircle className="w-5 h-5 mr-3 text-yellow-600" />
+                  <div className="text-left">
+                    <div className="font-medium text-yellow-900">Verify Workers</div>
+                    <div className="text-sm text-yellow-600">Review pending verifications</div>
+                  </div>
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outline"
+                  className="justify-start h-auto p-4 w-full bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:from-purple-100 hover:to-purple-200"
+                  onClick={() => window.location.href = '/admin/analytics'}
+                >
+                  <TrendingUp className="w-5 h-5 mr-3 text-purple-600" />
+                  <div className="text-left">
+                    <div className="font-medium text-purple-900">View Analytics</div>
+                    <div className="text-sm text-purple-600">Detailed reports</div>
+                  </div>
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
 
-      {/* Metrics and charts */}
-      <Grid container spacing={3} className="mb-6">
-        <Grid item xs={12} md={3}><Card><CardContent>
-          <Typography variant="subtitle2">Total Bookings</Typography>
-          <Typography variant="h5">{metrics.total}</Typography>
-        </CardContent></Card></Grid>
-
-        <Grid item xs={12} md={3}><Card><CardContent>
-          <Typography variant="subtitle2">Completed</Typography>
-          <Typography variant="h5">{metrics.completed}</Typography>
-        </CardContent></Card></Grid>
-
-        <Grid item xs={12} md={3}><Card><CardContent>
-          <Typography variant="subtitle2">Revenue (paid)</Typography>
-          <Typography variant="h5">₹{metrics.revenuePaid || 0}</Typography>
-          <Typography variant="caption">Unpaid: ₹{metrics.revenueUnpaid || 0}</Typography>
-        </CardContent></Card></Grid>
-
-        <Grid item xs={12} md={3}><Card><CardContent>
-          <Typography variant="subtitle2">Today</Typography>
-          <Typography variant="h5">{metrics.todayCount}</Typography>
-        </CardContent></Card></Grid>
-      </Grid>
-
-      <Grid container spacing={3} className="mb-6">
-        <Grid item xs={12} md={4}><Card><CardContent style={{height:300}}>
-          <Typography>Status Distribution</Typography>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie data={statusDistribution} dataKey="value" nameKey="name" outerRadius={80} innerRadius={40}>
-                {statusDistribution.map((e,i)=><Cell key={i} fill={COLORS[i%COLORS.length]} />)}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </CardContent></Card></Grid>
-
-        <Grid item xs={12} md={5}><Card><CardContent style={{height:300}}>
-          <Typography>Bookings (last 14 days)</Typography>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={bookingsPerDay}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false}/>
-              <ReTooltip />
-              <Line type="monotone" dataKey="count" stroke="#4B8CF5" strokeWidth={2}/>
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent></Card></Grid>
-
-        <Grid item xs={12} md={3}><Card><CardContent style={{height:300}}>
-          <Typography>Top Services</Typography>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={topServices}>
-              <XAxis dataKey="name" tick={{fontSize:12}}/>
-              <YAxis allowDecimals={false}/>
-              <ReTooltip />
-              <Bar dataKey="count" fill="#1BC47D" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent></Card></Grid>
-      </Grid>
-
-      {/* Recent bookings table */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>Recent Bookings</Typography>
-
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Created</TableCell>
-                <TableCell>Customer</TableCell>
-                <TableCell>Service</TableCell>
-                <TableCell>Slot</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Worker</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {bookings.map(b => (
-                <TableRow key={b._id}>
-                  <TableCell>{new Date(b.createdAt).toLocaleString()}</TableCell>
-                  <TableCell>
-                    <div style={{fontWeight:600}}>{b.customerName}</div>
-                    <div style={{fontSize:12, color:"#666"}}>{b.customerPhone}</div>
-                  </TableCell>
-                  <TableCell>{b.serviceTitle || "—"}</TableCell>
-                  <TableCell>{b.date} {b.slot}</TableCell>
-                  <TableCell>{b.status}</TableCell>
-                  <TableCell>{b.workerAssigned || "—"}</TableCell>
-                  <TableCell>{b.paid ? "Yes" : "No"}</TableCell>
-                  <TableCell>
-                    <Button size="small" onClick={() => openBooking(b._id)}>Open</Button>
-                    <IconButton size="small" onClick={() => { setActiveBooking(b); setAssignOpen(true); }}>
-                      <AssignIcon />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => { setActiveBooking(b); doMarkPaid(); }}>
-                      <PaidIcon />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => doCancel(b._id)}><CancelIcon/></IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Booking details drawer */}
-      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box width={520} p={3}>
-          {!activeBooking ? <div>Loading…</div> : (
-            <>
-              <Typography variant="h6">{activeBooking.serviceTitle}</Typography>
-              <Typography variant="body2" color="textSecondary">{activeBooking.serviceCategory}</Typography>
-              <Divider className="my-3"/>
-              <Typography variant="subtitle2">Customer</Typography>
-              <Typography>{activeBooking.customerName} • {activeBooking.customerPhone}</Typography>
-              <Typography variant="body2" color="textSecondary">Notes: {activeBooking.notes || "—"}</Typography>
-
-              <Divider className="my-3"/>
-
-              <Typography variant="subtitle2">Schedule</Typography>
-              <Typography>{activeBooking.date} • {activeBooking.slot}</Typography>
-
-              <Typography variant="subtitle2" className="mt-3">Status</Typography>
-              <Select value={activeBooking.status || "pending"} onChange={async (e)=>{
-                const status = e.target.value;
-                const r = await fetch(`${API}/api/bookings/${activeBooking._id}/status`, {
-                  method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ status })
-                });
-                const j = await r.json(); if (j.success) { toast.success("Updated"); openBooking(activeBooking._id); fetchBookings(); } else toast.error(j.error || "Failed");
-              }}>
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="in-progress">In Progress</MenuItem>
-                <MenuItem value="completed">Completed</MenuItem>
-                <MenuItem value="cancelled">Cancelled</MenuItem>
-              </Select>
-
-              <Divider className="my-3"/>
-
-              <Typography variant="subtitle2">Worker</Typography>
-              <Typography>{activeBooking.workerAssigned || "—"}</Typography>
-              <Box mt={1} display="flex" gap={1}>
-                <Button variant="outlined" onClick={() => setAssignOpen(true)}>Assign</Button>
-              </Box>
-
-              <Divider className="my-3"/>
-
-              <Box display="flex" gap={2}>
-                <Button variant="contained" color="primary" onClick={() => { setResOpen(true); }}>Reschedule</Button>
-                <Button variant="outlined" color="success" onClick={() => doMarkPaid()}>Mark Paid</Button>
-                <Button variant="outlined" color="error" onClick={() => doCancel(activeBooking._id)}>Cancel</Button>
-              </Box>
-            </>
-          )}
-        </Box>
-      </Drawer>
-
-      {/* Assign worker dialog */}
-      <Dialog open={assignOpen} onClose={() => setAssignOpen(false)}>
-        <DialogTitle>Assign Worker</DialogTitle>
-        <DialogContent>
-          <TextField fullWidth label="Worker name or ID" value={assignWorker} onChange={(e)=>setAssignWorker(e.target.value)} />
-          <Typography variant="caption">You can also store worker id if you have a Worker model</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAssignOpen(false)}>Close</Button>
-          <Button onClick={doAssignWorker} variant="contained">Assign</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Reschedule dialog */}
-      <Dialog open={resOpen} onClose={() => setResOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Reschedule booking</DialogTitle>
-        <DialogContent>
-          <TextField type="date" fullWidth value={resDate} onChange={(e)=>setResDate(e.target.value)} />
-          <Box mt={2}>
-            {loadingSlots ? <div>Loading slots…</div> : (
-              <Box display="grid" gridTemplateColumns="repeat(3,1fr)" gap={2}>
-                {resSlots.map(s => <Button key={s} variant={resSelected===s ? "contained" : "outlined"} onClick={()=>setResSelected(s)}>{s}</Button>)}
-              </Box>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={()=>setResOpen(false)}>Close</Button>
-          <Button onClick={doReschedule} variant="contained">Save</Button>
-        </DialogActions>
-      </Dialog>
+      {/* Debug Info */}
+      {process.env.NODE_ENV === 'development' && refreshCount > 0 && (
+        <div className="fixed bottom-4 right-4 bg-neutral-800 text-white px-3 py-2 rounded-lg text-xs">
+          Dashboard Refreshes: {refreshCount}
+        </div>
+      )}
     </AdminLayout>
   );
 }

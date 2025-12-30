@@ -5,35 +5,35 @@ import {
   Menu,
   X,
   Bell,
-  Search,
   User,
   Settings,
-  Heart,
-  History,
-  FileText,
-  ChevronDown
+  ChevronDown,
+  Home,
+  Calendar,
+  Briefcase,
+  Clock,
+  Star,
+  DollarSign,
+  HelpCircle
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Button } from "../ui";
-import QuickActions from "./QuickActions";
-import AdminFAB from "./AdminFAB";
 
-const AdminLayout = ({ children }) => {
+const WorkerLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifications, setNotifications] = useState(3); // Mock notification count
+  const [notifications, setNotifications] = useState(2);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [user, setUser] = useState(null);
+  const [worker, setWorker] = useState(null);
 
-  // Get user data
+  // Get worker data
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
+    const workerData = localStorage.getItem("user");
+    if (workerData) {
       try {
-        setUser(JSON.parse(userData));
+        setWorker(JSON.parse(workerData));
       } catch (e) {
-        console.error("Error parsing user data:", e);
+        console.error("Error parsing worker data:", e);
       }
     }
   }, []);
@@ -44,28 +44,27 @@ const AdminLayout = ({ children }) => {
     navigate("/login");
   };
 
-  const handleSidebarItemClick = (item) => {
-    setSidebarOpen(false);
-    console.log("Navigating to:", item.title, item.path);
-  };
-
-  const handleQuickActionClick = (action) => {
-    setSidebarOpen(false);
-    console.log("Quick action:", action.title, action.path);
-  };
-
-  const profileMenuItems = [
-    { icon: User, label: "Profile", path: "/profile" },
-    { icon: Heart, label: "Favorites", path: "/profile/favorites" },
-    { icon: History, label: "History", path: "/profile/history" },
-    { icon: FileText, label: "Invoices", path: "/profile/invoices" },
-    { icon: Settings, label: "Admin Settings", path: "/admin/settings" },
-  ];
-
   const handleBackToMainSite = () => {
     setShowProfileMenu(false);
     navigate("/");
   };
+
+  const sidebarItems = [
+    { icon: Home, label: "Dashboard", path: "/worker/dashboard", active: location.pathname === "/worker/dashboard" },
+    { icon: Briefcase, label: "My Jobs", path: "/worker/jobs", active: location.pathname.startsWith("/worker/jobs") },
+    { icon: Calendar, label: "Schedule", path: "/worker/schedule", active: location.pathname === "/worker/schedule" },
+    { icon: Clock, label: "Availability", path: "/worker/availability", active: location.pathname === "/worker/availability" },
+    { icon: Star, label: "Reviews", path: "/worker/reviews", active: location.pathname === "/worker/reviews" },
+    { icon: DollarSign, label: "Earnings", path: "/worker/earnings", active: location.pathname === "/worker/earnings" },
+    { icon: Bell, label: "Notifications", path: "/worker/notifications", active: location.pathname === "/worker/notifications" },
+    { icon: Settings, label: "Profile", path: "/worker/profile", active: location.pathname === "/worker/profile" },
+    { icon: HelpCircle, label: "Help", path: "/worker/help", active: location.pathname === "/worker/help" },
+  ];
+
+  const profileMenuItems = [
+    { icon: User, label: "Profile", path: "/worker/profile" },
+    { icon: Settings, label: "Settings", path: "/worker/settings" },
+  ];
 
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden">
@@ -81,18 +80,18 @@ const AdminLayout = ({ children }) => {
       <motion.aside 
         initial={false}
         animate={{ x: sidebarOpen ? 0 : "-100%" }}
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white border-r border-neutral-200 shadow-lg lg:shadow-none lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto`}
+        className="fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white border-r border-neutral-200 shadow-lg lg:shadow-none lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto"
       >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-neutral-200">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-accent-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">C</span>
               </div>
               <div>
                 <h2 className="text-xl font-bold text-neutral-900">COOLIE</h2>
-                <p className="text-sm text-neutral-500">Admin Panel</p>
+                <p className="text-sm text-neutral-500">Worker Panel</p>
               </div>
             </div>
             <button
@@ -103,14 +102,47 @@ const AdminLayout = ({ children }) => {
             </button>
           </div>
 
-          {/* Quick Actions */}
-          <div className="p-6 border-b border-neutral-200">
-            <QuickActions onActionClick={handleQuickActionClick} />
+          {/* Worker Info */}
+          <div className="p-6 border-b border-neutral-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-neutral-900">{worker?.name || 'Worker'}</p>
+                <p className="text-sm text-neutral-600">{worker?.skills?.join(', ') || 'Service Provider'}</p>
+                <div className="flex items-center space-x-1 mt-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                  <span className="text-xs text-neutral-600">4.8 (127 reviews)</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Navigation */}
           <div className="flex-1 p-6">
-            <AdminSidebar onItemClick={handleSidebarItemClick} />
+            <nav className="space-y-2">
+              {sidebarItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    item.active
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                  }`}
+                >
+                  <item.icon className={`w-5 h-5 ${item.active ? 'text-blue-600' : ''}`} />
+                  <span className="font-medium">{item.label}</span>
+                  {item.label === "Notifications" && notifications > 0 && (
+                    <span className="ml-auto w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {notifications}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
       </motion.aside>
@@ -128,64 +160,69 @@ const AdminLayout = ({ children }) => {
                 <Menu className="w-5 h-5" />
               </button>
               
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-200 w-64"
-                  />
-                </div>
+              <div className="hidden sm:block">
+                <h1 className="text-xl font-semibold text-neutral-900">
+                  {sidebarItems.find(item => item.active)?.label || 'Dashboard'}
+                </h1>
+                <p className="text-sm text-neutral-600">
+                  {new Date().toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
               {/* Quick Stats */}
-              <div className="hidden sm:flex items-center space-x-4 text-sm">
+              <div className="hidden md:flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-neutral-600">24 Active</span>
+                  <span className="text-neutral-600">Available</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-neutral-600">8 Pending</span>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-neutral-600">3 Jobs Today</span>
                 </div>
               </div>
 
               {/* Notifications */}
-              <motion.button 
-                className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Bell className="w-5 h-5 text-neutral-600" />
-                {notifications > 0 && (
-                  <motion.span 
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {notifications}
-                  </motion.span>
-                )}
-              </motion.button>
-              
+              <Link to="/worker/notifications">
+                <motion.button 
+                  className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Bell className="w-5 h-5 text-neutral-600" />
+                  {notifications > 0 && (
+                    <motion.span 
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    >
+                      {notifications}
+                    </motion.span>
+                  )}
+                </motion.button>
+              </Link>
+
               {/* User Profile Menu */}
               <div className="relative">
                 <motion.button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-primary-50 to-accent-50 hover:from-primary-100 hover:to-accent-100 transition-all duration-200 border border-primary-200"
+                  className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 border border-blue-200"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="w-10 h-10 bg-gradient-to-r from-primary-600 to-accent-600 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-5 h-5 text-white" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-4 h-4 text-white" />
                   </div>
                   <div className="hidden sm:block text-left">
-                    <p className="text-sm font-semibold text-neutral-900">{user?.name || 'Admin User'}</p>
-                    <p className="text-xs text-primary-600 font-medium">Administrator</p>
+                    <p className="text-sm font-semibold text-neutral-900">{worker?.name || 'Worker'}</p>
+                    <p className="text-xs text-blue-600 font-medium">Service Provider</p>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} />
                 </motion.button>
@@ -201,8 +238,8 @@ const AdminLayout = ({ children }) => {
                       className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-large border border-neutral-200 py-2 z-50"
                     >
                       <div className="px-4 py-3 border-b border-neutral-100">
-                        <p className="font-medium text-neutral-900">{user?.name || 'Admin User'}</p>
-                        <p className="text-sm text-neutral-500">{user?.email || 'admin@coolie.com'}</p>
+                        <p className="font-medium text-neutral-900">{worker?.name || 'Worker'}</p>
+                        <p className="text-sm text-neutral-500">{worker?.email || 'worker@coolie.com'}</p>
                       </div>
                       
                       {profileMenuItems.map((item) => (
@@ -224,7 +261,7 @@ const AdminLayout = ({ children }) => {
                       <div className="border-t border-neutral-100 mt-2 pt-2">
                         <motion.button
                           onClick={handleBackToMainSite}
-                          className="flex items-center space-x-3 px-4 py-3 w-full text-left hover:bg-primary-50 transition-colors duration-200 text-primary-600"
+                          className="flex items-center space-x-3 px-4 py-3 w-full text-left hover:bg-blue-50 transition-colors duration-200 text-blue-600"
                           whileHover={{ x: 4 }}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,9 +297,6 @@ const AdminLayout = ({ children }) => {
             {children}
           </motion.div>
         </main>
-
-        {/* Floating Action Button */}
-        <AdminFAB />
       </div>
 
       {/* Overlay for profile menu */}
@@ -281,4 +315,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout;
+export default WorkerLayout;

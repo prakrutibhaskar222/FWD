@@ -1,37 +1,147 @@
-import React from 'react'
+import React from 'react';
 import { Link } from "react-router";
+import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
+  const footerSections = [
+    {
+      title: "Services",
+      links: [
+        { name: "Electrical", path: "/electrical" },
+        { name: "Installation", path: "/installation" },
+        { name: "Personal", path: "/personal" },
+        { name: "Home Services", path: "/homeservices" },
+        { name: "Renovation", path: "/renovation" },
+      ]
+    },
+    {
+      title: "Company",
+      links: [
+        { name: "About Us", path: "/about" },
+        { name: "Careers", path: "/careers" },
+        { name: "Press", path: "/press" },
+        { name: "Blog", path: "/blog" },
+      ]
+    },
+    {
+      title: "Support",
+      links: [
+        { name: "Help Center", path: "/support" },
+        { name: "Contact Us", path: "/contact" },
+        { name: "FAQ", path: "/faq" },
+        { name: "Terms of Service", path: "/terms" },
+        { name: "Privacy Policy", path: "/privacy" },
+      ]
+    }
+  ];
+
+  const socialLinks = [
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+  ];
+
   return (
-    <div><footer className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm pt-10 border-t border-gray-300">
-        <div className="space-y-2">
-          <h4 className="font-semibold uppercase text-xs">Navigation</h4>
-          <Link to="/shop" className="block hover:text-blue-500">Shop</Link>
-          <Link to="/legacy" className="block hover:text-blue-500">Legacy</Link>
-          <Link to="/support" className="block hover:text-blue-500">Support</Link>
-        </div>
-        <div className="space-y-2">
-        <h4 className="font-semibold uppercase text-xs">Services</h4>
+    <footer className="bg-neutral-900 text-neutral-300 mt-auto">
+      <div className="container-custom py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center space-x-2 mb-6">
+              <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">C</span>
+              </div>
+              <span className="font-display font-bold text-2xl text-white">
+                COOLIE
+              </span>
+            </div>
+            
+            <p className="text-neutral-400 mb-6 max-w-md">
+              Your trusted partner for professional home services. From electrical work to renovations, 
+              we connect you with skilled professionals who deliver quality results.
+            </p>
 
-        <Link to="/electrical" className="block hover:text-blue-500">Electrical</Link>
-        <Link to="/installation" className="block hover:text-blue-500">Installation</Link>
-        <Link to="/personal" className="block hover:text-blue-500">Personal</Link>
-        <Link to="/homeservices" className="block hover:text-blue-500">Home Services</Link>
-        <Link to="/renovation" className="block hover:text-blue-500">Renovation</Link>
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <Mail className="w-5 h-5 text-primary-400" />
+                <span>coolie96913@gmail.com</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Phone className="w-5 h-5 text-primary-400" />
+                <span>+91 7619443280</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <MapPin className="w-5 h-5 text-primary-400" />
+                <span>Made in India</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Sections */}
+          {footerSections.map((section, index) => (
+            <div key={section.title}>
+              <h4 className="font-semibold text-white mb-4 text-lg">
+                {section.title}
+              </h4>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      to={link.path}
+                      className="text-neutral-400 hover:text-primary-400 transition-colors duration-200"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="space-y-2">
-          <h4 className="font-semibold uppercase text-xs">Contact</h4>
-          <p>Email-coolie96913@gmail.com</p>
-          <p>Contact-7619443280</p>
-          <p>FAQ</p>
-        </div>
-        <div className="space-y-2 text-xs opacity-80">
-          <p>© Coolie Premium 2025 </p>
-          <p>Made in India</p>
-        </div>
-      </footer></div>
-  )
-}
+        {/* Bottom Section */}
+        <div className="border-t border-neutral-800 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            {/* Copyright */}
+            <div className="text-neutral-400 text-sm">
+              © {currentYear} Coolie Premium. All rights reserved.
+            </div>
 
-export default Footer
+            {/* Social Links */}
+            <div className="flex items-center space-x-4">
+              {socialLinks.map((social) => (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-neutral-800 hover:bg-primary-600 rounded-lg flex items-center justify-center transition-colors duration-200"
+                  aria-label={social.label}
+                >
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Additional Links */}
+            <div className="flex items-center space-x-6 text-sm">
+              <Link to="/shop" className="text-neutral-400 hover:text-primary-400 transition-colors duration-200">
+                Shop
+              </Link>
+              <Link to="/legacy" className="text-neutral-400 hover:text-primary-400 transition-colors duration-200">
+                Legacy
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

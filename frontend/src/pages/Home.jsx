@@ -1,96 +1,341 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router";
+import { ArrowRight, Star, Clock, Shield, TrendingUp, RefreshCw } from "lucide-react";
+import { Card, Button, Badge, LoadingSpinner } from "../components/ui";
 import Stats from "../components/Stats";
 import RecentlyViewed from "../components/RecentlyViewed";
+import { useAutoRefresh } from "../hooks/useAutoRefresh";
 
 const API = "http://localhost:5001";
 
 // STATIC BACKGROUND IMAGES (NO DATABASE NEEDED)
 const categoryBackgrounds = {
   electrical:
-    "https://img.freepik.com/free-vector/hand-drawn-job-cartoon-illustration_23-2151286062.jpg",
+    "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1000",
   installation:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4t03WoCAu2EevWnyX8tNcZkqSGZ53jav1ZQ&s",
+    "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1000",
   personal:
-    "https://psychocare.biz/blog/wp-content/uploads/2025/07/What-is-wellness.jpeg",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1000",
   homeservices:
-    "https://mobisoftinfotech.com/resources/wp-content/uploads/2018/08/Banner.png",
+    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1000",
   renovation:
-    "https://sourcinghardware.net/wp-content/uploads/2022/11/iStock-1384315807-2-scaled-1-1.jpg",
-
+    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1000",
   // fallback image
   default:
-    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200"
+    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1000"
+};
+
+const categoryIcons = {
+  electrical: "⚡",
+  installation: "🔧",
+  personal: "👤",
+  homeservices: "🏠",
+  renovation: "🎨",
+  default: "🔧"
 };
 
 export default function HomePage() {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-      fetch(`${API}/api/categories`)
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.success) {
-            // ✅ Sort categories alphabetically by name
-            const sorted = json.data.sort((a, b) =>
-              a.name.localeCompare(b.name)
-            );
-            setCategories(sorted);
-          }
-        });
-    }, []);
+  // Fetch categories function
+  const fetchCategories = async (source = 'initial') => {
+    try {
+      console.log(`Fetching categories from ${source}`);
+      const res = await fetch(`${API}/api/categories`);
+      const json = await res.json();
+      if (json.success) {
+        // Sort categories alphabetically by name
+        const sorted = json.data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        setCategories(sorted);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Auto-refresh hook
+  const { isRefreshing, refreshCount, triggerRefresh } = useAutoRefresh(
+    fetchCategories,
+    {
+      enabled: true,
+      onButtonClick: true,
+      onCustomEvent: true,
+      debounceMs: 1000,
+    }
+  );
+
+  useEffect(() => {
+    fetchCategories('initial');
+  }, []);
+
+  const features = [
+    {
+      icon: <Shield className="w-6 h-6" />,
+      title: "Verified Professionals",
+      description: "All service providers are background-checked and certified"
+    },
+    {
+      icon: <Clock className="w-6 h-6" />,
+      title: "Quick Booking",
+      description: "Book services in minutes with flexible scheduling"
+    },
+    {
+      icon: <Star className="w-6 h-6" />,
+      title: "Quality Guaranteed",
+      description: "100% satisfaction guarantee on all services"
+    },
+    {
+      icon: <TrendingUp className="w-6 h-6" />,
+      title: "Transparent Pricing",
+      description: "No hidden fees, upfront pricing for all services"
+    }
+  ];
+
+  if (loading && !isRefreshing) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#f9f8f6] text-[#1a1a1a] font-sans">
+    <div className="min-h-screen bg-neutral-50">
+      {/* Refresh Indicator */}
+      {isRefreshing && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-20 right-4 z-50 bg-primary-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2"
+        >
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span className="text-sm font-medium">Refreshing data...</span>
+        </motion.div>
+      )}
+
+      {/* Debug Info (Development only) */}
+      {process.env.NODE_ENV === 'development' && refreshCount > 0 && (
+        <div className="fixed bottom-4 left-4 bg-neutral-800 text-white px-3 py-2 rounded-lg text-xs">
+          Refreshes: {refreshCount}
+        </div>
+      )}
       {/* Hero Section */}
-      <section className="text-center px-6 md:px-20 py-16">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-          Home Services at Your Doorstep
-        </h1>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-10">
-          Get expert professionals for all your home needs — safe, trusted, and
-          quick.
-        </p>
-        <h2 className="text-3xl font-semibold mb-6">What are you looking for?</h2>
+      <section className="relative bg-gradient-to-br from-primary-600 to-primary-800 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container-custom py-20 lg:py-32 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <Badge variant="secondary" className="mb-6 bg-white/20 text-white border-white/30">
+                🏠 Professional Home Services
+              </Badge>
+              
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 leading-tight">
+                Home Services at Your
+                <span className="block text-accent-300">Doorstep</span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-primary-100 mb-8 leading-relaxed max-w-3xl mx-auto">
+                Connect with trusted professionals for all your home needs. From electrical work to renovations, 
+                we make it simple, reliable, and affordable.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  className="w-full sm:w-auto"
+                  autoRefresh={true}
+                  refreshDelay={1500}
+                >
+                  Browse Services
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary-600"
+                  autoRefresh={true}
+                  refreshDelay={1200}
+                >
+                  How It Works
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-accent-400/20 rounded-full"></div>
+        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-full"></div>
       </section>
 
-      {/* Services Section */}
-      <section className="px-8 md:px-20 pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 justify-items-center">
-          {categories.map((cat, index) => {
-            const bg =
-              categoryBackgrounds[cat.key] || categoryBackgrounds.default;
-
-            return (
-              <Link to={`/${cat.key}`} key={index} className="w-full">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                  className="rounded-2xl shadow hover:shadow-lg cursor-pointer transition h-56 w-full relative overflow-hidden"
-                  style={{
-                    backgroundImage: `url(${bg})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }}
-                >
-                  <div className="absolute inset-0 bg-black/40"></div>
-
-                  <div className="relative z-10 text-center text-white p-4 flex flex-col font-bold justify-center h-full">
-                    <div className="text-4xl mb-2">{cat.icon || "🛠️"}</div>
-                    <h3 className="text-lg font-semibold">{cat.name}</h3>
-                    <p className="text-sm opacity-90">{cat.description}</p>
-                  </div>
-                </motion.div>
-              </Link>
-            );
-          })}
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 mx-auto mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-neutral-600 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
-      <RecentlyViewed />
 
-      <Stats />
+      {/* Categories Section */}
+      <section className="py-20 bg-neutral-50">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <Badge variant="primary" className="mb-4">
+              Our Services
+            </Badge>
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 mb-6">
+              Choose Your Service Category
+            </h2>
+            <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
+              From routine maintenance to major renovations, find the perfect professional for your needs.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categories.map((category, index) => {
+              const bgImage = categoryBackgrounds[category.name.toLowerCase()] || categoryBackgrounds.default;
+              const icon = categoryIcons[category.name.toLowerCase()] || categoryIcons.default;
+              
+              return (
+                <motion.div
+                  key={category._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Link to={`/${category.name.toLowerCase()}`}>
+                    <Card hover className="group overflow-hidden h-80 relative">
+                      {/* Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                        style={{ backgroundImage: `url(${bgImage})` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="relative z-10 h-full flex flex-col justify-end p-6 text-white">
+                        <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                          {icon}
+                        </div>
+                        
+                        <h3 className="text-2xl font-bold mb-2 capitalize">
+                          {category.name}
+                        </h3>
+                        
+                        <p className="text-neutral-200 mb-4 text-sm leading-relaxed">
+                          Professional {category.name.toLowerCase()} services with verified experts
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <Badge variant="secondary" size="sm" className="bg-white/20 text-white border-white/30">
+                            {category.serviceCount || 0} Services
+                          </Badge>
+                          
+                          <div className="flex items-center text-sm text-neutral-300 group-hover:text-white transition-colors">
+                            Explore
+                            <ArrowRight className="ml-1 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Recently Viewed Section */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <RecentlyViewed />
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-neutral-50">
+        <div className="container-custom">
+          <Stats />
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+        <div className="container-custom text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-4xl lg:text-5xl font-display font-bold mb-6">
+              Need Help Choosing?
+            </h2>
+            <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
+              Our customer support team is here to help you find the perfect service for your needs.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="w-full sm:w-auto"
+                autoRefresh={true}
+                refreshDelay={1000}
+              >
+                Contact Support
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary-600"
+                autoRefresh={true}
+                refreshDelay={1300}
+              >
+                View All Services
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }

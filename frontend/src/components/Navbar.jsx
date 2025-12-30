@@ -1,31 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Menu, X, User, Settings, LogOut, Heart, History, FileText, Bell, Shield, BarChart3, Users, Wrench, Calendar } from "lucide-react";
+import { Button, Badge } from "./ui";
+import api from "../api.js";
 
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  /* ================= SCROLL EFFECT ================= */
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   /* ================= AUTH STATE ================= */
-
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
     setIsLoggedIn(!!token);
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+      }
+    }
+
+    // Check admin status if logged in
+    if (token) {
+      api.get("/api/auth/me")
+        .then(res => {
+          setIsAdmin(res.data.user.role === "admin");
+        })
+        .catch(() => setIsAdmin(false));
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null);
+    setIsAdmin(false);
+    setShowProfileMenu(false);
+    setShowAdminMenu(false);
     navigate("/login");
   };
 
   /* ================= SEARCH ================= */
-
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSuggestions([]);
@@ -51,175 +90,513 @@ const Navbar = () => {
   }, [searchTerm]);
 
   const handleKeyDown = (e) => {
-    if (!suggestions.length) return;
+    if (suggestions.length === 0) return;
 
     if (e.key === "ArrowDown") {
-      setActiveIndex((prev) =>
-        prev < suggestions.length - 1 ? prev + 1 : prev
-      );
-    }
-
-    if (e.key === "ArrowUp") {
-      setActiveIndex((prev) => (prev > 0 ? prev - 1 : -1));
-    }
-
-    if (e.key === "Enter") {
       e.preventDefault();
-      const selected =
-        activeIndex >= 0 ? suggestions[activeIndex] : suggestions[0];
-      navigate(selected.route);
-      resetSearch();
+      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      const selected = suggestions[activeIndex];
+      navigate(`/service/${selected._id}`);
+      setSearchTerm("");
+      setSuggestions([]);
+      setIsSearchFocused(false);
+    } else if (e.key === "Escape") {
+      setSuggestions([]);
+      setActiveIndex(-1);
+      setIsSearchFocused(false);
     }
-
-    if (e.key === "Escape") resetSearch();
   };
 
-  const resetSearch = () => {
+  const handleSuggestionClick = (service) => {
+    navigate(`/service/${service._id}`);
     setSearchTerm("");
     setSuggestions([]);
-    setActiveIndex(-1);
+    setIsSearchFocused(false);
   };
 
-  const highlightMatch = (text = "") => {
-  if (typeof text !== "string" || !searchTerm) return text || "";
+  const navLinks = [
+    { name: "Electrical", path: "/electrical", icon: "⚡" },
+    { name: "Installation", path: "/installation", icon: "🔧" },
+    { name: "Personal", path: "/personal", icon: "👤" },
+    { name: "Home Services", path: "/homeservices", icon: "🏠" },
+    { name: "Renovation", path: "/renovation", icon: "🎨" },
+  ];
 
-  return text.replace(
-    new RegExp(`(${searchTerm})`, "gi"),
-    "<mark>$1</mark>"
-  );
-};
+  const profileMenuItems = [
+    { icon: User, label: "Profile", path: "/profile" },
+    { icon: Heart, label: "Favorites", path: "/profile/favorites" },
+    { icon: History, label: "History", path: "/profile/history" },
+    { icon: FileText, label: "Invoices", path: "/profile/invoices" },
+  ];
 
-
-  /* ================= JSX ================= */
+  const adminMenuItems = [
+    { icon: BarChart3, label: "Dashboard", path: "/admin/" },
+    { icon: Calendar, label: "Bookings", path: "/admin/bookings" },
+    { icon: Users, label: "Workers", path: "/admin/workers" },
+    { icon: Wrench, label: "Services", path: "/admin/services" },
+    { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+    { icon: Settings, label: "Settings", path: "/admin/settings" },
+  ];
 
   return (
-    <div className="bg-[#e9e4de] px-4 relative z-[9999]">
-      <header className="flex justify-between items-center py-3">
-
-        {/* LOGO */}
-        <Link to="/home" className="text-xl font-semibold">
-          COOLIE
-        </Link>
-
-        {/* NAV LINKS */}
-        <nav className="space-x-3 text-sm uppercase tracking-wide">
-          {[
-            { name: "Electrical", path: "/electrical" },
-            { name: "Home Services", path: "/homeservices" },
-            { name: "Installation", path: "/installation" },
-            { name: "Personal", path: "/personal" },
-            { name: "Renovation", path: "/renovation" },
-          ].map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className="btn glass bg-[#e5d4c0]"
-            >
-              {item.name}
+    <>
+      <motion.nav 
+        className={`sticky top-0 z-50 transition-all duration-300 ${
+          scrolled 
+            ? 'bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-medium' 
+            : 'bg-white/90 backdrop-blur-sm border-b border-neutral-100 shadow-soft'
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="container-custom">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-2 group">
+              <motion.div 
+                className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <span className="text-white font-bold text-lg">C</span>
+              </motion.div>
+              <motion.span 
+                className="font-display font-bold text-xl text-neutral-900 group-hover:text-primary-600 transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                COOLIE
+              </motion.span>
             </Link>
-          ))}
-        </nav>
 
-        {/* SEARCH BAR */}
-        <div className="relative w-72">
-          <input
-            type="text"
-            placeholder="Search services..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none"
-          />
-
-          {suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-xl max-h-64 overflow-auto">
-              {suggestions.map((item, index) => (
-                <li
-                  key={index}
-                  onMouseDown={() => {
-                    navigate(item.route);
-                    resetSearch();
-                  }}
-                  className={`px-3 py-2 cursor-pointer text-sm ${
-                    index === activeIndex
-                      ? "bg-[#f3ede6]"
-                      : "hover:bg-[#f3ede6]"
-                  }`}
-                  dangerouslySetInnerHTML={{
-                    __html: highlightMatch(item?.label || ""),
-                  }}
-                />
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className="relative group"
+                >
+                  <motion.div
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                      location.pathname === link.path 
+                        ? 'bg-primary-50 text-primary-600' 
+                        : 'text-neutral-600 hover:text-primary-600 hover:bg-primary-50'
+                    }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="text-lg">{link.icon}</span>
+                    <span className="font-medium">{link.name}</span>
+                  </motion.div>
+                  
+                  {/* Active indicator */}
+                  {location.pathname === link.path && (
+                    <motion.div
+                      className="absolute bottom-0 left-1/2 w-1 h-1 bg-primary-600 rounded-full"
+                      layoutId="activeTab"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      style={{ x: '-50%' }}
+                    />
+                  )}
+                </Link>
               ))}
-            </ul>
-          )}
-        </div>
-
-        {/* LOGIN / PROFILE */}
-        <div className="ml-4 relative">
-          {!isLoggedIn ? (
-            <Link
-              to="/login"
-              className="px-4 py-1 rounded-lg font-medium border"
-            >
-              Log in
-            </Link>
-          ) : (
-            <div className="relative group">
-              <FaUserCircle className="text-3xl cursor-pointer" />
-
-              {/* PROFILE DROPDOWN */}
-              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg hidden group-hover:block">
-                <li>
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    My Profile
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    to="/profile/favorites"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Favorites
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    to="/profile/history"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Service History
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    to="/profile/invoices"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Invoices
-                  </Link>
-                </li>
-
-                <li className="border-t">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
             </div>
-          )}
+
+            {/* Enhanced Search Bar */}
+            <div className="hidden md:block relative flex-1 max-w-md mx-8">
+              <motion.div 
+                className="relative"
+                animate={{ 
+                  scale: isSearchFocused ? 1.02 : 1,
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              >
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                  isSearchFocused ? 'text-primary-500' : 'text-neutral-400'
+                }`} />
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-4 focus:outline-none transition-all duration-300 bg-white ${
+                    isSearchFocused 
+                      ? 'border-primary-500 ring-primary-200 shadow-medium' 
+                      : 'border-neutral-200 hover:border-neutral-300'
+                  }`}
+                />
+                
+                {/* Search loading indicator */}
+                {searchTerm && (
+                  <motion.div
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                  >
+                    <div className="w-4 h-4 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* Enhanced Search Suggestions */}
+              <AnimatePresence>
+                {isSearchFocused && suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-large border border-neutral-200 max-h-80 overflow-y-auto z-50"
+                  >
+                    {suggestions.map((service, index) => (
+                      <motion.button
+                        key={service._id}
+                        onClick={() => handleSuggestionClick(service)}
+                        className={`w-full text-left px-4 py-3 transition-all duration-200 ${
+                          index === activeIndex 
+                            ? 'bg-primary-50 border-l-4 border-primary-500' 
+                            : 'hover:bg-neutral-50'
+                        } ${index === 0 ? 'rounded-t-xl' : ''} ${
+                          index === suggestions.length - 1 ? 'rounded-b-xl' : ''
+                        }`}
+                        whileHover={{ x: 4 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-neutral-900">{service.title}</p>
+                            <p className="text-sm text-neutral-500 capitalize">{service.category}</p>
+                          </div>
+                          <Badge variant="primary" size="sm" className="bg-gradient-to-r from-primary-500 to-primary-600">
+                            ₹{service.price}
+                          </Badge>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Auth Section */}
+            <div className="flex items-center space-x-4">
+              {isLoggedIn ? (
+                <div className="flex items-center space-x-3">
+                  {/* Admin Menu - Only show for admin users */}
+                  {isAdmin && (
+                    <div className="relative">
+                      <motion.button
+                        onClick={() => setShowAdminMenu(!showAdminMenu)}
+                        className="flex items-center space-x-2 p-2 rounded-xl hover:bg-primary-50 transition-colors duration-200 group"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+                          <Shield className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="hidden sm:block font-medium text-primary-600 group-hover:text-primary-700">
+                          Admin
+                        </span>
+                      </motion.button>
+
+                      {/* Admin Dropdown */}
+                      <AnimatePresence>
+                        {showAdminMenu && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-large border border-neutral-200 py-2 z-50"
+                          >
+                            <div className="px-4 py-3 border-b border-neutral-100">
+                              <div className="flex items-center space-x-2">
+                                <Shield className="w-4 h-4 text-primary-600" />
+                                <p className="font-medium text-neutral-900">Admin Panel</p>
+                              </div>
+                              <p className="text-sm text-neutral-500">Manage your platform</p>
+                            </div>
+                            
+                            {adminMenuItems.map((item) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                onClick={() => setShowAdminMenu(false)}
+                              >
+                                <motion.div
+                                  className="flex items-center space-x-3 px-4 py-3 hover:bg-primary-50 transition-colors duration-200 group"
+                                  whileHover={{ x: 4 }}
+                                >
+                                  <item.icon className="w-4 h-4 text-neutral-500 group-hover:text-primary-600" />
+                                  <span className="text-neutral-700 group-hover:text-primary-700">{item.label}</span>
+                                </motion.div>
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Notifications */}
+                  <motion.button
+                    className="relative p-2 rounded-xl hover:bg-neutral-100 transition-colors duration-200"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Bell className="w-5 h-5 text-neutral-600" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-error-500 rounded-full"></span>
+                  </motion.button>
+
+                  {/* Profile Menu */}
+                  <div className="relative">
+                    <motion.button
+                      onClick={() => setShowProfileMenu(!showProfileMenu)}
+                      className="flex items-center space-x-2 p-2 rounded-xl hover:bg-neutral-100 transition-colors duration-200"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary-100 to-accent-100 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-primary-600" />
+                      </div>
+                      <span className="hidden sm:block font-medium text-neutral-700">
+                        {user?.name || 'User'}
+                      </span>
+                    </motion.button>
+
+                    {/* Enhanced Profile Dropdown */}
+                    <AnimatePresence>
+                      {showProfileMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-large border border-neutral-200 py-2 z-50"
+                        >
+                          <div className="px-4 py-3 border-b border-neutral-100">
+                            <p className="font-medium text-neutral-900">{user?.name}</p>
+                            <p className="text-sm text-neutral-500">{user?.email}</p>
+                          </div>
+                          
+                          {profileMenuItems.map((item) => (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              onClick={() => setShowProfileMenu(false)}
+                            >
+                              <motion.div
+                                className="flex items-center space-x-3 px-4 py-3 hover:bg-neutral-50 transition-colors duration-200"
+                                whileHover={{ x: 4 }}
+                              >
+                                <item.icon className="w-4 h-4 text-neutral-500" />
+                                <span className="text-neutral-700">{item.label}</span>
+                              </motion.div>
+                            </Link>
+                          ))}
+                          
+                          <div className="border-t border-neutral-100 mt-2 pt-2">
+                            <motion.button
+                              onClick={handleLogout}
+                              className="flex items-center space-x-3 px-4 py-3 w-full text-left hover:bg-error-50 transition-colors duration-200 text-error-600"
+                              whileHover={{ x: 4 }}
+                            >
+                              <LogOut className="w-4 h-4" />
+                              <span>Logout</span>
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Link to="/login">
+                    <Button variant="ghost" size="sm">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button variant="primary" size="sm">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {/* Mobile Menu Button */}
+              <motion.button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors duration-200"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <AnimatePresence mode="wait">
+                  {showMobileMenu ? (
+                    <motion.div
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <X className="w-6 h-6 text-neutral-600" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Menu className="w-6 h-6 text-neutral-600" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </div>
+          </div>
         </div>
 
-      </header>
-    </div>
+        {/* Enhanced Mobile Menu */}
+        <AnimatePresence>
+          {showMobileMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="lg:hidden border-t border-neutral-200 bg-white"
+            >
+              <div className="container-custom py-4 space-y-4">
+                {/* Mobile Search */}
+                <div className="md:hidden relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search services..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-200 bg-white"
+                  />
+                </div>
+
+                {/* Mobile Navigation Links */}
+                <div className="space-y-2">
+                  {navLinks.map((link, index) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <motion.div
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                          location.pathname === link.path
+                            ? 'bg-primary-50 text-primary-600 font-medium'
+                            : 'text-neutral-700 hover:bg-neutral-50'
+                        }`}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ x: 4 }}
+                      >
+                        <span className="text-lg">{link.icon}</span>
+                        <span>{link.name}</span>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Mobile Admin Menu - Only show for admin users */}
+                {isAdmin && (
+                  <div className="space-y-2 pt-4 border-t border-neutral-200">
+                    <div className="px-4 py-2">
+                      <div className="flex items-center space-x-2">
+                        <Shield className="w-4 h-4 text-primary-600" />
+                        <span className="font-medium text-primary-600">Admin Panel</span>
+                      </div>
+                    </div>
+                    {adminMenuItems.map((item, index) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setShowMobileMenu(false)}
+                      >
+                        <motion.div
+                          className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                            location.pathname === item.path
+                              ? 'bg-primary-50 text-primary-600 font-medium'
+                              : 'text-neutral-700 hover:bg-primary-50'
+                          }`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: (navLinks.length + index) * 0.1 }}
+                          whileHover={{ x: 4 }}
+                        >
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.label}</span>
+                        </motion.div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+
+      {/* Overlay for mobile menu */}
+      <AnimatePresence>
+        {showMobileMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowMobileMenu(false)}
+            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Overlay for profile menu */}
+      <AnimatePresence>
+        {showProfileMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowProfileMenu(false)}
+            className="fixed inset-0 z-40"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Overlay for admin menu */}
+      <AnimatePresence>
+        {showAdminMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAdminMenu(false)}
+            className="fixed inset-0 z-40"
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
