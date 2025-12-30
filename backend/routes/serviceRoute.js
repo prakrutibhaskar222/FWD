@@ -34,11 +34,6 @@ router.get("/category/:category", getServiceByCategory);
 router.get("/list/categories", getCategories);
 
 
-router.get("/", requireAuth, getFavorites);
-router.post("/", requireAuth, addToFavorites);
-router.delete("/:serviceId", requireAuth, removeFromFavorites);
-
-
 
 // View count
 router.get("/:id/view", viewAndGetService);
