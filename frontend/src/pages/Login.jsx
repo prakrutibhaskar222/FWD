@@ -183,22 +183,6 @@ const Login = () => {
             </div>
           </Card>
 
-          {/* Demo Credentials */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6 p-4 bg-white/60 dark:bg-neutral-800/60 backdrop-blur-sm rounded-xl border border-white/20 dark:border-neutral-700/20"
-          >
-            <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Demo Credentials
-            </h3>
-            <div className="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
-              <p><strong>Admin:</strong> admin@coolie.com / admin123</p>
-              <p><strong>User:</strong> user@coolie.com / user123</p>
-              <p><strong>Worker:</strong> worker@coolie.com / worker123</p>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </div>
