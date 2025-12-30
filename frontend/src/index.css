@@ -11,7 +11,7 @@
   }
   
   body {
-    @apply text-neutral-800 bg-neutral-50;
+    @apply text-neutral-800 dark:text-neutral-200 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -19,7 +19,7 @@
   
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', system-ui, sans-serif;
-    @apply font-semibold text-neutral-900;
+    @apply font-semibold text-neutral-900 dark:text-neutral-100;
   }
 
   /* Custom scrollbar */
@@ -28,15 +28,15 @@
   }
   
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-100;
+    @apply bg-neutral-100 dark:bg-neutral-800;
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-300 rounded-full;
+    @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-neutral-400;
+    @apply bg-neutral-400 dark:bg-neutral-500;
   }
 }
 
@@ -78,7 +78,7 @@
   
   /* Enhanced Card Components */
   .card {
-    @apply bg-white rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 border border-neutral-100 relative overflow-hidden;
+    @apply bg-white dark:bg-neutral-800 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 border border-neutral-100 dark:border-neutral-700 relative overflow-hidden;
   }
   
   .card::before {
@@ -100,7 +100,7 @@
   
   /* Enhanced Input Components */
   .input {
-    @apply w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-300 bg-white hover:border-neutral-300;
+    @apply w-full px-4 py-3 border border-neutral-200 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-800 focus:border-primary-500 dark:focus:border-primary-400 focus:outline-none transition-all duration-300 bg-white dark:bg-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-500 text-neutral-900 dark:text-neutral-100;
   }
   
   .input:focus {
@@ -108,15 +108,15 @@
   }
   
   .input-error {
-    @apply border-error-500 focus:ring-error-200 focus:border-error-500;
+    @apply border-error-500 focus:ring-error-200 dark:focus:ring-error-800 focus:border-error-500;
   }
   
   .textarea {
-    @apply w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-300 bg-white resize-none hover:border-neutral-300;
+    @apply w-full px-4 py-3 border border-neutral-200 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-800 focus:border-primary-500 dark:focus:border-primary-400 focus:outline-none transition-all duration-300 bg-white dark:bg-neutral-800 resize-none hover:border-neutral-300 dark:hover:border-neutral-500 text-neutral-900 dark:text-neutral-100;
   }
   
   .select {
-    @apply w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-all duration-300 bg-white appearance-none hover:border-neutral-300;
+    @apply w-full px-4 py-3 border border-neutral-200 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-800 focus:border-primary-500 dark:focus:border-primary-400 focus:outline-none transition-all duration-300 bg-white dark:bg-neutral-800 appearance-none hover:border-neutral-300 dark:hover:border-neutral-500 text-neutral-900 dark:text-neutral-100;
   }
   
   /* Enhanced Badge Components */
@@ -212,11 +212,11 @@
   
   /* Enhanced Navigation */
   .nav-link {
-    @apply text-neutral-600 hover:text-primary-600 font-medium transition-all duration-300 relative px-4 py-2 rounded-xl hover:bg-primary-50;
+    @apply text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-all duration-300 relative px-4 py-2 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/30;
   }
   
   .nav-link.active {
-    @apply text-primary-600 bg-primary-50;
+    @apply text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/50;
   }
   
   .nav-link::after {
@@ -250,7 +250,7 @@
   }
   
   .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-large;
+    @apply bg-white/80 dark:bg-neutral-800/80 backdrop-blur-md border border-white/20 dark:border-neutral-700/20 shadow-large;
   }
   
   .section-padding {

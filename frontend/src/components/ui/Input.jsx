@@ -45,17 +45,17 @@ const Input = forwardRef(({
   };
   
   const variants = {
-    default: 'border-neutral-200 focus:border-primary-500 focus:ring-primary-200',
-    filled: 'bg-neutral-50 border-transparent focus:bg-white focus:border-primary-500 focus:ring-primary-200',
-    underlined: 'border-0 border-b-2 border-neutral-200 focus:border-primary-500 rounded-none bg-transparent px-0',
+    default: 'border-neutral-200 dark:border-neutral-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100',
+    filled: 'bg-neutral-50 dark:bg-neutral-700 border-transparent focus:bg-white dark:focus:bg-neutral-800 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-200 dark:focus:ring-primary-800 text-neutral-900 dark:text-neutral-100',
+    underlined: 'border-0 border-b-2 border-neutral-200 dark:border-neutral-600 focus:border-primary-500 dark:focus:border-primary-400 rounded-none bg-transparent px-0 text-neutral-900 dark:text-neutral-100',
   };
   
   const baseClasses = `
     w-full transition-all duration-300 focus:outline-none focus:ring-4 
-    disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-50
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-50 dark:disabled:bg-neutral-700
     ${variant === 'underlined' ? 'rounded-none' : 'rounded-xl'}
-    ${error ? 'border-error-500 focus:border-error-500 focus:ring-error-200' : ''}
-    ${success ? 'border-success-500 focus:border-success-500 focus:ring-success-200' : ''}
+    ${error ? 'border-error-500 focus:border-error-500 focus:ring-error-200 dark:focus:ring-error-800' : ''}
+    ${success ? 'border-success-500 focus:border-success-500 focus:ring-success-200 dark:focus:ring-success-800' : ''}
     ${variants[variant]}
     ${sizes[size]}
   `;
@@ -73,7 +73,7 @@ const Input = forwardRef(({
             color: focused ? '#0ea5e9' : error ? '#ef4444' : success ? '#22c55e' : '#6b7280',
           }}
           className={`
-            block text-sm font-medium mb-2 transition-colors duration-300
+            block text-sm font-medium mb-2 transition-colors duration-300 text-neutral-700 dark:text-neutral-300
             ${required ? "after:content-['*'] after:text-error-500 after:ml-1" : ''}
           `}
         >
@@ -85,7 +85,7 @@ const Input = forwardRef(({
       <div className="relative">
         {/* Left Icon */}
         {icon && iconPosition === 'left' && (
-          <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${iconSize} text-neutral-400 transition-colors duration-300 ${focused ? 'text-primary-500' : ''}`}>
+          <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${iconSize} text-neutral-400 dark:text-neutral-500 transition-colors duration-300 ${focused ? 'text-primary-500 dark:text-primary-400' : ''}`}>
             {icon}
           </div>
         )}
@@ -141,7 +141,7 @@ const Input = forwardRef(({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-neutral-400 hover:text-neutral-600 transition-colors duration-200"
+              className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors duration-200"
             >
               {showPassword ? (
                 <EyeOff className="w-5 h-5" />
@@ -153,7 +153,7 @@ const Input = forwardRef(({
           
           {/* Right Icon */}
           {icon && iconPosition === 'right' && (
-            <div className={`${iconSize} text-neutral-400 transition-colors duration-300 ${focused ? 'text-primary-500' : ''}`}>
+            <div className={`${iconSize} text-neutral-400 dark:text-neutral-500 transition-colors duration-300 ${focused ? 'text-primary-500 dark:text-primary-400' : ''}`}>
               {icon}
             </div>
           )}
@@ -167,7 +167,7 @@ const Input = forwardRef(({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className={`mt-2 text-sm ${error ? 'text-error-600' : 'text-neutral-500'}`}
+            className={`mt-2 text-sm ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-500 dark:text-neutral-400'}`}
           >
             {error || hint}
           </motion.div>

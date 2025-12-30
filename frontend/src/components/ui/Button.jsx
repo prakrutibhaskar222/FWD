@@ -23,13 +23,13 @@ const Button = ({
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-300 focus:outline-none focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group';
   
   const variants = {
-    primary: 'bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-soft hover:shadow-large focus:ring-primary-200 border border-transparent',
-    secondary: 'bg-white hover:bg-neutral-50 text-neutral-700 shadow-soft hover:shadow-medium focus:ring-neutral-200 border border-neutral-200 hover:border-neutral-300',
-    outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white focus:ring-primary-200 bg-transparent hover:shadow-medium',
-    ghost: 'text-neutral-600 hover:text-primary-600 hover:bg-primary-50 focus:ring-primary-200 border border-transparent hover:border-primary-200',
-    success: 'bg-gradient-to-r from-success-600 to-success-700 hover:from-success-700 hover:to-success-800 text-white shadow-soft hover:shadow-large focus:ring-success-200 border border-transparent',
-    warning: 'bg-gradient-to-r from-warning-600 to-warning-700 hover:from-warning-700 hover:to-warning-800 text-white shadow-soft hover:shadow-large focus:ring-warning-200 border border-transparent',
-    error: 'bg-gradient-to-r from-error-600 to-error-700 hover:from-error-700 hover:to-error-800 text-white shadow-soft hover:shadow-large focus:ring-error-200 border border-transparent',
+    primary: 'bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-soft hover:shadow-large focus:ring-primary-200 dark:focus:ring-primary-800 border border-transparent',
+    secondary: 'bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 shadow-soft hover:shadow-medium focus:ring-neutral-200 dark:focus:ring-neutral-700 border border-neutral-200 dark:border-neutral-600 hover:border-neutral-300 dark:hover:border-neutral-500',
+    outline: 'border-2 border-primary-600 dark:border-primary-500 text-primary-600 dark:text-primary-400 hover:bg-primary-600 dark:hover:bg-primary-500 hover:text-white focus:ring-primary-200 dark:focus:ring-primary-800 bg-transparent hover:shadow-medium',
+    ghost: 'text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30 focus:ring-primary-200 dark:focus:ring-primary-800 border border-transparent hover:border-primary-200 dark:hover:border-primary-700',
+    success: 'bg-gradient-to-r from-success-600 to-success-700 hover:from-success-700 hover:to-success-800 text-white shadow-soft hover:shadow-large focus:ring-success-200 dark:focus:ring-success-800 border border-transparent',
+    warning: 'bg-gradient-to-r from-warning-600 to-warning-700 hover:from-warning-700 hover:to-warning-800 text-white shadow-soft hover:shadow-large focus:ring-warning-200 dark:focus:ring-warning-800 border border-transparent',
+    error: 'bg-gradient-to-r from-error-600 to-error-700 hover:from-error-700 hover:to-error-800 text-white shadow-soft hover:shadow-large focus:ring-error-200 dark:focus:ring-error-800 border border-transparent',
   };
   
   const sizes = {

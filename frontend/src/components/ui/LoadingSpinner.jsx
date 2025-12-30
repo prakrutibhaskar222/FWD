@@ -11,13 +11,13 @@ const LoadingSpinner = ({
   };
   
   const colors = {
-    primary: 'border-primary-600',
-    secondary: 'border-neutral-600',
+    primary: 'border-primary-600 dark:border-primary-400',
+    secondary: 'border-neutral-600 dark:border-neutral-400',
     white: 'border-white',
   };
   
   return (
-    <div className={`loading-spinner ${sizes[size]} border-4 border-neutral-200 ${colors[color]} ${className}`}></div>
+    <div className={`loading-spinner ${sizes[size]} border-4 border-neutral-200 dark:border-neutral-700 ${colors[color]} ${className}`}></div>
   );
 };
 
@@ -33,8 +33,8 @@ const LoadingDots = ({
   };
   
   const colors = {
-    primary: 'bg-primary-600',
-    secondary: 'bg-neutral-600',
+    primary: 'bg-primary-600 dark:bg-primary-400',
+    secondary: 'bg-neutral-600 dark:bg-neutral-400',
     white: 'bg-white',
   };
   

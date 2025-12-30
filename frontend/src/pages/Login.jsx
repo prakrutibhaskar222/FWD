@@ -61,7 +61,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,15 +74,15 @@ const Login = () => {
               <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">C</span>
               </div>
-              <span className="font-display font-bold text-2xl text-neutral-900">
+              <span className="font-display font-bold text-2xl text-neutral-900 dark:text-neutral-100">
                 COOLIE
               </span>
             </Link>
             
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
               Welcome Back
             </h1>
-            <p className="text-neutral-600">
+            <p className="text-neutral-600 dark:text-neutral-400">
               Sign in to your account to continue
             </p>
           </div>
@@ -121,7 +121,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-[38px] text-neutral-400 hover:text-neutral-600 transition-colors"
+                  className="absolute right-3 top-[38px] text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -135,16 +135,16 @@ const Login = () => {
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-primary-600 border-neutral-300 rounded focus:ring-primary-500 focus:ring-2"
+                    className="w-4 h-4 text-primary-600 border-neutral-300 dark:border-neutral-600 rounded focus:ring-primary-500 focus:ring-2 bg-white dark:bg-neutral-800"
                   />
-                  <span className="ml-2 text-sm text-neutral-600">
+                  <span className="ml-2 text-sm text-neutral-600 dark:text-neutral-400">
                     Remember me
                   </span>
                 </label>
                 
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
                 >
                   Forgot password?
                 </Link>
@@ -164,10 +164,10 @@ const Login = () => {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-neutral-200"></div>
+                <div className="w-full border-t border-neutral-200 dark:border-neutral-700"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-neutral-500">
+                <span className="px-2 bg-white dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400">
                   Don't have an account?
                 </span>
               </div>
@@ -188,12 +188,12 @@ const Login = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-6 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/20"
+            className="mt-6 p-4 bg-white/60 dark:bg-neutral-800/60 backdrop-blur-sm rounded-xl border border-white/20 dark:border-neutral-700/20"
           >
-            <h3 className="text-sm font-medium text-neutral-700 mb-2">
+            <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
               Demo Credentials
             </h3>
-            <div className="text-xs text-neutral-600 space-y-1">
+            <div className="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
               <p><strong>Admin:</strong> admin@coolie.com / admin123</p>
               <p><strong>User:</strong> user@coolie.com / user123</p>
               <p><strong>Worker:</strong> worker@coolie.com / worker123</p>

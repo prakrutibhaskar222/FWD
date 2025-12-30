@@ -167,19 +167,12 @@ const Navbar = () => {
     const fetchSuggestions = async () => {
       try {
         console.log('Searching for:', searchTerm); // Debug log
-        const res = await fetch(
-          `http://localhost:5001/api/services/navbar-search?for=navbar&q=${encodeURIComponent(searchTerm)}`
-        );
+        const res = await api.get(`/api/services/search?q=${encodeURIComponent(searchTerm)}&limit=5`);
         
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        console.log('Search results:', res.data); // Debug log
         
-        const json = await res.json();
-        console.log('Search results:', json); // Debug log
-        
-        if (json.success && Array.isArray(json.data)) {
-          setSuggestions(json.data.slice(0, 5)); // Limit to 5 suggestions
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setSuggestions(res.data.data);
         } else {
           setSuggestions([]);
         }
@@ -254,8 +247,8 @@ const Navbar = () => {
       <motion.nav 
         className={`sticky top-0 z-50 transition-all duration-300 ${
           scrolled 
-            ? 'bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-medium' 
-            : 'bg-white/90 backdrop-blur-sm border-b border-neutral-100 shadow-soft'
+            ? 'bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-700 shadow-medium' 
+            : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm border-b border-neutral-100 dark:border-neutral-800 shadow-soft'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -273,7 +266,7 @@ const Navbar = () => {
                 <span className="text-white font-bold text-lg">C</span>
               </motion.div>
               <motion.span 
-                className="font-display font-bold text-xl text-neutral-900 group-hover:text-primary-600 transition-colors"
+                className="font-display font-bold text-xl text-neutral-900 dark:text-neutral-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
                 COOLIE
@@ -291,8 +284,8 @@ const Navbar = () => {
                   <motion.div
                     className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                       location.pathname === link.path 
-                        ? 'bg-primary-50 text-primary-600' 
-                        : 'text-neutral-600 hover:text-primary-600 hover:bg-primary-50'
+                        ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400' 
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/30'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

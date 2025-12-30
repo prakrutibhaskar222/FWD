@@ -11,7 +11,7 @@ const Card = ({
   interactive = false,
   ...props
 }) => {
-  const baseClasses = 'bg-white rounded-2xl border border-neutral-100 transition-all duration-300 relative overflow-hidden';
+  const baseClasses = 'bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-100 dark:border-neutral-700 transition-all duration-300 relative overflow-hidden';
   
   const paddings = {
     none: '',
@@ -29,8 +29,8 @@ const Card = ({
   };
   
   const hoverClasses = hover ? 'hover:shadow-large hover:scale-[1.02] hover:-translate-y-2 cursor-pointer group' : '';
-  const interactiveClasses = interactive ? 'hover:border-primary-200 focus-within:ring-4 focus-within:ring-primary-100 focus-within:border-primary-300' : '';
-  const gradientClasses = gradient ? 'bg-gradient-to-br from-white to-neutral-50' : '';
+  const interactiveClasses = interactive ? 'hover:border-primary-200 dark:hover:border-primary-600 focus-within:ring-4 focus-within:ring-primary-100 dark:focus-within:ring-primary-800 focus-within:border-primary-300 dark:focus-within:border-primary-500' : '';
+  const gradientClasses = gradient ? 'bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-800 dark:to-neutral-900' : '';
   
   const classes = `${baseClasses} ${paddings[padding]} ${shadows[shadow]} ${hoverClasses} ${interactiveClasses} ${gradientClasses} ${className}`;
   
@@ -59,7 +59,7 @@ const Card = ({
         {...props}
       >
         {/* Subtle gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-accent-50/0 group-hover:from-primary-50/30 group-hover:to-accent-50/20 transition-all duration-500 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-50/0 to-accent-50/0 group-hover:from-primary-50/30 group-hover:to-accent-50/20 dark:group-hover:from-primary-900/30 dark:group-hover:to-accent-900/20 transition-all duration-500 pointer-events-none"></div>
         
         {/* Content */}
         <div className="relative z-10">
@@ -83,7 +83,7 @@ const Card = ({
 };
 
 const CardHeader = ({ children, className = '', divider = false }) => (
-  <div className={`mb-6 ${divider ? 'pb-4 border-b border-neutral-100' : ''} ${className}`}>
+  <div className={`mb-6 ${divider ? 'pb-4 border-b border-neutral-100 dark:border-neutral-700' : ''} ${className}`}>
     {children}
   </div>
 );
@@ -95,7 +95,7 @@ const CardBody = ({ children, className = '' }) => (
 );
 
 const CardFooter = ({ children, className = '', divider = false }) => (
-  <div className={`mt-6 ${divider ? 'pt-4 border-t border-neutral-100' : ''} ${className}`}>
+  <div className={`mt-6 ${divider ? 'pt-4 border-t border-neutral-100 dark:border-neutral-700' : ''} ${className}`}>
     {children}
   </div>
 );
