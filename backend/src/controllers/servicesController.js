@@ -169,3 +169,29 @@ export const getPopularServices = async (req, res) => {
   }
 };
 
+
+export const searchServices = async (req, res) => {
+  try {
+    const { q, limit = 5 } = req.query;
+
+    if (!q) {
+      return res.json({ success: true, data: [] });
+    }
+
+    const services = await Service.find({
+      title: { $regex: q, $options: "i" }
+    })
+      .limit(Number(limit))
+      .select("title category price");
+
+    res.json({
+      success: true,
+      data: services
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Search failed"
+    });
+  }
+};

@@ -52,7 +52,6 @@ import Profile from "./pages/profile/Profile.jsx";
 import Favorites from "./pages/profile/Favorites.jsx";
 import ServiceHistory from "./pages/profile/ServiceHistory.jsx";
 import Invoices from "./pages/profile/Invoices.jsx";
-import SavedServices from "./pages/SavedServices.jsx";
 import AdminWorkerVerification from "./pages/admin/AdminWorkerVerfication.jsx";
 
 // Footer Pages
@@ -151,8 +150,7 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/favorites" element={<Favorites />} />
             <Route path="/profile/history" element={<ServiceHistory />} />
-            <Route path="/profile/invoices" element={<Invoices />} />
-            <Route path="/saved-services" element={<ProtectedRoute> <SavedServices /> </ProtectedRoute>} />
+            <Route path="/profile/invoices" element={<Invoices />} /> 
 
             {/* ADMIN */}
             <Route path="/admin/" element={<AdminRoute> <Dashboard /> </AdminRoute>}/>

@@ -184,7 +184,7 @@ export default function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-neutral-800 transition-colors duration-300">
+      <section className="py-20 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -192,13 +192,13 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <Badge variant="primary" className="mb-4 bg-primary-600 text-white">
+            <Badge variant="primary" className="mb-4">
               Our Services
             </Badge>
-            <h2 className="text-4xl lg:text-5xl font-display font-bold text-white mb-6 transition-colors duration-300">
+            <h2 className="text-4xl lg:text-5xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-6 transition-colors duration-300">
               Choose Your Service Category
             </h2>
-            <p className="text-xl text-neutral-200 max-w-3xl mx-auto transition-colors duration-300">
+            <p className="text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl mx-auto transition-colors duration-300">
               From routine maintenance to major renovations, find the perfect professional for your needs.
             </p>
           </motion.div>

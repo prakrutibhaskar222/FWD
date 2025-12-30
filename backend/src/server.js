@@ -16,6 +16,7 @@ import workerRoute from "../routes/workerRoutes.js";
 import calendarRoute from "../routes/calendarRoute.js";
 import profileRoute from "../routes/profileRoute.js";
 import userRoutes from "../routes/userRoute.js";
+import favoritesRoute from "../routes/favoritesRoute.js";
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/workers", workerRoute);
 app.use("/api/calendar", calendarRoute);
 app.use("/api/profile", profileRoute);
 app.use("/api/users", userRoutes);
+app.use("/api/user/favorites", favoritesRoute);
 
 // Health check
 app.get("/", (req, res) => res.send("API is running..."));

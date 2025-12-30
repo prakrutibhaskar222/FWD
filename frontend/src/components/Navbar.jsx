@@ -8,6 +8,7 @@ import api from "../api.js";
 
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -157,6 +158,7 @@ const Navbar = () => {
   };
 
   /* ================= SEARCH ================= */
+ 
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSuggestions([]);
@@ -166,20 +168,29 @@ const Navbar = () => {
 
     const fetchSuggestions = async () => {
       try {
-        console.log('Searching for:', searchTerm); // Debug log
-        const res = await api.get(`/api/services/search?q=${encodeURIComponent(searchTerm)}&limit=5`);
-        
-        console.log('Search results:', res.data); // Debug log
-        
-        if (res.data.success && Array.isArray(res.data.data)) {
-          setSuggestions(res.data.data);
+        setSearchLoading(true);
+
+        // 🔹 USING EXISTING API
+        const res = await api.get("/api/services");
+
+        if (res.data?.success) {
+          const filtered = res.data.data
+            .filter(service =>
+              service.title
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())
+            )
+            .slice(0, 5);
+
+          setSuggestions(filtered);
         } else {
           setSuggestions([]);
         }
-        setActiveIndex(-1);
       } catch (err) {
-        console.error("Search error:", err);
+        console.error("Search failed:", err);
         setSuggestions([]);
+      } finally {
+        setSearchLoading(false);
       }
     };
 
@@ -210,12 +221,19 @@ const Navbar = () => {
     }
   };
 
-  const handleSuggestionClick = (service) => {
-    navigate(`/service/${service._id}`);
+
+  const resetSearch = () => {
     setSearchTerm("");
     setSuggestions([]);
+    setActiveIndex(-1);
     setIsSearchFocused(false);
   };
+
+  const handleSuggestionClick = (service) => {
+  navigate(`/service/${service._id}`);
+  resetSearch();
+};
+
 
   const navLinks = [
     { name: "Electrical", path: "/electrical", icon: "⚡" },
@@ -228,7 +246,6 @@ const Navbar = () => {
   const profileMenuItems = [
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Heart, label: "Favorites", path: "/profile/favorites" },
-    { icon: Bookmark, label: "Saved Services", path: "/saved-services" },
     { icon: History, label: "History", path: "/profile/history" },
     { icon: FileText, label: "Invoices", path: "/profile/invoices" },
   ];
@@ -257,7 +274,7 @@ const Navbar = () => {
         <div className="container-custom">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2 group">
+            <Link to="/home" className="flex items-center space-x-2 group">
               <motion.div 
                 className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center"
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -308,84 +325,58 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Enhanced Search Bar */}
-            <div className="hidden md:block relative flex-1 max-w-md mx-8">
-              <motion.div 
-                className="relative"
-                animate={{ 
-                  scale: isSearchFocused ? 1.02 : 1,
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              >
-                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                  isSearchFocused ? 'text-primary-500 dark:text-primary-400' : 'text-neutral-400 dark:text-neutral-500'
-                }`} />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-4 focus:outline-none transition-all duration-300 bg-white dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-100 ${
-                    isSearchFocused 
-                      ? 'border-primary-500 ring-primary-200 dark:ring-primary-800 shadow-medium' 
-                      : 'border-neutral-200 dark:border-neutral-600 hover:border-neutral-300 dark:hover:border-neutral-500'
-                  }`}
-                />
-                
-                {/* Search loading indicator */}
-                {searchTerm && (
-                  <motion.div
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                  >
-                    <div className="w-4 h-4 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-                  </motion.div>
-                )}
-              </motion.div>
+            {/* SEARCH */}
+        <div className="relative w-full max-w-md mx-6 hidden md:block">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setTimeout(() => setIsSearchFocused(false), 150)}
+            placeholder="Search services..."
+            className="w-full pl-9 pr-9 py-2 border rounded-lg"
+          />
 
-              {/* Enhanced Search Suggestions */}
-              <AnimatePresence>
-                {isSearchFocused && suggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-800 rounded-xl shadow-large border border-neutral-200 dark:border-neutral-600 max-h-80 overflow-y-auto z-50 transition-colors duration-300"
+          {/* Loader */}
+          {searchLoading && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-primary-300 border-t-primary-600 rounded-full animate-spin" />
+          )}
+
+          {/* Suggestions */}
+          <AnimatePresence>
+            {isSearchFocused && suggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute mt-2 w-full bg-white border rounded-lg shadow-lg z-50"
+              >
+                {suggestions.map((service, index) => (
+                  <div
+                    key={service._id}
+                    onMouseDown={() => handleSuggestionClick(service)}
+                    className={`px-4 py-3 cursor-pointer ${
+                      index === activeIndex
+                        ? "bg-primary-50"
+                        : "hover:bg-neutral-50"
+                    }`}
                   >
-                    {suggestions.map((service, index) => (
-                      <motion.button
-                        key={service._id}
-                        onClick={() => handleSuggestionClick(service)}
-                        className={`w-full text-left px-4 py-3 transition-all duration-200 ${
-                          index === activeIndex 
-                            ? 'bg-primary-50 dark:bg-primary-900/50 border-l-4 border-primary-500' 
-                            : 'hover:bg-neutral-50 dark:hover:bg-neutral-700'
-                        } ${index === 0 ? 'rounded-t-xl' : ''} ${
-                          index === suggestions.length - 1 ? 'rounded-b-xl' : ''
-                        }`}
-                        whileHover={{ x: 4 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-neutral-900 dark:text-neutral-100">{service.title}</p>
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400 capitalize">{service.category}</p>
-                          </div>
-                          <Badge variant="primary" size="sm" className="bg-gradient-to-r from-primary-500 to-primary-600">
-                            ₹{service.price}
-                          </Badge>
-                        </div>
-                      </motion.button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="font-medium">{service.title}</p>
+                        <p className="text-sm text-neutral-500">
+                          {service.category}
+                        </p>
+                      </div>
+                      <Badge>₹{service.price}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
             {/* Auth Section */}
             <div className="flex items-center space-x-4">
